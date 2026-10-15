@@ -43,10 +43,11 @@ description: 수업 PPT, 수업용 슬라이드, 교과서로 슬라이드, 수�
 1. **자료 읽기**: 교사가 준 쪽을 읽고 핵심 개념·활동·용어를 목록으로 뽑는다. 못 읽은 곳은 표시한다.
 2. **구성안 확인**: 슬라이드 제목과 한 줄 내용 목록(구성안)을 교사에게 보여 주고 수정 요청이 없으면 진행한다.
 3. **파일 만들기**
-   - 플랫폼에 **PPTX 생성 기능**(예: pptx 스킬·문서 생성 도구)이 있으면 그것으로 `.pptx`를 만든다. 발표자 노트 기능이 있으면 노트에 발문을 넣는다.
+   - **pptx-maker**(분필팩 teacher 묶음의 한국어 발표 자료 엔진, MCP `pptx_maker` 또는 날쌤팩의 `nalssam-pptx`)가 연결돼 있으면 그것을 먼저 쓴다. 순서: `pptx_start_here` → `pptx_recipes` → `pptx_plan`(용도는 초등 `class_kids`, 중등·고등 `class_teen`) → 명세의 TODO를 위 흐름과 발문으로 채움 → `pptx_check` → `pptx_build` → `pptx_preview`. 오류·경고 0, 점수 90 이상이 될 때까지 명세를 고치고, 발문은 각 장의 `notes`에 넣는다. 명령줄만 있으면 `pptx-maker plan class_kids --topic "주제" --minutes 40 -o spec.json` → `pptx-maker build spec.json --preview`.
+   - 없으면 플랫폼의 **PPTX 생성 기능**(예: pptx 스킬·문서 생성 도구)으로 `.pptx`를 만든다. 발표자 노트 기능이 있으면 노트에 발문을 넣는다.
    - 없으면 `assets/slides-fallback.html`을 복사해 슬라이드별 HTML로 만든다. 화살표 키로 넘기고 `N` 키로 발표자 노트를 보이게 한다. 인쇄하면 한 장에 한 슬라이드가 나온다.
 4. **점검** 후 `outputs/수업슬라이드_<교과>_<단원>_<차시>.pptx` (또는 `.html`)로 저장한다.
-5. **보고**: 저장 위치, 슬라이드 수, 교과서에서 요약한 부분과 못 읽은 부분, 교사가 확인할 곳을 알린다.
+5. **보고**: 저장 위치, 슬라이드 수, 교과서에서 요약한 부분과 못 읽은 부분, 교사가 확인할 곳을 알린다. pptx-maker로 만들었으면 점수와 발표 PC에 필요한 글꼴(`pptx-maker fonts install` 또는 `--pack-fonts`)도 알린다.
 
 ## 점검
 

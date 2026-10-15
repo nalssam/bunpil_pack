@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "bunpil-connect",
   "displayName": "분필 커넥터 팩",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "노션·패들렛·캔바 원격 MCP 커넥터를 등록하고 하네스별 로그인 방법을 안내합니다.",
   "author": {
     "name": "nalssam(날쌤) · 몽당분필",

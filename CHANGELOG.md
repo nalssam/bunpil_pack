@@ -1,5 +1,13 @@
 # 변경 기록
 
+## 0.4.0 — 2026-10-16
+- teacher 묶음에 한국어 발표 자료 엔진 **pptx-maker**(ZZombie04/pptx_maker, MIT) 추가 — 고정 커밋을 `uv tool install`로 설치하고 `pptx-maker setup`으로 Claude Code·Codex에 MCP·스킬 연결(Windows 포함)
+- 수업 슬라이드 스킬(class-slides)이 pptx-maker를 먼저 사용(초등 `class_kids`·중등 `class_teen` 용도, 점검·채점 90점 이상)
+- **날쌤팩 연동**: `--nalssam`(macOS·Linux·WSL2)으로 날쌤팩 v1.0.1을 함께 설치 — Claude Code가 있으면 `--claude`, 겹치는 추천 도구는 날쌤팩의 고정 버전을 쓰고 분필팩은 건너뜀, 날쌤팩 공통 MCP 중 없는 것(REA·Motion 등)을 Claude Code에 `nalssam-` 이름으로 연결. Windows PowerShell에서는 WSL2 안내
+- 추천 도구 표에 nalssam 묶음(Motion Director·Showreel·Cinetic·motion-graphics·REA·After Effects MCP·Claude 네이티브 플러그인 122개)
+- 웹사이트: 날쌤팩 단락(분필팩과 비교, 설치 명령), 명령 만들기에 날쌤팩 선택, 문제 해결 2건 추가
+- 설치 점검(checkup)이 pptx_maker와 날쌤팩 MCP 이름을 정상으로 인식
+
 ## 0.3.0 — 2026-10-15
 - 웹사이트 공개: https://nalssam-bunpil.vercel.app — Claude·ChatGPT Codex 탭, 운영체제별 설치 시간표(교시별 진도 표시), 명령 만들기, 문제 해결 찾기, 연수용 큰 화면·QR
 - 한 줄 설치 주소: `claude.sh`·`codex.sh`·`install.sh`·`uninstall.sh`(macOS·Linux), 같은 이름의 `.ps1`(Windows)

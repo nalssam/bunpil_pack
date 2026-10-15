@@ -304,18 +304,20 @@ def kind(s: str) -> str:
         k = "MCP"
     elif "가져오기" in s:
         k = "골라 가져오기"
+    elif s == "날쌤팩":
+        k = "날쌤팩으로 설치"
     else:
         k = s
     extra = " (Codex가 있을 때)" if "Codex가 있을 때" in s else ""
     return f'<span class="kind">{esc(k)}</span>{esc(extra)}'
 
 
-PROFILE_TITLES = {"teacher": "teacher · 기본", "creator": "creator", "dev": "dev"}
+PROFILE_TITLES = {"teacher": "teacher · 기본", "creator": "creator", "dev": "dev", "nalssam": "nalssam"}
 
 
 def catalog_html(data: dict) -> str:
     out = []
-    for prof in ("teacher", "creator", "dev"):
+    for prof in ("teacher", "creator", "dev", "nalssam"):
         items = [i for i in data["catalog"] if i["profile"] == prof]
         rows = []
         for i in items:
@@ -421,7 +423,7 @@ def main() -> None:
         "VERSION": version, "DATE": now.strftime("%Y. %m. %d.").replace(". 0", ". "), "SITE": SITE,
         "SITE_HOST": SITE_HOST, "REPO": REPO, "ZIP_SIZE": human(pack.stat().st_size),
         "SKILL_COUNT": str(n_skills), "PLUGIN_COUNT": str(len(build.ORDER)),
-        "TOOL_COUNT": str(len(site_data(version)["catalog"])), "QR_SVG": qr_svg(SITE + "/"),
+        "TOOL_COUNT": str(sum(1 for i in site_data(version)["catalog"] if i["profile"] != "nalssam")), "QR_SVG": qr_svg(SITE + "/"),
         "PLUGINS_HTML": plugins_html(site_data(version)), "CATALOG_HTML": catalog_html(site_data(version)),
     }
     fragment = render(template, values, site_data(version))

@@ -59,6 +59,19 @@ Codex 앱(데스크톱)을 쓴다면 이 설치를 마친 뒤 앱을 다시 열�
 
 분필팩 5종은 인터넷 없이도 설치되고, 추천 도구는 인터넷이 필요합니다.
 
+## E. 날쌤팩도 함께 (고급, macOS·Linux·WSL2)
+
+영상·모션·발표·분석·개발 도구까지 담은 [날쌤팩](https://github.com/nalssam/nalssam-pack)을 분필팩과 함께 설치합니다. 수 GB를 내려받아 10~30분이 걸립니다.
+
+```bash
+curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --nalssam
+```
+
+- Claude Code가 있으면 날쌤팩을 `--claude`로 설치합니다(스킬과 네이티브 플러그인 122개, 개발·Google Cloud 플러그인 포함).
+- 겹치는 추천 도구는 날쌤팩의 고정 버전을 쓰고, 분필팩은 그 항목을 건너뜁니다.
+- 설치 후 `nalssam-pack doctor --verify-mcp`로 연결을 점검합니다. 나레이션(ElevenLabs)·음성 인식(Gemini 등)·Google Cloud·After Effects는 각자 계정·프로그램을 연결해야 합니다.
+- Windows는 WSL2 Ubuntu 터미널에서 실행합니다. 이때는 WSL 안의 Claude Code·Codex에 설치됩니다.
+
 ## 업데이트 · 지우기
 
 - 업데이트: 설치할 때 쓴 한 줄을 다시 실행합니다.

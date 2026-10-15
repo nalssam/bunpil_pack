@@ -53,7 +53,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scroll-padding-top: calc(72px + env(safe-area-inset-top, 0px)); }
 body {
   margin: 0; background: var(--paper); color: var(--ink);
   font: 400 1rem/1.72 var(--font-body); word-break: keep-all; overflow-wrap: break-word;
@@ -260,6 +260,16 @@ details.prof-more > summary h4::before { content: "+"; font: 500 1rem/1 var(--fo
 details.prof-more[open] > summary h4::before { content: "−"; }
 
 .cat { margin-top: 38px; }
+.nal-cmds { margin-top: 18px; }
+.nal-cmds .cmd { margin: 8px 0 12px; }
+.nal-notes { margin: 18px 0 0; padding-left: 1.2em; color: var(--ink-2); max-width: 80ch; }
+.nal-notes li { margin: 6px 0; }
+table.compare { table-layout: fixed; }
+table.compare th:first-child, table.compare td:first-child { width: 22%; font-weight: 600; }
+@media (max-width: 560px) {
+  table.compare th, table.compare td { padding: 8px 7px; font-size: .82rem; overflow-wrap: anywhere; }
+  table.compare th:first-child, table.compare td:first-child { width: 27%; }
+}
 .cat h3 { font: 400 1.45rem/1.2 var(--font-display); margin-bottom: 6px; }
 .cat > p { color: var(--ink-2); max-width: 72ch; margin-bottom: 16px; }
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--sheet); }
@@ -394,6 +404,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
     <nav class="nav" aria-label="바로가기">
       <a href="#install">설치 시간표</a>
       <a href="#contents">설치되는 것</a>
+      <a href="#nalssam">날쌤팩</a>
       <a href="#builder">명령 만들기</a>
       <a href="#manage">업데이트·지우기</a>
       <a href="#faq">문제 해결</a>
@@ -514,7 +525,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
               <ul>
                 <li>Claude Code(없을 때만, Anthropic 공식 설치 프로그램)</li>
                 <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
-                <li>분필팩 5종과 날쌤 추천 teacher 묶음(한글 HWPX 도구 3종, 문서 변환, 브라우저 자동화, 하네스 팩토리)</li>
+                <li>분필팩 5종과 날쌤 추천 teacher 묶음(한글 HWPX 도구 3종, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 하네스 팩토리)</li>
               </ul>
               <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
               <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
@@ -664,7 +675,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
             <ul>
               <li>Codex CLI(없을 때만, OpenAI 공식 설치 프로그램)</li>
               <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
-              <li>분필팩 5종과 날쌤 추천 teacher 묶음</li>
+              <li>분필팩 5종과 날쌤 추천 teacher 묶음(한글 HWPX 도구, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 하네스 팩토리)</li>
             </ul>
             <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
             <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
@@ -738,6 +749,49 @@ body[data-mobile="1"] .mobile-note { display: block; }
     </div>
   </section>
 
+  <!-- 날쌤팩 -->
+  <section id="nalssam" class="wrap" aria-labelledby="nalssam-title">
+    <div class="sec-head">
+      <p class="tag">더 큰 작업실 · 고급</p>
+      <h2 id="nalssam-title">날쌤팩</h2>
+      <p>날쌤이 실제로 쓰는 전체 작업 환경입니다. 분필팩이 교사 업무에 필요한 도구를 가볍게 담았다면, 날쌤팩은 영상·모션그래픽·발표 자료·앱 분석·개발 도구까지 원본 저장소 29개를 고정 버전으로 설치합니다. 교사 업무만 한다면 분필팩으로 충분합니다.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="env compare">
+        <thead><tr><th scope="col">구분</th><th scope="col">분필팩</th><th scope="col">날쌤팩</th></tr></thead>
+        <tbody>
+          <tr><td>누구에게</td><td>모든 선생님</td><td>영상·발표·개발까지 하는 선생님</td></tr>
+          <tr><td>컴퓨터</td><td>Windows · macOS · Linux</td><td>macOS · Linux, Windows는 WSL2 Ubuntu</td></tr>
+          <tr><td>크기·시간</td><td>수백 MB · 5~10분</td><td>수 GB · 10~30분</td></tr>
+          <tr><td>Claude Code</td><td>분필팩 5종 + 추천 도구</td><td>스킬 + 네이티브 플러그인 122개(개발·Google Cloud 포함)</td></tr>
+          <tr><td>Codex</td><td>분필팩 5종 + 추천 도구</td><td>스킬 수백 개 + MCP 6종 자동 연결</td></tr>
+          <tr><td>버전</td><td>각 원 저장소의 최신판</td><td>커밋 고정(같은 버전을 다시 설치)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="manage nal-cmds">
+      <div class="sheet">
+        <h3>분필팩과 함께 설치</h3>
+        <p>분필팩을 설치하면서 날쌤팩도 넣습니다. Claude Code가 있으면 날쌤팩을 <code>--claude</code>로 설치하고, 겹치는 도구는 날쌤팩의 고정 버전을 씁니다.</p>
+        <div class="cmd"><span class="pr">%</span><code>curl -fsSL {{SITE}}/install.sh | sh -s -- --nalssam</code><button class="copy" type="button">복사</button></div>
+        <p class="muted small">macOS·Linux 터미널에서 실행합니다. Windows는 WSL2 Ubuntu 터미널에서 실행하며, 이때는 WSL 안의 Claude Code·Codex에 설치됩니다.</p>
+      </div>
+      <div class="sheet">
+        <h3>날쌤팩만 설치</h3>
+        <p>Claude Code용 — 스킬과 네이티브 플러그인까지</p>
+        <div class="cmd"><span class="pr">%</span><code>bash -c "$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/v1.0.1/install.sh)" -- --claude</code><button class="copy" type="button">복사</button></div>
+        <p>Codex용</p>
+        <div class="cmd"><span class="pr">%</span><code>bash -c "$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/v1.0.1/install.sh)"</code><button class="copy" type="button">복사</button></div>
+      </div>
+    </div>
+    <ul class="nal-notes">
+      <li>설치가 끝나면 새 터미널에서 <code>nalssam-pack doctor --verify-mcp</code>로 실제 연결을 점검합니다.</li>
+      <li>계정이 따로 필요한 것: 나레이션(ElevenLabs), 영상 음성 인식(Gemini 등), Google Cloud 데이터 플러그인, Adobe After Effects. 설치가 끝난 것과 계정이 연결된 것은 다릅니다.</li>
+      <li><code>--claude</code>는 개발용 플러그인(개발 워크플로 90여 종, Google Cloud 데이터 도구 등)까지 켭니다. 필요 없는 플러그인은 Claude Code에서 <code>/plugin</code>으로 끌 수 있습니다.</li>
+      <li>날쌤팩에만 있는 도구는 <a href="#contents">설치되는 것</a>의 <b>nalssam</b> 묶음에서 볼 수 있습니다. 자세한 안내: <a href="https://github.com/nalssam/nalssam-pack" rel="noopener">GitHub nalssam/nalssam-pack</a></li>
+    </ul>
+  </section>
+
   <!-- 명령 만들기 -->
   <section id="builder" class="wrap" aria-labelledby="builder-title">
     <div class="sec-head">
@@ -765,6 +819,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
           <label class="opt"><input type="checkbox" id="b-install" checked> <span>Claude Code·Codex가 없으면 함께 설치</span></label>
           <label class="opt"><input type="checkbox" id="b-tools" checked> <span>Node.js·uv·Git이 없으면 함께 설치</span></label>
           <label class="opt"><input type="checkbox" id="b-nohwpx"> <span>한글(HWPX) 플러그인 빼기</span></label>
+          <label class="opt"><input type="checkbox" id="b-nalssam"> <span><b>날쌤팩</b>도 함께 설치(macOS·Linux·WSL2, 수 GB)</span></label>
         </fieldset>
       </form>
       <div class="b-out"><div class="b-out-in">
@@ -790,7 +845,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
           <tr><td>개인정보 자동 점검(훅)</td><td class="no">× 지침으로 대신</td><td class="yes">○</td><td class="yes">○</td><td><span class="yes">○</span> <span class="small muted">/hooks 신뢰 후</span></td></tr>
           <tr><td>공문 처리 서브에이전트</td><td class="no">× 순서대로 처리</td><td class="yes">○</td><td class="yes">○</td><td class="no">× 순서대로 처리</td></tr>
           <tr><td>노션·패들렛·캔바</td><td>커넥터 연결 후</td><td>커넥터 연결 후</td><td><code>/mcp</code> 로그인 후</td><td><code>codex mcp login</code> 후</td></tr>
-          <tr><td>추천 MCP(한글·문서 변환·브라우저 자동화)</td><td class="no">×</td><td>컴퓨터에서 실행할 때</td><td class="yes">○</td><td class="yes">○</td></tr>
+          <tr><td>추천 MCP(한글·발표 자료·문서 변환·브라우저 자동화)</td><td class="no">×</td><td>컴퓨터에서 실행할 때</td><td class="yes">○</td><td class="yes">○</td></tr>
         </tbody>
       </table>
     </div>
@@ -850,6 +905,8 @@ body[data-mobile="1"] .mobile-note { display: block; }
         <li>새 창에서도 명령을 찾도록 PATH를 남깁니다. <span class="only-mac">맥·리눅스는 <code>~/.bunpil/env</code> 파일을 만들고 셸 설정 파일(<code>~/.zshrc</code>, <code>~/.bashrc</code>, <code>~/.bash_profile</code>, <code>~/.profile</code> 중 있는 것, 맥은 <code>~/.zshrc</code>가 없으면 새로 만듦)에 <code># bunpil-path</code> 표시가 붙은 한 줄을 더합니다.</span><span class="only-win">Windows는 사용자 PATH에 폴더를 더합니다(기존 항목은 그대로 둠).</span></li>
         <li class="only-win">Codex를 npm으로 설치한 경우에만, PowerShell에서 <code>codex</code> 명령이 실행되도록 현재 사용자의 실행 정책을 RemoteSigned로 바꿉니다. 되돌리기: <code>Set-ExecutionPolicy -Scope CurrentUser Undefined</code></li>
       </ul><p>지우기 명령은 분필팩 5종과 <code>.bunpil/bunpil-pack</code> 폴더를 지우고, 나머지는 그대로 둔 채 직접 지우는 방법을 알려 줍니다.</p></div></details>
+      <details><summary>분필팩과 날쌤팩은 무엇이 다른가요?</summary><div class="a"><p>분필팩은 모든 선생님이 Windows·맥에서 바로 쓰는 교사 업무 도구 모음이고, 날쌤팩은 날쌤의 전체 작업 환경(영상·모션·발표·분석·개발 도구, 고정 버전)입니다. 날쌤팩은 macOS·Linux·WSL2에서만 설치되고 수 GB가 필요합니다. <a href="#nalssam">날쌤팩 안내</a>를 보세요.</p></div></details>
+      <details><summary>수업 슬라이드는 어떤 도구로 만드나요?</summary><div class="a"><p>teacher 묶음의 발표 자료 엔진(pptx-maker)이 연결돼 있으면 "수업 슬라이드 만들어줘"라고 할 때 그 엔진으로 .pptx를 만들고 디자인 점검·채점까지 합니다. 발표할 PC에 테마 글꼴이 없으면 <code>pptx-maker fonts install</code>로 무료 글꼴을 설치하세요.</p></div></details>
       <details><summary>학생도 쓸 수 있나요? 생활기록부 문구도 써 주나요?</summary><div class="a"><p>분필팩은 교사의 수업 준비와 행정 업무용입니다. 학생이 직접 쓰는 도구가 아닙니다. 생활기록부 서술형 문구는 만들지 않습니다(2026 기재요령).</p></div></details>
     </div>
     <p class="faq-empty" id="faq-empty" hidden>맞는 질문이 없습니다. 다른 낱말로 찾아보세요.</p>
@@ -907,6 +964,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
     <details>
       <summary>변경 기록</summary>
       <div class="log">
+        <p><b>0.4.0 (2026-10-16)</b> 발표 자료(PPTX) 엔진 pptx-maker를 teacher 묶음에 추가(수업 슬라이드 스킬이 먼저 사용), 날쌤팩 연동(<code>--nalssam</code>)과 안내 단락, 추천 도구 표에 nalssam 묶음.</p>
         <p><b>0.3.0 (2026-10-15)</b> 웹사이트와 한 줄 설치 주소 공개. Claude·Codex별 설치 스크립트(claude/codex.sh·ps1), 더블클릭 설치 파일, Claude Code·Codex·Node.js·uv 자동 설치, Windows에서 Git Bash 없이 작동하는 개인정보 가드.</p>
         <p><b>0.2.0 (2026-10-13)</b> 날쌤 추천 도구 묶음(teacher·creator·dev) 반영, 하네스 예시 100종 가져오기 스킬.</p>
         <p><b>0.1.0 (2026-10-13)</b> 첫 공개: 플러그인 5종, Claude·Codex 동시 지원, 개인정보 가드.</p>
@@ -1096,6 +1154,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
     var host = val("b-host"), os = val("b-os");
     var profiles = ["teacher", "creator", "dev"].filter(function (p) { return document.getElementById("b-p-" + p).checked; });
     var inst = document.getElementById("b-install").checked, tools = document.getElementById("b-tools").checked, nohwpx = document.getElementById("b-nohwpx").checked;
+    var nal = document.getElementById("b-nalssam").checked;
     var notes = [], cmd;
     if (os === "mac") {
       var f = [];
@@ -1104,6 +1163,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
       if (inst) { if (host !== "codex") f.push("--install-claude"); if (host !== "claude") f.push("--install-codex"); }
       if (tools) f.push("--with-tools");
       if (nohwpx) f.push("--no-hwpx");
+      if (nal) f.push("--nalssam");
       cmd = "curl -fsSL " + SITE + "/install.sh | sh" + (f.length ? " -s -- " + f.join(" ") : "");
     } else {
       var v = [];
@@ -1120,6 +1180,8 @@ body[data-mobile="1"] .mobile-note { display: block; }
     else notes.push("추천 묶음: " + profiles.join(" + ") + (profiles.indexOf("dev") >= 0 ? " (dev의 큰 모음은 목록만 등록하고 골라 설치)" : ""));
     if (host === "both") notes.push(inst ? "Claude Code와 Codex 모두에 설치하고, 없는 쪽은 새로 설치합니다." : "컴퓨터에서 찾은 Claude Code·Codex에만 설치합니다.");
     if (!tools) notes.push("Node.js·uv·Git이 없으면 일부 추천 도구는 건너뜁니다.");
+    if (nal && os === "mac") notes.push("날쌤팩(수 GB, 10~30분)도 설치합니다. Claude Code가 있으면 --claude로 설치하고, 겹치는 도구는 날쌤팩 것을 씁니다.");
+    if (nal && os === "win") notes.push("날쌤팩은 Windows PowerShell에서 설치되지 않습니다. WSL2 Ubuntu 터미널에서 '날쌤팩' 단락의 명령을 실행하세요.");
     if (os === "win") notes.push("PowerShell에 붙여넣으세요. 끝에 붙은 Remove-Item은 이 창에 남은 설정값을 지웁니다.");
     var ul = document.getElementById("b-notes"); ul.innerHTML = "";
     notes.forEach(function (n) { var li = document.createElement("li"); li.textContent = n; ul.appendChild(li); });

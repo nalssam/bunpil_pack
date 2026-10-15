@@ -1,7 +1,7 @@
 {
   "name": "nalssam's 분필팩",
-  "version": "0.3.0",
-  "date": "2026-10-15",
+  "version": "0.4.0",
+  "date": "2026-10-16",
   "site": "https://nalssam-bunpil.vercel.app",
   "repo": "nalssam/bunpil_pack",
   "plugins": [
@@ -15,35 +15,35 @@
   "files": {
     "VERSION": {
       "bytes": 6,
-      "sha256": "d915cc95d6ca8f47ae297713ed46d4e5c5d99ddd29fc3c61e263bdf305f2b5b0"
+      "sha256": "40b8eb4000a913a7791090535f291d3d369874162a89ef3c9e3d4e887a1b9e79"
     },
     "app/bunpil-builder.zip": {
       "bytes": 28011,
-      "sha256": "e15a8e3c15f7eb8ce1cee409dad5fcc39854afd9490b4955678e726210dfb75a"
+      "sha256": "e758a4626bb7ab2baa527bbc90a5af804892aa1be9f0c2b1bd135e3623e4065b"
     },
     "app/bunpil-class.zip": {
-      "bytes": 53124,
-      "sha256": "05c2953c61a743e457b0a01b339c1186c1ffe9cd1c3e84aec0b8023015fed0d1"
+      "bytes": 53528,
+      "sha256": "5bd9162cc2d07a274661bd888aba4ed3ae9dd645985b526787e9685369fd035d"
     },
     "app/bunpil-connect.zip": {
       "bytes": 7124,
-      "sha256": "3c79be7d25166d6f880fb0145108863919991baea6939fe666eea1d10c8c8a70"
+      "sha256": "fe6d18af1be5bfadbf44ace869cc058335e1b20ee794b64d244fd549f6013903"
     },
     "app/bunpil-school.zip": {
       "bytes": 41270,
-      "sha256": "eacc8f48f5241d53d5b2fc184b9a24c1e5fcee161266859c65defe9528106eff"
+      "sha256": "b96dc781f36360aab3a40e1cb18d72f329071e09fb2e1bd4dd04b6803d432a60"
     },
     "app/bunpil-start.zip": {
-      "bytes": 15527,
-      "sha256": "b2fd0bcfb1ee9cd115460cb4c1ab5e7c597c41559d8234d30e5894b8252dbb6b"
+      "bytes": 15647,
+      "sha256": "67ceb46944919ae954074e89492fd88caf1eb794a57dec0375eae12ec008a64e"
     },
     "app/skills/checkup.zip": {
-      "bytes": 2215,
-      "sha256": "c0d58fc0ff94f7f36d40f019d3fc01c86c0bad51de68281eca61f45a3d74e1d2"
+      "bytes": 2335,
+      "sha256": "f55f5a2c5abf4a5c37505a527ce4c47c4bee4b8882b7832245da5a376bffc41c"
     },
     "app/skills/class-slides.zip": {
-      "bytes": 6852,
-      "sha256": "9f0427a85953364f85f3181aa317a60badbe33a93751b48ee305f62cdb143fb7"
+      "bytes": 7255,
+      "sha256": "179104793b84d5326ec0d9e95f97de2fef1c25bd2806ff7bd11a8ea98fb8baf0"
     },
     "app/skills/coloring.zip": {
       "bytes": 7946,
@@ -118,36 +118,36 @@
       "sha256": "97299bce750a27933ee0a1cbdb89eac1315e83d621bb744645663935020a4ba7"
     },
     "bunpil-pack.zip": {
-      "bytes": 322291,
-      "sha256": "fbde5f58c06a19539f1ab93d7b321d9b1d3aa88d8b44672eb0a7f04b69baf75b"
+      "bytes": 327719,
+      "sha256": "3683f97c7604af4519d3de8f5129892f01e269c5a05e423819676eb286e303ee"
     },
     "claude.ps1": {
-      "bytes": 47192,
-      "sha256": "cbc1950f2f0b199ba4e25e92985235d291eb5986372327d7bbefdb5fac769985"
+      "bytes": 50103,
+      "sha256": "4c0fc100f9d5edaa389ee42559835fc1384a07f9d17f785de1d2a7f2fade29a7"
     },
     "claude.sh": {
-      "bytes": 35604,
-      "sha256": "31a8b2dcef43b656ee0ae5b9b54525de55ec5c7c5a968e480d28c426ceac2a27"
+      "bytes": 42644,
+      "sha256": "5730088fe1ea73f4824f38b1c2e1cbc9e2d2e64e8f6f930dac1c62dfd6aacdae"
     },
     "codex.ps1": {
-      "bytes": 47187,
-      "sha256": "d4f8845e87e0c1b2ff351709827bd4e80082786fd1126c5a00fdf6e37038f7d1"
+      "bytes": 50098,
+      "sha256": "75eefc242b2716b2669ed32b3c7366562caf33942b716c191805c55a83d54059"
     },
     "codex.sh": {
-      "bytes": 35599,
-      "sha256": "916cc6c3e0f4ea9108652fd0ac982cd4071b3d9f70401def4804b391e8dc211e"
+      "bytes": 42639,
+      "sha256": "12e922c708f4f81ff60918b3a05259ce620dce4fde100bf2c6f1dd051959eaae"
     },
     "favicon.svg": {
       "bytes": 347,
       "sha256": "b75b8def082deb4485201470a9e23b51583b3a9803ce6aef899446d2f0cc58cf"
     },
     "install.ps1": {
-      "bytes": 47071,
-      "sha256": "c0f99b5daf4d88e673c3e85ff31394f1d8183b1671d062eae95a08ef6a3b18fb"
+      "bytes": 49982,
+      "sha256": "3768253fa88dea26100505c4e062aad355e40001cc887df849f1d546991ef405"
     },
     "install.sh": {
-      "bytes": 35445,
-      "sha256": "40892255ebdc868b4d07122d6aab892cdffa40ae972f8eb268b5a23632dc9060"
+      "bytes": 42485,
+      "sha256": "dd0a94443bc4bc59dec586435abcb2e4ba80d9d2fa95bafffc2e5a8c62c229fe"
     },
     "og.jpg": {
       "bytes": 150155,
@@ -158,12 +158,12 @@
       "sha256": "16ceb5ee3e0dc13aa9adf31a3ebbe45a1d965b8c2b9f72eaf84e5911e140ed95"
     },
     "uninstall.ps1": {
-      "bytes": 47097,
-      "sha256": "a66981b2207509651048e273a6da67fc250b99ad004e0b0e4918ae5546e60716"
+      "bytes": 50008,
+      "sha256": "d5d07cba87c70c697eda688c9b2262b9b2aeac7e982a705bb2392141d94c3e76"
     },
     "uninstall.sh": {
-      "bytes": 35485,
-      "sha256": "46f37f942a9707a994052b0825ae6c1cb0962e08198eeeb1197caee67c2e4e0f"
+      "bytes": 42525,
+      "sha256": "4693c46cf9c07cc45ab98c1874279562206eaf5234d84b306073acdb4da60749"
     }
   }
 }

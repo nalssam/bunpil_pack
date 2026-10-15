@@ -25,7 +25,7 @@ description: "분필 점검, 설치 확인, 잘 깔렸나, 분필팩 상태, 업
    | 분필 하네스빌더 팩 | skill-maker, harness-fix, eval-run, share-skill, harness-gallery |
    | 분필 커넥터 팩 | connect |
 
-   추천 묶음(한 줄 설치의 teacher 묶음)도 확인한다. 연결된 MCP 목록(Claude Code는 `claude mcp list`, Codex는 `codex mcp list`)에 kordoc, playwright, markitdown, hwpx_new가 있는지 본다. 없으면 한 줄 설치 명령을 다시 실행하라고 안내한다(다시 실행하면 빠진 것만 채운다). Node.js·uv가 없어서 건너뛴 항목은 그 이름과 설치 방법을 적는다.
+   추천 묶음(한 줄 설치의 teacher 묶음)도 확인한다. 연결된 MCP 목록(Claude Code는 `claude mcp list`, Codex는 `codex mcp list`)에 kordoc, playwright, markitdown, hwpx_new, pptx_maker가 있는지 본다. 날쌤팩을 함께 설치했다면 같은 도구가 `nalssam-` 이름이나 날쌤팩 이름(hwpx-new, pptx-maker, rea, motion)으로 연결돼 있어도 정상이고, `nalssam-pack doctor --verify-mcp`로 실제 연결을 확인하라고 안내한다. 없으면 한 줄 설치 명령을 다시 실행하라고 안내한다(다시 실행하면 빠진 것만 채운다). Node.js·uv가 없어서 건너뛴 항목은 그 이름과 설치 방법을 적는다.
 3. **지침 파일 확인** — 작업 폴더의 `CLAUDE.md`, `AGENTS.md`가 있는지, 두 파일 내용이 같은지 확인한다. 없으면 setup 실행을 권한다. 다르면 어느 쪽을 기준으로 맞출지 묻는다.
 4. **가드 시험** — 선생님께 다음 문장을 그대로 입력해 보시라고 안내한다: `가드 시험: 연락처 010-0000-0000`. 경고 문구가 보이면 정상이다. 웹 채팅에서는 훅이 없어 경고가 뜨지 않는 것이 정상이며, 대신 privacy-guard 지침이 작동한다.
 5. **업데이트 설정 안내** — 환경에 맞는 줄만 보여 준다.

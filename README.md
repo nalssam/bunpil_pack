@@ -47,9 +47,19 @@ Claude 앱 → **사용자 지정(Customize) → 플러그인(Plugins) → 추�
 
 분필팩은 아래 도구를 복사·재배포하지 않고 각 원 저장소에서 직접 설치합니다. 전체 목록과 설치 방식: [catalog/recommended.json](catalog/recommended.json), 사이트의 "무엇이 설치되나요".
 
-- **teacher (기본)** — airmang/hwpx-plugins, chrisryugj/kordoc, ZZombie04/hwpx_new, microsoft/markitdown, microsoft/playwright, revfactory/harness, revfactory/harness-100
+- **teacher (기본)** — airmang/hwpx-plugins, chrisryugj/kordoc, ZZombie04/hwpx_new, ZZombie04/pptx_maker(한국어 발표 자료 엔진), microsoft/markitdown, microsoft/playwright, revfactory/harness, revfactory/harness-100
 - **creator** — ui-ux-pro-max-skill, taste-skill, impeccable, claude-video, sprite-gen
 - **dev** — superpowers, andrej-karpathy-skills, caveman, codex-plugin-cc, Agent-Reach, ECC·wshobson/agents·google/skills·claude-mem(목록만 등록)
+- **nalssam** — 날쌤팩으로 설치: Motion Director, Showreel, Cinetic, motion-graphics, REA, After Effects MCP, Claude 네이티브 플러그인 122개(아래 "날쌤팩")
+
+## 날쌤팩 (고급)
+
+[날쌤팩](https://github.com/nalssam/nalssam-pack)은 날쌤의 전체 작업 환경입니다. 영상·모션그래픽·발표 자료·앱 분석·개발 도구까지 원본 저장소 29개를 커밋 고정으로 설치합니다(macOS·Linux·Windows WSL2, 수 GB, 10~30분).
+
+- 분필팩과 함께: `curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --nalssam` — Claude Code가 있으면 날쌤팩을 `--claude`로 설치하고, 겹치는 추천 도구는 날쌤팩의 고정 버전을 씁니다. 날쌤팩 공통 MCP 중 분필팩에 없는 것(REA, Motion 등)은 Claude Code에 `nalssam-` 이름으로 연결합니다.
+- 날쌤팩만: `bash -c "$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/v1.0.1/install.sh)" -- --claude`(Claude Code) · `bash -c "$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/v1.0.1/install.sh)"`(Codex)
+- 점검: `nalssam-pack doctor --verify-mcp`. ElevenLabs·Gemini·Google Cloud·After Effects 같은 계정·프로그램은 따로 연결합니다.
+- Windows PowerShell 설치에서 `$env:BUNPIL_NALSSAM="1"`을 주면 WSL2 설치 방법만 안내합니다.
 
 ## 옵션
 
@@ -63,6 +73,7 @@ macOS·Linux는 `install.sh | sh -s -- <옵션>`, Windows는 같은 이름의 �
 | 없으면 Claude Code·Codex까지 설치 | `--install-claude` / `--install-codex` | `$env:BUNPIL_INSTALL_CLAUDE="1";` / `$env:BUNPIL_INSTALL_CODEX="1";` |
 | Node.js·uv도 설치 | `--with-tools` | `$env:BUNPIL_WITH_TOOLS="1";` |
 | 한글 플러그인 빼기 | `--no-hwpx` | `$env:BUNPIL_HWPX="0";` |
+| 날쌤팩도 설치 | `--nalssam` | WSL2 안내만(`$env:BUNPIL_NALSSAM="1";`) |
 | 지우기 | `uninstall.sh` | `uninstall.ps1` |
 
 ## 업데이트 · 지우기

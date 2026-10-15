@@ -19,6 +19,7 @@
 #   BUNPIL_INSTALL_CLAUDE · BUNPIL_INSTALL_CODEX   없으면 Claude Code / Codex CLI까지 설치
 #   BUNPIL_WITH_TOOLS  Node.js·uv·Git이 없으면 함께 설치
 #   BUNPIL_RECS="0" 분필팩 5종만 · BUNPIL_HWPX="0" 한글 플러그인 빼기 · BUNPIL_ASK · BUNPIL_UNINSTALL
+#   BUNPIL_NALSSAM  날쌤팩(영상·모션·분석 도구)은 macOS·Linux·WSL2 전용 — Windows에서는 WSL2 안내만 한다
 #   BUNPIL_SITE · BUNPIL_REPO(owner/repo를 마켓플레이스로) · BUNPIL_HOME(기본 ~\.bunpil) · BUNPIL_KEEP_POLICY
 #  관리자 권한이 필요 없다. (Git for Windows 설치만 Windows가 확인 창을 띄울 수 있다)
 # ─────────────────────────────────────────────────────────────
@@ -56,6 +57,8 @@ try {
   $skillsCli = 'skills@1.7.2'
   $playwrightMcp = '@playwright/mcp@latest'
   $nodeDist = (Opt 'BUNPIL_NODE_DIST' 'NodeDist' 'https://nodejs.org/dist/latest-v24.x').TrimEnd('/')
+  $pptxCommit = 'ae3d919005100472805bf39ddab234bd1cf72577'   # ZZombie04/pptx_maker (날쌤팩 v1.0.1과 같은 커밋)
+  $nalssamVersion = 'v1.0.1'
   $bunpilHome = Opt 'BUNPIL_HOME' 'Home' (Join-Path $HOME '.bunpil')
   $packDir = Join-Path $bunpilHome 'bunpil-pack'
   $only = Opt 'BUNPIL_ONLY' 'Only' ''
@@ -69,10 +72,12 @@ try {
   $skipHwpx = ((Opt 'BUNPIL_HWPX' 'Hwpx' '1') -eq '0')
   $uninstall = ((Opt 'BUNPIL_UNINSTALL' 'Uninstall' '0') -eq '1')
   $profiles = Opt 'BUNPIL_PROFILE' 'Profile' 'teacher'
+  $nalssam = ((Opt 'BUNPIL_NALSSAM' 'Nalssam' '0') -eq '1') -or ((',' + $profiles + ',') -match ',nalssam,')
   if ((',' + $profiles + ',') -match ',all,') { $profiles = 'teacher,creator,dev' }
-  $profileList = @($profiles.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+  $profileList = @($profiles.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ -and $_ -ne 'nalssam' })
+  if ($profileList.Count -eq 0) { $profileList = @('teacher') }
 
-  $st = @{ errors = 0; pathChanged = $false; hasClaude = $false; hasCodex = $false; hasNpx = $false; hasUvx = $false; hasGit = $false; hwpxDone = $false }
+  $st = @{ errors = 0; pathChanged = $false; hasClaude = $false; hasCodex = $false; hasNpx = $false; hasUvx = $false; hasGit = $false; hwpxDone = $false; pptxDone = $false; mdWarm = $false }
   $gitSkip = 'Git이 없어 건너뜀 (Git 설치 후 같은 명령을 다시 실행)'
 
   function Say([string]$m) { Write-Host $m }
@@ -558,6 +563,12 @@ try {
     if ($hostName -eq 'claude') { $argv = @('mcp', 'add', '-s', 'user', $name, '--') + $cmd } else { $argv = @('mcp', 'add', $name, '--') + $cmd }
     if (Run $hostName $argv) { Ok $label } else { Fail "$label — MCP 등록 실패" }
   }
+  # 첫 실행 때 내려받는 시간(30초 안팎) 때문에 MCP 연결이 시간 초과되지 않도록 미리 받아 둔다
+  function WarmMarkitdown {
+    if ($st.mdWarm) { return }
+    $st.mdWarm = $true
+    if ($st.hasUvx) { Run 'uvx' @('markitdown-mcp', '--help') | Out-Null }
+  }
   function HwpxNew {
     if ($st.hwpxDone) { return }
     $st.hwpxDone = $true
@@ -577,6 +588,36 @@ try {
     if ($isWin) { AddPath (Join-Path $HOME '.local\bin') $true } else { AddPath (Join-Path $HOME '.local/bin') $false }
     if ($done -and (Has 'hwpx-new') -and (Run 'hwpx-new' @('setup', '-y', '--only', ($targets -join ',')))) { Ok '한글 양식 보고서(hwpx_new) — 설치·MCP 연결' }
     else { Fail "한글 양식 보고서(hwpx_new) — 설치 실패 (pip install $zsrc)" }
+  }
+
+  # 한국어 발표 자료 엔진: 고정 커밋으로 설치하고 Claude Code·Codex에 MCP·스킬 연결
+  function PptxMaker {
+    if ($st.pptxDone) { return }
+    $st.pptxDone = $true
+    $label = '발표 자료(PPTX) 엔진 · ZZombie04/pptx_maker'
+    $targets = @()
+    if ($st.hasClaude) { $targets += 'claude-code' }
+    if ($st.hasCodex) { $targets += 'codex'; $targets += 'skill' }
+    if (-not (Has 'uv')) { Skip "$label — uv가 없어 건너뜀"; return }
+    $gsrc = "git+https://github.com/ZZombie04/pptx_maker@$pptxCommit"
+    $zsrc = "https://github.com/ZZombie04/pptx_maker/archive/$pptxCommit.zip"
+    $done = $false
+    if ($st.hasGit) { $done = Run 'uv' @('tool', 'install', '--force', "pptx-maker[images] @ $gsrc") }
+    if (-not $done) { $done = Run 'uv' @('tool', 'install', '--force', "pptx-maker[images] @ $zsrc") }
+    if ($isWin) { AddPath (Join-Path $HOME '.local\bin') $true } else { AddPath (Join-Path $HOME '.local/bin') $false }
+    if ($done -and (Has 'pptx-maker') -and (Run 'pptx-maker' @('setup', '--yes', '--only', ($targets -join ',')))) { Ok "$label — 설치·MCP·스킬 연결" }
+    else { Fail "$label — 설치 실패 (uv tool install `"pptx-maker @ $zsrc`")" }
+  }
+  # 날쌤팩은 macOS·Linux·WSL2 전용 설치기라 Windows에서는 안내만 한다
+  function NalssamGuide {
+    Head "[날쌤팩 $nalssamVersion]"
+    if ($isWin) {
+      Skip '날쌤팩 — Windows에서는 WSL2 Ubuntu 안에서 설치합니다(이 PowerShell의 Claude Code·Codex와는 따로 설치됨)'
+      Say '    1) PowerShell(관리자)에서  wsl --install  → 다시 시작 → Ubuntu 열기'
+      Say "    2) Ubuntu 터미널에서  bash -c `"`$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/$nalssamVersion/install.sh)`" -- --claude"
+    } else {
+      Skip "날쌤팩 — macOS·Linux에서는 터미널 한 줄 설치에 --nalssam 을 붙이세요:  curl -fsSL $site/install.sh | sh -s -- --nalssam"
+    }
   }
 
   # ── 분필팩 설치 ──────────────────────────────────────────
@@ -632,7 +673,7 @@ try {
         McpAdd 'claude' 'kordoc' 'kordoc 문서 도구 17종(MCP)' @('npx', '-y', 'kordoc', 'mcp')
         McpAdd 'claude' 'playwright' '브라우저 자동화 RPA(MCP) · microsoft/playwright' @('npx', '-y', $playwrightMcp)
       } else { Skip 'kordoc MCP·브라우저 자동화 — Node.js가 없어 건너뜀' }
-      if ($st.hasUvx) { McpAdd 'claude' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp') }
+      if ($st.hasUvx) { McpAdd 'claude' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp'); WarmMarkitdown }
       else { Skip '파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀' }
       CPlugin 'revfactory/harness' 'harness@harness-marketplace' '하네스 팩토리 · revfactory/harness'
     }
@@ -669,7 +710,7 @@ try {
         McpAdd 'codex' 'kordoc' 'kordoc 문서 도구 17종(MCP) · chrisryugj/kordoc' @('npx', '-y', 'kordoc', 'mcp')
         McpAdd 'codex' 'playwright' '브라우저 자동화 RPA(MCP) · microsoft/playwright' @('npx', '-y', $playwrightMcp)
       } else { Skip 'kordoc·브라우저 자동화 — Node.js가 없어 건너뜀' }
-      if ($st.hasUvx) { McpAdd 'codex' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp') }
+      if ($st.hasUvx) { McpAdd 'codex' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp'); WarmMarkitdown }
       else { Skip '파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀' }
       SkillsAdd 'revfactory/harness' 'codex' '하네스 팩토리 · revfactory/harness'
     }
@@ -719,8 +760,11 @@ try {
   if ($recs -and (InProfile 'teacher')) {
     Head '[공통]'
     HwpxNew
+    PptxMaker
     Say ''
   }
+
+  if ($nalssam) { NalssamGuide; Say '' }
 
   Head '다음 단계'
   if ($st.pathChanged) { Write-Host '  ※ 새로 설치한 명령이 잡히도록 지금 PowerShell 창을 닫고 새 창을 여세요.' -ForegroundColor Yellow }

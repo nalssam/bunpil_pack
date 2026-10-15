@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "bunpil-start",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": {
         "source": "local",
         "path": "./plugins/codex/bunpil-start"
@@ -19,7 +19,7 @@
     },
     {
       "name": "bunpil-class",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": {
         "source": "local",
         "path": "./plugins/codex/bunpil-class"
@@ -32,7 +32,7 @@
     },
     {
       "name": "bunpil-school",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": {
         "source": "local",
         "path": "./plugins/codex/bunpil-school"
@@ -45,7 +45,7 @@
     },
     {
       "name": "bunpil-builder",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": {
         "source": "local",
         "path": "./plugins/codex/bunpil-builder"
@@ -58,7 +58,7 @@
     },
     {
       "name": "bunpil-connect",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": {
         "source": "local",
         "path": "./plugins/codex/bunpil-connect"
