@@ -41,7 +41,12 @@ bad_json = []
 
 
 def run(cmd, text, mode="prompt"):
-    payload = {"prompt": text} if mode == "prompt" else {"tool_input": {"content": text}}
+    if mode == "prompt":
+        payload = {"prompt": text}
+    elif mode == "write-codex":
+        payload = {"tool_name": "apply_patch", "tool_input": {"command": text}}
+    else:
+        payload = {"tool_input": {"content": text}}
     p = subprocess.run(cmd + [mode], input=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
                        capture_output=True)
     out = p.stdout.decode("utf-8", "replace")
@@ -57,14 +62,28 @@ def run(cmd, text, mode="prompt"):
             return "bad"
         if cmd[0] != "sh" and not p.stdout.isascii():
             bad_json.append(("ascii", text))
-        if d.get("hookSpecificOutput", {}).get("permissionDecision") == "ask":
-            return "ask"
+        decision = d.get("hookSpecificOutput", {}).get("permissionDecision")
+        if decision in ("ask", "deny"):
+            return decision
         return "warn"
     return "clean"
 
 
+# Codex 파일 쓰기(apply_patch): 더하는 줄만 본다. 지우는 줄의 번호는 막지 않는다
+r = rrn()
+codex_cases = [
+    (f"*** Begin Patch\n*** Add File: 명단.md\n+# 명단\n+학생A {r}\n*** End Patch\n", "deny"),
+    (f"*** Begin Patch\n*** Update File: 명단.md\n@@\n-학생A {r}\n+학생A (번호 지움)\n*** End Patch\n", "clean"),
+    ("*** Begin Patch\n*** Update File: 안내.md\n@@\n 안내\n+연락처 010-1234-5678\n*** End Patch\n", "warn"),
+    ("*** Begin Patch\n*** Add File: 학습지.md\n+4학년 분수 학습지\n*** End Patch\n", "clean"),
+]
+
 failed = False
 for name, cmd in CMDS.items():
+    got = [run(cmd, patch, "write-codex") for patch, _ in codex_cases]
+    want = [w for _, w in codex_cases]
+    print(f"[{name}] Codex 쓰기 — {sum(g == w for g, w in zip(got, want))}/{len(want)} 맞음 {got}")
+    failed = failed or got != want
     res = {"block": [run(cmd, t) for t in block], "warn": [run(cmd, t) for t in warn],
            "clean": [run(cmd, t) for t in clean]}
     ok = {k: sum(1 for r in v if r == k) for k, v in res.items()}

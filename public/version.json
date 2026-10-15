@@ -19,23 +19,23 @@
     },
     "app/bunpil-builder.zip": {
       "bytes": 28011,
-      "sha256": "0b6ad6e419570ae5ed41e4bd7c4859d1c17cb9f32d90c65ae5fd997574f96ab8"
+      "sha256": "e15a8e3c15f7eb8ce1cee409dad5fcc39854afd9490b4955678e726210dfb75a"
     },
     "app/bunpil-class.zip": {
       "bytes": 53124,
-      "sha256": "1e5a1da5b69f4b60c33ff097ff24e2ee7f126c1368ef57563affb707af64fa9f"
+      "sha256": "05c2953c61a743e457b0a01b339c1186c1ffe9cd1c3e84aec0b8023015fed0d1"
     },
     "app/bunpil-connect.zip": {
       "bytes": 7124,
-      "sha256": "8114f29f85a47cb1c71537f3a1c07f9ac1adcb4229283300cb0f133cd886b08e"
+      "sha256": "3c79be7d25166d6f880fb0145108863919991baea6939fe666eea1d10c8c8a70"
     },
     "app/bunpil-school.zip": {
       "bytes": 41270,
-      "sha256": "9305a87adea23a23c955f14c70ff012f5e034c4e628eaac019921f5af374bb05"
+      "sha256": "eacc8f48f5241d53d5b2fc184b9a24c1e5fcee161266859c65defe9528106eff"
     },
     "app/bunpil-start.zip": {
-      "bytes": 14820,
-      "sha256": "a33ebe2f69ab3e57346f9dd667560636767547f84ff597e3c972101fca8bc0aa"
+      "bytes": 15527,
+      "sha256": "b2fd0bcfb1ee9cd115460cb4c1ab5e7c597c41559d8234d30e5894b8252dbb6b"
     },
     "app/skills/checkup.zip": {
       "bytes": 2215,
@@ -90,8 +90,8 @@
       "sha256": "ca9422390d42e0311e5233eb2df55b1570ab0ea41c1f94a1f9fd9c883382f00a"
     },
     "app/skills/privacy-guard.zip": {
-      "bytes": 3727,
-      "sha256": "85b7804570c3a7a53e42ed835b9b6f7483c0b7ccc80f4f62ea2b65d907f6da79"
+      "bytes": 3778,
+      "sha256": "5581b299a941274b2440c4127362711c5819b71aa1cabb87fe53c675e40cd41b"
     },
     "app/skills/pumui.zip": {
       "bytes": 6778,
@@ -118,36 +118,36 @@
       "sha256": "97299bce750a27933ee0a1cbdb89eac1315e83d621bb744645663935020a4ba7"
     },
     "bunpil-pack.zip": {
-      "bytes": 319967,
-      "sha256": "d52802f9f70a8f1604bb2c3028b1d5ebb08f6d729f2bc8c2392abf7826405c37"
+      "bytes": 322291,
+      "sha256": "fbde5f58c06a19539f1ab93d7b321d9b1d3aa88d8b44672eb0a7f04b69baf75b"
     },
     "claude.ps1": {
-      "bytes": 45141,
-      "sha256": "397100e864b81b9786c31032a06431294ea3085592f21309f4419746bb241986"
+      "bytes": 47192,
+      "sha256": "cbc1950f2f0b199ba4e25e92985235d291eb5986372327d7bbefdb5fac769985"
     },
     "claude.sh": {
-      "bytes": 34384,
-      "sha256": "ce1835248ebc8117ecdd147deaafd984a12caecbd28bb2bc7b71533513bcf1fc"
+      "bytes": 35604,
+      "sha256": "31a8b2dcef43b656ee0ae5b9b54525de55ec5c7c5a968e480d28c426ceac2a27"
     },
     "codex.ps1": {
-      "bytes": 45136,
-      "sha256": "779ebbc3fba0ed98ec787ba01205d3eda6544be11c20f45fc396cf2d2228c849"
+      "bytes": 47187,
+      "sha256": "d4f8845e87e0c1b2ff351709827bd4e80082786fd1126c5a00fdf6e37038f7d1"
     },
     "codex.sh": {
-      "bytes": 34379,
-      "sha256": "043e71b616b0c6dbd24e867e3bf2dcaa55171175902616299ec05cffd3a535ca"
+      "bytes": 35599,
+      "sha256": "916cc6c3e0f4ea9108652fd0ac982cd4071b3d9f70401def4804b391e8dc211e"
     },
     "favicon.svg": {
       "bytes": 347,
       "sha256": "b75b8def082deb4485201470a9e23b51583b3a9803ce6aef899446d2f0cc58cf"
     },
     "install.ps1": {
-      "bytes": 45020,
-      "sha256": "185f010adb82d4f5eb65138bb8198ac3b6f8fc94b64c8b8a8304948358ff0f9f"
+      "bytes": 47071,
+      "sha256": "c0f99b5daf4d88e673c3e85ff31394f1d8183b1671d062eae95a08ef6a3b18fb"
     },
     "install.sh": {
-      "bytes": 34225,
-      "sha256": "419c989546a6b79c822671f98d143b6d8d6c1471ddf5a91e9ddc6ef99c65741a"
+      "bytes": 35445,
+      "sha256": "40892255ebdc868b4d07122d6aab892cdffa40ae972f8eb268b5a23632dc9060"
     },
     "og.jpg": {
       "bytes": 150155,
@@ -158,12 +158,12 @@
       "sha256": "16ceb5ee3e0dc13aa9adf31a3ebbe45a1d965b8c2b9f72eaf84e5911e140ed95"
     },
     "uninstall.ps1": {
-      "bytes": 45046,
-      "sha256": "9eb3d24b6eaa504c00a5676f73d19ab736186c015a72553342148b5643cae7a7"
+      "bytes": 47097,
+      "sha256": "a66981b2207509651048e273a6da67fc250b99ad004e0b0e4918ae5546e60716"
     },
     "uninstall.sh": {
-      "bytes": 34265,
-      "sha256": "883753e40efbf8c8677b11ef28e9b223583c9eb5f6cdf325d5b3531ef8f4fee8"
+      "bytes": 35485,
+      "sha256": "46f37f942a9707a994052b0825ae6c1cb0962e08198eeeb1197caee67c2e4e0f"
     }
   }
 }

@@ -19,8 +19,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"${PLUGIN_ROOT}/hooks/guard.sh\" write",
-            "commandWindows": "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%PLUGIN_ROOT%\\hooks\\guard.ps1\" write",
+            "command": "sh \"${PLUGIN_ROOT}/hooks/guard.sh\" write-codex",
+            "commandWindows": "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%PLUGIN_ROOT%\\hooks\\guard.ps1\" write-codex",
             "statusMessage": "분필 가드 점검",
             "timeout": 10
           }

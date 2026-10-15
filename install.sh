@@ -297,11 +297,18 @@ HAS_GIT=0; git_ok && HAS_GIT=1
 GIT_SKIP="Git이 없어 건너뜀 (Git 설치 후 다시 실행)"
 
 # ── 분필팩 내려받기 ──────────────────────────────────────────
-SOURCE=""; SOURCE_IS_REPO=0
+SOURCE=""; SOURCE_IS_REPO=0; SOURCE_FALLBACK=0
+pack_version() { cat "$PACK_DIR/VERSION" 2>/dev/null || echo '?'; }
+has_pack() { [ -f "$PACK_DIR/.claude-plugin/marketplace.json" ]; }
 prepare_pack() {
   if [ -n "${BUNPIL_REPO:-}" ]; then SOURCE="$BUNPIL_REPO"; SOURCE_IS_REPO=1; ok "분필팩 저장소: $SOURCE"; return 0; fi
   mkdir -p "$BUNPIL_HOME" || { fail "$BUNPIL_HOME 폴더를 만들 수 없습니다"; return 1; }
-  for old_tmp in "$BUNPIL_HOME"/.tmp.*; do [ -d "$old_tmp" ] && rm -rf "$old_tmp"; done
+  # 지난 실행이 남긴 임시 폴더 정리. 분필팩 폴더가 없고 옛 사본만 남아 있으면 먼저 되돌린다
+  for old_tmp in "$BUNPIL_HOME"/.tmp.*; do
+    [ -d "$old_tmp" ] || continue
+    if [ ! -d "$PACK_DIR" ] && [ -f "$old_tmp/old/.claude-plugin/marketplace.json" ]; then mv "$old_tmp/old" "$PACK_DIR" 2>/dev/null; fi
+    if [ -d "$PACK_DIR" ] || [ ! -d "$old_tmp/old" ]; then rm -rf "$old_tmp"; fi
+  done
   tmp="$BUNPIL_HOME/.tmp.$$"
   rm -rf "$tmp"; mkdir -p "$tmp/new"
   if [ -n "$LOCAL_SRC" ]; then
@@ -311,26 +318,30 @@ prepare_pack() {
       [ -e "$LOCAL_SRC/$x" ] && cp -R "$LOCAL_SRC/$x" "$tmp/new/bunpil-pack/"
     done
   else
-    if ! download "$SITE/bunpil-pack.zip" "$tmp/pack.zip"; then
+    # 받기·압축 풀기·내용 확인 중 하나라도 실패하면(학교 방화벽이 안내 페이지를 대신 주는 경우 포함) 같은 길로 처리한다
+    if ! { download "$SITE/bunpil-pack.zip" "$tmp/pack.zip" && unpack "$tmp/pack.zip" "$tmp/new" >/dev/null 2>&1 \
+           && [ -f "$tmp/new/bunpil-pack/.claude-plugin/marketplace.json" ]; }; then
       rm -rf "$tmp"
-      if [ -f "$PACK_DIR/.claude-plugin/marketplace.json" ]; then
-        warn "새 분필팩을 내려받지 못해 이미 있는 분필팩(v$(cat "$PACK_DIR/VERSION" 2>/dev/null || echo '?'))을 그대로 씁니다"
+      if has_pack; then
+        warn "새 분필팩을 받지 못해(인터넷·학교 방화벽 확인) 이미 있는 분필팩(v$(pack_version))을 그대로 씁니다"
         SOURCE="$PACK_DIR"; return 0
       fi
-      if git_ok; then warn "분필팩을 내려받지 못해 GitHub 저장소($REPO_DEFAULT)를 대신 씁니다"; SOURCE="$REPO_DEFAULT"; SOURCE_IS_REPO=1; return 0; fi
-      fail "분필팩을 내려받지 못했습니다 ($SITE/bunpil-pack.zip) — 인터넷 연결을 확인하세요"; return 1
+      if git_ok; then warn "분필팩을 받지 못해 GitHub 저장소($REPO_DEFAULT)를 대신 씁니다"; SOURCE="$REPO_DEFAULT"; SOURCE_IS_REPO=1; SOURCE_FALLBACK=1; return 0; fi
+      fail "분필팩을 받지 못했습니다 ($SITE/bunpil-pack.zip) — 인터넷 연결이나 학교 방화벽을 확인하세요"; return 1
     fi
-    if ! unpack "$tmp/pack.zip" "$tmp/new" >/dev/null 2>&1; then rm -rf "$tmp"; fail "압축을 풀지 못했습니다 — unzip을 설치하거나 zip을 직접 풀어 Install-Mac.command를 실행하세요"; return 1; fi
   fi
   if [ ! -f "$tmp/new/bunpil-pack/.claude-plugin/marketplace.json" ]; then rm -rf "$tmp"; fail "받은 분필팩이 올바르지 않습니다"; return 1; fi
+  # 이전 폴더를 먼저 옆으로 옮긴 뒤 새 폴더를 놓는다. 못 바꾸면 지금 버전을 그대로 쓴다
   if [ -d "$PACK_DIR" ] && ! mv "$PACK_DIR" "$tmp/old"; then
-    rm -rf "$tmp"; fail "이전 분필팩 폴더($PACK_DIR)를 바꾸지 못했습니다 — 폴더 권한을 확인하고 다시 실행하세요"; return 1
+    rm -rf "$tmp"; warn "분필팩 폴더를 새 버전으로 바꾸지 못해 지금 버전(v$(pack_version))을 그대로 씁니다 — 폴더 권한을 확인하고 다시 실행하세요"
+    SOURCE="$PACK_DIR"; return 0
   fi
   if ! mv "$tmp/new/bunpil-pack" "$PACK_DIR"; then
     [ -d "$tmp/old" ] && [ ! -d "$PACK_DIR" ] && mv "$tmp/old" "$PACK_DIR"
-    rm -rf "$tmp"; fail "새 분필팩을 제자리에 두지 못했습니다 — 같은 명령을 다시 실행해 보세요"; return 1
+    if has_pack; then rm -rf "$tmp"; warn "새 분필팩을 제자리에 두지 못해 지금 버전(v$(pack_version))을 그대로 씁니다"; SOURCE="$PACK_DIR"; return 0; fi
+    fail "분필팩 폴더를 준비하지 못했습니다 — 같은 명령을 다시 실행해 보세요 (임시 폴더: $tmp)"; return 1
   fi
-  rm -rf "$tmp"
+  [ -d "$PACK_DIR" ] && rm -rf "$tmp"
   SOURCE="$PACK_DIR"
   ok "분필팩 v$(cat "$PACK_DIR/VERSION" 2>/dev/null || echo '?') 준비 ($PACK_DIR)"
 }
@@ -405,7 +416,7 @@ bunpil_claude() {
     case "$src_line" in
       *"$SOURCE"*)
         if claude plugin marketplace update "$MARKET" >/dev/null 2>&1; then ok "분필팩 목록 최신으로 갱신"; else warn "분필팩 목록 갱신 실패(지금 버전 유지)"; fi ;;
-      *) if [ "$SOURCE_IS_REPO" = 1 ]; then
+      *) if [ "$SOURCE_FALLBACK" = 1 ]; then
            # 내려받기에 실패해 저장소를 쓰는 경우: 이미 설치된 분필팩을 지우지 않는다
            claude plugin marketplace update "$MARKET" >/dev/null 2>&1; warn "분필팩 목록은 그대로 두었습니다(내려받기 실패)"
          else
@@ -425,8 +436,11 @@ bunpil_claude() {
 bunpil_codex() {
   if x_has_market "$MARKET"; then
     case "$(x_market_line "$MARKET")" in
-      *"$SOURCE"*) ok "분필팩 목록 확인" ;;   # 폴더 목록은 plugin add 가 새 내용을 읽는다
-      *) if [ "$SOURCE_IS_REPO" = 1 ]; then codex plugin marketplace upgrade "$MARKET" >/dev/null 2>&1; ok "분필팩 목록 확인"
+      *"$SOURCE"*)
+        if [ "$SOURCE_IS_REPO" = 1 ]; then
+          if codex plugin marketplace upgrade "$MARKET" >/dev/null 2>&1; then ok "분필팩 목록 최신으로 갱신"; else warn "분필팩 목록 갱신 실패(지금 버전 유지)"; fi
+        else ok "분필팩 목록 확인"; fi ;;   # 폴더 목록은 plugin add 가 새 내용을 읽는다(upgrade는 Git 목록 전용)
+      *) if [ "$SOURCE_FALLBACK" = 1 ]; then warn "분필팩 목록은 그대로 두었습니다(내려받기 실패)"
          else codex plugin marketplace remove "$MARKET" >/dev/null 2>&1
            codex plugin marketplace add "$SOURCE" >/dev/null 2>&1 && ok "분필팩 목록 위치 변경" || { fail "분필팩 목록 등록 실패"; return 1; }; fi ;;
     esac

@@ -13,6 +13,14 @@ try {
 } catch {
   try { $inputText = [Console]::In.ReadToEnd() } catch { $inputText = '' }
 }
+# Codex는 PreToolUse의 ask를 지원하지 않아 write-codex 모드에서는 더하는 줄(+)만 보고 막는다(deny)
+$scanText = $inputText
+if ($Mode -eq "write-codex") {
+  $patch = $null
+  try { $patch = [string](($inputText | ConvertFrom-Json).tool_input.command) } catch { }
+  if (-not $patch) { $patch = $inputText -replace '\\n', "`n" }
+  $scanText = (@($patch -split "`r?`n") | Where-Object { $_.StartsWith('+') -and -not $_.StartsWith('+++') }) -join "`n"
+}
 function Write-Json($obj) {
   $json = $obj | ConvertTo-Json -Compress -Depth 4
   $json = [regex]::Replace($json, '[^\x00-\x7F]', { param($m) '\u{0:x4}' -f [int][char]$m.Value })
@@ -29,7 +37,19 @@ $rrnPlain = '(^|[^0-9])[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[1-8][0-9]
 $phone = '(^|[^0-9])01[016789][- .]?[0-9]{3,4}[- .]?[0-9]{4}([^0-9]|$)'
 $classNo = '[0-9] ?학년 ?[0-9]{1,2} ?반 ?[0-9]{1,2} ?번'
 
-if ($inputText -match $rrnHyphen) {
+if ($scanText -match $rrnHyphen) {
+  if ($Mode -eq "write-codex") {
+    $deny = @{
+      systemMessage = "[분필 가드] 파일에 주민등록번호 형식을 쓰려고 해서 막았습니다."
+      hookSpecificOutput = @{
+        hookEventName = "PreToolUse"
+        permissionDecision = "deny"
+        permissionDecisionReason = "분필 가드: 주민등록번호 형식(000000-0000000)은 파일에 쓰지 않습니다. 가명이나 빈칸으로 바꿔 다시 시도하세요. 실제 번호가 아니면 사용자에게 알리고 BUNPIL_GUARD=off로 잠시 끌 수 있습니다."
+      }
+    }
+    Write-Json $deny
+    exit 0
+  }
   if ($Mode -eq "write") {
     $ask = @{
       systemMessage = "[분필 가드] 쓰려는 내용에 주민등록번호 형식이 있습니다. 실제 번호라면 거절하세요."
@@ -47,13 +67,13 @@ if ($inputText -match $rrnHyphen) {
 }
 
 $found = @()
-if ($inputText -match $rrnPlain) { $found += "13자리 번호(주민번호일 수 있음)" }
-if ($inputText -match $phone) { $found += "휴대전화 번호" }
-if ($inputText -match $classNo) { $found += "학년·반·번호" }
+if ($scanText -match $rrnPlain) { $found += "13자리 번호(주민번호일 수 있음)" }
+if ($scanText -match $phone) { $found += "휴대전화 번호" }
+if ($scanText -match $classNo) { $found += "학년·반·번호" }
 
 if ($found.Count -gt 0) {
   $warn = $found -join ", "
-  $hookEvent = if ($Mode -eq "write") { "PreToolUse" } else { "UserPromptSubmit" }
+  $hookEvent = if ($Mode -eq "prompt") { "UserPromptSubmit" } else { "PreToolUse" }
   $out = @{
     systemMessage = "[분필 가드] $warn 형식이 보입니다. 실제 개인정보라면 가명으로 바꿔 주세요."
     hookSpecificOutput = @{

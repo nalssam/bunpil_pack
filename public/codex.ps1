@@ -27,6 +27,8 @@ $bunpilPreset = @{ Only = 'codex'; InstallCodex = '1'; WithTools = '1' }
 $bunpilScriptDir = $PSScriptRoot
 $bunpilPresetArg = $null
 if (Test-Path variable:bunpilPreset) { $bunpilPresetArg = $bunpilPreset; Remove-Variable -Name bunpilPreset -ErrorAction SilentlyContinue }
+$bunpilOldEnc = $null
+try { $bunpilOldEnc = [Console]::OutputEncoding } catch { }
 
 try {
 & {
@@ -420,12 +422,30 @@ try {
   $st.hasGit = Has 'git'
 
   # ── 분필팩 내려받기 ──────────────────────────────────────
-  $source = ''; $sourceIsRepo = $false
+  $source = ''; $sourceIsRepo = $false; $sourceFallback = $false
+  # 폴더 옮기기: 백신·색인 프로그램이 잠깐 붙잡고 있을 수 있어 몇 번 다시 시도한다
+  function MoveRetry([string]$from, [string]$to) {
+    for ($i = 0; $i -lt 10; $i++) {
+      try { Move-Item -LiteralPath $from -Destination $to -ErrorAction Stop; return $true } catch { Start-Sleep -Milliseconds 300 }
+    }
+    return $false
+  }
+  function PackVersion {
+    $vf0 = Join-Path $packDir 'VERSION'
+    if (Test-Path $vf0) { return (Get-Content $vf0 -TotalCount 1).Trim() }
+    return '?'
+  }
+  function HasPack { return (Test-Path (Join-Path $packDir '.claude-plugin/marketplace.json')) }
   function PreparePack {
     $r = Opt 'BUNPIL_REPO' 'Repo' ''
-    if ($r) { Ok "분필팩 저장소: $r"; return @{ ok = $true; source = $r; repo = $true } }
+    if ($r) { Ok "분필팩 저장소: $r"; return @{ ok = $true; source = $r; repo = $true; fallback = $false } }
     New-Item -ItemType Directory -Force -Path $bunpilHome | Out-Null
-    Get-ChildItem -LiteralPath $bunpilHome -Directory -Force -Filter '.tmp.*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+    # 지난 실행이 남긴 임시 폴더 정리. 분필팩 폴더가 없고 옛 사본만 남아 있으면 먼저 되돌린다
+    foreach ($d in @(Get-ChildItem -LiteralPath $bunpilHome -Directory -Force -Filter '.tmp.*' -ErrorAction SilentlyContinue)) {
+      $left = Join-Path $d.FullName 'old'
+      if (-not (Test-Path $packDir) -and (Test-Path (Join-Path $left '.claude-plugin/marketplace.json'))) { [void](MoveRetry $left $packDir) }
+      if ((Test-Path $packDir) -or -not (Test-Path $left)) { Remove-Item -LiteralPath $d.FullName -Recurse -Force -ErrorAction SilentlyContinue }
+    }
     $tmp = Join-Path $bunpilHome (".tmp." + $PID)
     Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
     New-Item -ItemType Directory -Force -Path (Join-Path $tmp 'new') | Out-Null
@@ -434,7 +454,7 @@ try {
       $a = (Resolve-Path $localSrc).Path.TrimEnd('\', '/')
       if ((Test-Path $packDir) -and ($a -eq (Resolve-Path $packDir).Path.TrimEnd('\', '/'))) {
         Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
-        Ok "분필팩 폴더 사용 ($packDir)"; return @{ ok = $true; source = $packDir; repo = $false }
+        Ok "분필팩 폴더 사용 ($packDir)"; return @{ ok = $true; source = $packDir; repo = $false; fallback = $false }
       }
       New-Item -ItemType Directory -Force -Path $newPack | Out-Null
       foreach ($x in @('.claude-plugin', '.agents', 'plugins', 'catalog', 'VERSION', 'install.sh', 'install.ps1', 'README.md', 'LICENSE', 'NOTICE')) {
@@ -443,45 +463,42 @@ try {
       }
     } else {
       $zip = Join-Path $tmp 'bunpil-pack.zip'
-      if (-not (Download "$site/bunpil-pack.zip" $zip)) {
+      # 받기·압축 풀기·내용 확인 중 하나라도 실패하면(학교 방화벽이 안내 페이지를 대신 주는 경우 포함) 같은 길로 처리한다
+      $got = (Download "$site/bunpil-pack.zip" $zip) -and (Unpack $zip (Join-Path $tmp 'new')) -and (Test-Path (Join-Path $newPack '.claude-plugin/marketplace.json'))
+      if (-not $got) {
         Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
-        if (Test-Path (Join-Path $packDir '.claude-plugin/marketplace.json')) {
-          $v = '?'
-          $vf0 = Join-Path $packDir 'VERSION'
-          if (Test-Path $vf0) { $v = (Get-Content $vf0 -TotalCount 1).Trim() }
-          Warn "새 분필팩을 내려받지 못해 이미 있는 분필팩(v$v)을 그대로 씁니다"
-          return @{ ok = $true; source = $packDir; repo = $false }
+        if (HasPack) {
+          Warn ("새 분필팩을 받지 못해(인터넷·학교 방화벽 확인) 이미 있는 분필팩(v" + (PackVersion) + ")을 그대로 씁니다")
+          return @{ ok = $true; source = $packDir; repo = $false; fallback = $false }
         }
-        if ($st.hasGit) { Warn "분필팩을 내려받지 못해 GitHub 저장소($repoDefault)를 대신 씁니다"; return @{ ok = $true; source = $repoDefault; repo = $true } }
-        Fail "분필팩을 내려받지 못했습니다 ($site/bunpil-pack.zip) — 인터넷 연결을 확인하세요"; return @{ ok = $false }
-      }
-      if (-not (Unpack $zip (Join-Path $tmp 'new'))) {
-        Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
-        Fail '압축을 풀지 못했습니다 — zip을 직접 풀어 Install-Windows.bat 을 실행하세요'; return @{ ok = $false }
+        if ($st.hasGit) { Warn "분필팩을 받지 못해 GitHub 저장소($repoDefault)를 대신 씁니다"; return @{ ok = $true; source = $repoDefault; repo = $true; fallback = $true } }
+        Fail "분필팩을 받지 못했습니다 ($site/bunpil-pack.zip) — 인터넷 연결이나 학교 방화벽을 확인하세요. 사이트에서 zip을 직접 받아 압축을 풀고 Install-Windows.bat 으로 설치할 수도 있습니다"
+        return @{ ok = $false }
       }
     }
     if (-not (Test-Path (Join-Path $newPack '.claude-plugin/marketplace.json'))) {
       Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
       Fail '받은 분필팩이 올바르지 않습니다'; return @{ ok = $false }
     }
-    # 이전 폴더를 먼저 옆으로 옮긴다. 열려 있는 파일 때문에 못 옮기면 섞이지 않게 멈춘다
+    # 이전 폴더를 먼저 옆으로 옮긴 뒤 새 폴더를 놓는다. 못 바꾸면 지금 버전을 그대로 쓴다
     $old = Join-Path $tmp 'old'
-    if (Test-Path $packDir) {
-      try { Move-Item -LiteralPath $packDir -Destination $old -ErrorAction Stop }
-      catch {
-        Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
-        Fail "이전 분필팩 폴더($packDir)를 바꾸지 못했습니다 — Claude Code·Codex 창과 그 폴더를 연 탐색기를 모두 닫고 다시 실행하세요"
-        return @{ ok = $false }
-      }
-    }
-    try { Move-Item -LiteralPath $newPack -Destination $packDir -ErrorAction Stop }
-    catch {
-      if ((Test-Path $old) -and -not (Test-Path $packDir)) { Move-Item -LiteralPath $old -Destination $packDir -ErrorAction SilentlyContinue }
+    $busy = '다른 프로그램이 폴더를 쓰는 중일 수 있습니다. Claude Code·Codex 창과 그 폴더를 연 탐색기를 닫고 같은 명령을 다시 실행하면 바뀝니다'
+    if ((Test-Path $packDir) -and -not (MoveRetry $packDir $old)) {
       Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
-      Fail '새 분필팩을 제자리에 두지 못했습니다 — 같은 명령을 다시 실행해 보세요'
+      Warn ("분필팩 폴더를 새 버전으로 바꾸지 못해 지금 버전(v" + (PackVersion) + ")을 그대로 씁니다 — " + $busy)
+      return @{ ok = $true; source = $packDir; repo = $false; fallback = $false }
+    }
+    if (-not (MoveRetry $newPack $packDir)) {
+      if ((Test-Path $old) -and -not (Test-Path $packDir)) { [void](MoveRetry $old $packDir) }
+      if (HasPack) {
+        Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
+        Warn ("새 분필팩을 제자리에 두지 못해 지금 버전(v" + (PackVersion) + ")을 그대로 씁니다 — " + $busy)
+        return @{ ok = $true; source = $packDir; repo = $false; fallback = $false }
+      }
+      Fail "분필팩 폴더를 준비하지 못했습니다 — 같은 명령을 다시 실행해 보세요 (임시 폴더: $tmp)"
       return @{ ok = $false }
     }
-    Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
+    if (Test-Path $packDir) { Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue }
     if ($isWin) {
       try { Get-ChildItem $packDir -Recurse -File | Unblock-File -ErrorAction SilentlyContinue } catch { }
       # Windows용 훅으로 바꿔 끼우기 (Git Bash 없이도 PowerShell로 개인정보 가드 실행)
@@ -492,7 +509,7 @@ try {
     $vf = Join-Path $packDir 'VERSION'
     if (Test-Path $vf) { $ver = (Get-Content $vf -TotalCount 1).Trim() }
     Ok "분필팩 v$ver 준비 ($packDir)"
-    return @{ ok = $true; source = $packDir; repo = $false }
+    return @{ ok = $true; source = $packDir; repo = $false; fallback = $false }
   }
 
   # ── 공통 도우미 ──────────────────────────────────────────
@@ -564,11 +581,11 @@ try {
   }
 
   # ── 분필팩 설치 ──────────────────────────────────────────
-  function BunpilClaude([string]$src, [bool]$isRepo) {
+  function BunpilClaude([string]$src, [bool]$isRepo, [bool]$isFallback) {
     if (CHasMarket $market) {
       if (SameSource (CMarketSrc $market) $src) {
         if (Run 'claude' @('plugin', 'marketplace', 'update', $market)) { Ok '분필팩 목록 최신으로 갱신' } else { Warn '분필팩 목록 갱신 실패(지금 버전 유지)' }
-      } elseif ($isRepo) {
+      } elseif ($isFallback) {
         # 내려받기에 실패해 저장소를 쓰는 경우: 이미 설치된 분필팩을 지우지 않는다
         Run 'claude' @('plugin', 'marketplace', 'update', $market) | Out-Null
         Warn '분필팩 목록은 그대로 두었습니다(내려받기 실패)'
@@ -587,11 +604,15 @@ try {
     }
     return $true
   }
-  function BunpilCodex([string]$src, [bool]$isRepo) {
+  function BunpilCodex([string]$src, [bool]$isRepo, [bool]$isFallback) {
     $line = XMarketLine $market
     if ($line) {
-      if (SameSource $line $src) { Ok '분필팩 목록 확인' }   # 폴더 목록은 plugin add 가 새 내용을 읽는다
-      elseif ($isRepo) { Run 'codex' @('plugin', 'marketplace', 'upgrade', $market) | Out-Null; Ok '분필팩 목록 확인' }
+      if (SameSource $line $src) {
+        if ($isRepo) {
+          if (Run 'codex' @('plugin', 'marketplace', 'upgrade', $market)) { Ok '분필팩 목록 최신으로 갱신' } else { Warn '분필팩 목록 갱신 실패(지금 버전 유지)' }
+        } else { Ok '분필팩 목록 확인' }   # 폴더 목록은 plugin add 가 새 내용을 읽는다
+      }
+      elseif ($isFallback) { Warn '분필팩 목록은 그대로 두었습니다(내려받기 실패)' }
       else {
         Run 'codex' @('plugin', 'marketplace', 'remove', $market) | Out-Null
         if (Run 'codex' @('plugin', 'marketplace', 'add', $src)) { Ok '분필팩 목록 위치 변경' } else { Fail '분필팩 목록 등록 실패'; return $false }
@@ -684,16 +705,16 @@ try {
     if ($oldOutEnc) { try { [Console]::OutputEncoding = $oldOutEnc } catch { } }
     return
   }
-  $source = $pack.source; $sourceIsRepo = [bool]$pack.repo
+  $source = $pack.source; $sourceIsRepo = [bool]$pack.repo; $sourceFallback = [bool]$pack.fallback
   Say ''
   if ($st.hasClaude) {
     Head ('[Claude Code] ' + (FirstLine 'claude' @('--version')))
-    if ((BunpilClaude $source $sourceIsRepo) -and $recs) { RecsClaude }
+    if ((BunpilClaude $source $sourceIsRepo $sourceFallback) -and $recs) { RecsClaude }
     Say ''
   }
   if ($st.hasCodex) {
     Head ('[Codex] ' + (FirstLine 'codex' @('--version')))
-    if ((BunpilCodex $source $sourceIsRepo) -and $recs) { RecsCodex }
+    if ((BunpilCodex $source $sourceIsRepo $sourceFallback) -and $recs) { RecsCodex }
     Say ''
   }
   if ($recs -and (InProfile 'teacher')) {
@@ -731,5 +752,6 @@ try {
   if ($oldOutEnc) { try { [Console]::OutputEncoding = $oldOutEnc } catch { } }
 } $bunpilScriptDir $bunpilPresetArg
 } finally {
-  Remove-Variable -Name bunpilPreset, bunpilPresetArg, bunpilScriptDir -ErrorAction SilentlyContinue
+  if ($bunpilOldEnc) { try { [Console]::OutputEncoding = $bunpilOldEnc } catch { } }
+  Remove-Variable -Name bunpilPreset, bunpilPresetArg, bunpilScriptDir, bunpilOldEnc -ErrorAction SilentlyContinue
 }

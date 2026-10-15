@@ -19,7 +19,7 @@
    - Windows: `irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex`
    - macOS·Linux: `curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh`
 
-   Claude Code(없을 때만) → Node.js·uv(Windows는 Git for Windows도) → 분필팩 5종 → 추천 teacher 묶음 순으로 설치합니다. Windows에서 Git을 설치할 때 "변경을 허용하시겠어요?" 창이 뜨면 **예**를 누릅니다. 거절해도 나머지는 설치됩니다.
+   Claude Code(없을 때만) → Node.js·uv·Git(없을 때만) → 분필팩 5종 → 추천 teacher 묶음 순으로 설치합니다. Windows에서 Git을 설치할 때 "변경을 허용하시겠어요?" 창이 뜨면 **예**를 누릅니다. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다. 맥에서 Git이 없으면 "명령어 개발자 도구" 설치 창이 뜨니 **설치**를 누르고 끝나면 같은 줄을 다시 실행합니다.
 3. **새 창에서 Claude 시작** — 창을 닫고 새로 연 뒤:
    - Windows: `mkdir -Force ~\분필작업 > $null; cd ~\분필작업; claude`
    - macOS·Linux: `mkdir -p ~/분필작업 && cd ~/분필작업 && claude`
@@ -35,7 +35,7 @@
    - Windows: `irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex`
    - macOS·Linux: `curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh`
 
-   Codex CLI(없을 때만, OpenAI 공식 설치 프로그램) → Node.js·uv → 분필팩 5종 → 추천 teacher 묶음 순으로 설치합니다.
+   Codex CLI(없을 때만, OpenAI 공식 설치 프로그램) → Node.js·uv·Git(없을 때만) → 분필팩 5종 → 추천 teacher 묶음 순으로 설치합니다. Windows용 Codex에서는 한글 편집 엔진(hwpx-plugin)을 건너뛰고 한글 양식 보고서(hwpx_new)·kordoc이 대신 한글 문서를 맡습니다.
 3. **새 창에서 Codex 시작** — `mkdir … && cd ~/분필작업 && codex` → **Sign in with ChatGPT**.
 4. **개인정보 가드 켜기** — Codex는 플러그인 훅을 처음에 믿지 않습니다. 대화창에 `/hooks` → 분필 가드 → **신뢰(trust)**. 분필팩을 업데이트하면 다시 신뢰합니다.
 5. **설정 마법사** — `설정 시작해줘` → 내 맞춤 지침(`AGENTS.md`)이 생깁니다.
@@ -83,7 +83,7 @@ Codex 앱(데스크톱)을 쓴다면 이 설치를 마친 뒤 앱을 다시 열�
 
 - 홈 폴더의 `.bunpil` 폴더: 분필팩(`bunpil-pack`), 관리자 권한 없이 설치한 Node.js(`node`), PATH 설정(`env`, macOS·Linux)
 - Claude Code·Codex 설정: 분필팩·추천 플러그인, MCP 연결(kordoc, playwright, markitdown, hwpx_new)
-- 없을 때만: Claude Code·Codex CLI·Node.js·uv(Windows의 Claude용은 Git for Windows), PATH 추가
+- 없을 때만: Claude Code·Codex CLI·Node.js·uv·Git, PATH 추가(macOS·Linux는 `~/.bunpil/env`와 셸 설정 파일의 `# bunpil-path` 한 줄, Windows는 사용자 PATH)
 - Windows에서 Codex를 npm으로 설치한 경우에만: 현재 사용자 PowerShell 실행 정책을 RemoteSigned로(`$env:BUNPIL_KEEP_POLICY="1"`이면 바꾸지 않음)
 
 문의: GitHub Issues — https://github.com/nalssam/bunpil_pack/issues
