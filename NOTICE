@@ -1,0 +1,51 @@
+nalssam's 분필팩 (Bunpil Pack)
+Copyright 2026 날쌤(nalssam) · 몽당분필 (사단법인 디지털미디어교육콘텐츠 교사연구협회)
+
+원안
+- gongmun 스킬과 서브에이전트 5종: 날쌤(nalssam) 「Claude Code 교사용 공문 처리 Harness 구축 문서」(2026)
+- parent-survey 스킬: 날쌤 「학기말 학부모 설문 결과 분석」 스킬
+- pumui 스킬: 날쌤 「학교 물품 품의 — G마켓 견적·장바구니 워크플로」 스킬
+- skill-maker 설계 원칙(프롬프트 5요소): 날쌤 「교사 업무 효율화를 위한 클로드 하네스팀 구축」(2026)
+
+- harness-gallery 스킬의 학교용 예시 목록: revfactory/harness-100 (Apache-2.0) 한국어판에서 고름
+- 추천 묶음 선정: 날쌤(nalssam)
+
+함께 쓰는 외부 프로젝트 (분필팩에 포함하지 않음 — 설치 스크립트가 각 원 저장소에서 직접 설치)
+- airmang/hwpx-plugins — Apache-2.0
+- chrisryugj/kordoc — MIT
+- ZZombie04/hwpx_new — MIT
+- microsoft/markitdown — MIT
+- microsoft/playwright (@playwright/mcp) — Apache-2.0
+- revfactory/harness, revfactory/harness-100 — Apache-2.0
+- nextlevelbuilder/ui-ux-pro-max-skill — MIT
+- Leonxlnx/taste-skill — MIT
+- pbakaus/impeccable — Apache-2.0
+- bradautomates/claude-video — MIT
+- aldegad/sprite-gen — Apache-2.0
+- obra/superpowers-marketplace — MIT
+- multica-ai/andrej-karpathy-skills — 라이선스 파일 없음(원 저장소에서 설치만 함)
+- JuliusBrussee/caveman — Apache-2.0
+- openai/codex-plugin-cc — Apache-2.0
+- Panniantong/Agent-Reach — MIT
+- affaan-m/ECC — MIT
+- wshobson/agents — MIT
+- google/skills — Apache-2.0
+- thedotmack/claude-mem — Apache-2.0
+- vercel-labs skills CLI (npx skills) — 설치 도구로 사용
+
+설치 스크립트가 없을 때만 내려받아 실행하는 공식 설치 프로그램·배포본 (분필팩에 포함하지 않음)
+- Claude Code 설치 프로그램 (https://claude.ai/install.sh, install.ps1) — Anthropic
+- Codex CLI 설치 프로그램 (https://chatgpt.com/codex/install.sh, install.ps1) — OpenAI
+- Node.js 공식 배포본 (https://nodejs.org/dist) — MIT 등, SHA-256 확인 후 설치
+- uv 설치 프로그램 (https://astral.sh/uv) — Apache-2.0/MIT
+- Git for Windows (winget Git.Git) — GPL-2.0
+
+웹사이트
+- 글꼴: Black Han Sans, Gaegu, IBM Plex Sans KR, IBM Plex Mono (Google Fonts, SIL Open Font License 1.1)
+- QR 코드: segno(BSD-3-Clause)로 빌드할 때 생성
+링크만 안내: hesreallyhim/awesome-claude-code (CC BY-NC-ND 4.0)
+각 프로젝트의 라이선스·약관은 원 저장소를 따른다. 라이선스 정보는 2026-10-14 기준이다.
+
+상표
+"몽당분필", "디미교연"과 로고는 몽당분필의 표장이며 위 라이선스로 허락되지 않습니다.
+"Claude"는 Anthropic, "ChatGPT"·"Codex"는 OpenAI의 상표입니다. 분필팩은 두 회사와 제휴하지 않은 독립 프로젝트입니다.

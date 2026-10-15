@@ -1,0 +1,60 @@
+{
+  "version": "2026-10-13",
+  "note": "날쌤 추천 모음. 분필팩은 이 저장소들을 복사·재배포하지 않고, 각 원 저장소에서 직접 설치만 한다. 설치 스크립트(install.sh, install.ps1)와 이 목록은 함께 고친다.",
+  "profiles": {
+    "teacher": "기본. 한글·문서·업무 자동화(RPA)·하네스",
+    "creator": "웹·디자인·영상 자료 만들기",
+    "dev": "고급·개발자용. 큰 모음은 마켓플레이스만 등록",
+    "all": "teacher + creator + dev"
+  },
+  "items": [
+    {"id": "hwpx-plugin", "profile": "teacher", "repo": "airmang/hwpx-plugins", "license": "Apache-2.0", "label": "한글(HWPX) 편집 엔진",
+     "claude": "plugin hwpx-plugin@hwpx", "codex": "plugin hwpx-plugin@hwpx", "needs": "-"},
+    {"id": "kordoc", "profile": "teacher", "repo": "chrisryugj/kordoc", "license": "MIT", "label": "HWP·HWPX·PDF·DOCX·XLSX 읽기·비교·공문 프리셋 생성(MCP 17개 도구)",
+     "claude": "plugin kordoc@kordoc + mcp kordoc (npx -y kordoc mcp)", "codex": "mcp kordoc (npx -y kordoc mcp)", "needs": "Node.js"},
+    {"id": "hwpx-new", "profile": "teacher", "repo": "ZZombie04/hwpx_new", "license": "MIT", "label": "한글 양식 기반 보고서·계획서 생성(MCP)",
+     "claude": "uv tool install → hwpx-new setup", "codex": "uv tool install → hwpx-new setup", "needs": "uv(또는 pipx)·Python 3.9+"},
+    {"id": "markitdown", "profile": "teacher", "repo": "microsoft/markitdown", "license": "MIT", "label": "PDF·PPT·워드·엑셀 → 텍스트 변환(MCP)",
+     "claude": "mcp markitdown (uvx markitdown-mcp)", "codex": "mcp markitdown (uvx markitdown-mcp)", "needs": "uv"},
+    {"id": "playwright", "profile": "teacher", "repo": "microsoft/playwright", "license": "Apache-2.0", "label": "브라우저 자동화(RPA) — 웹 양식 입력·자료 수집(MCP)",
+     "claude": "mcp playwright (npx -y @playwright/mcp@latest)", "codex": "mcp playwright (npx -y @playwright/mcp@latest)", "needs": "Node.js"},
+    {"id": "harness", "profile": "teacher", "repo": "revfactory/harness", "license": "Apache-2.0", "label": "한 문장으로 에이전트 팀·스킬 만들기(하네스 팩토리)",
+     "claude": "plugin harness@harness-marketplace", "codex": "skills add", "needs": "Codex: Node.js"},
+    {"id": "harness-100", "profile": "teacher", "repo": "revfactory/harness-100", "license": "Apache-2.0", "label": "하네스 예시 100종(한국어) — 분필팩 harness-gallery 스킬로 필요한 것만 가져오기",
+     "claude": "가져오기 스킬", "codex": "가져오기 스킬", "needs": "git"},
+
+    {"id": "ui-ux-pro-max", "profile": "creator", "repo": "nextlevelbuilder/ui-ux-pro-max-skill", "license": "MIT", "label": "UI·UX 디자인 지식(웹페이지·에듀테크 화면)",
+     "claude": "plugin ui-ux-pro-max@ui-ux-pro-max-skill", "codex": "skills add", "needs": "Codex: Node.js"},
+    {"id": "taste-skill", "profile": "creator", "repo": "Leonxlnx/taste-skill", "license": "MIT", "label": "세련된 프런트엔드 디자인 감각",
+     "claude": "plugin taste-skill@taste-skill", "codex": "skills add", "needs": "Codex: Node.js"},
+    {"id": "impeccable", "profile": "creator", "repo": "pbakaus/impeccable", "license": "Apache-2.0", "label": "디자인 다듬기·점검(/impeccable polish·audit)",
+     "claude": "plugin impeccable@impeccable", "codex": "skills add", "needs": "Codex: Node.js"},
+    {"id": "watch", "profile": "creator", "repo": "bradautomates/claude-video", "license": "MIT", "label": "영상 보고 요약(유튜브·파일 → 장면·자막)",
+     "claude": "plugin watch@claude-video", "codex": "plugin watch@claude-video", "needs": "Python 3.10+, ffmpeg, yt-dlp(실행 시)"},
+    {"id": "sprite-gen", "profile": "creator", "repo": "aldegad/sprite-gen", "license": "Apache-2.0", "label": "게임·애니메이션용 스프라이트 이미지 만들기",
+     "claude": "skills add", "codex": "skills add", "needs": "Node.js(설치), Python(실행)"},
+
+    {"id": "superpowers", "profile": "dev", "repo": "obra/superpowers-marketplace", "license": "MIT", "label": "계획→구현→검증 개발 습관 스킬 모음",
+     "claude": "plugin superpowers@superpowers-marketplace", "codex": "skills add obra/superpowers", "needs": "Codex: Node.js"},
+    {"id": "karpathy-skills", "profile": "dev", "repo": "multica-ai/andrej-karpathy-skills", "license": "확인 필요(라이선스 파일 없음)", "label": "카파시식 코딩 지침",
+     "claude": "plugin andrej-karpathy-skills@karpathy-skills", "codex": "skills add", "needs": "Codex: Node.js"},
+    {"id": "caveman", "profile": "dev", "repo": "JuliusBrussee/caveman", "license": "Apache-2.0/MIT", "label": "응답 압축으로 토큰 절약",
+     "claude": "plugin caveman@caveman", "codex": "skills add", "needs": "Codex: Node.js"},
+    {"id": "codex-plugin-cc", "profile": "dev", "repo": "openai/codex-plugin-cc", "license": "Apache-2.0", "label": "Claude Code에서 Codex에게 검토·작업 맡기기",
+     "claude": "plugin codex@openai-codex (Codex가 있을 때만)", "codex": "-", "needs": "Codex 설치·로그인"},
+    {"id": "agent-reach", "profile": "dev", "repo": "Panniantong/Agent-Reach", "license": "MIT", "label": "에이전트가 웹·SNS를 읽게 하는 도구(설치는 에이전트가 안내)",
+     "claude": "skills add", "codex": "skills add", "needs": "Node.js, 이후 Python"},
+    {"id": "ecc", "profile": "dev", "repo": "affaan-m/ECC", "license": "MIT", "label": "Everything Claude Code — 스킬 1,000여 개(마켓플레이스만 등록, 골라 설치)",
+     "claude": "marketplace ecc", "codex": "marketplace ecc", "needs": "-"},
+    {"id": "wshobson-agents", "profile": "dev", "repo": "wshobson/agents", "license": "MIT", "label": "개발 워크플로 플러그인 90여 종(마켓플레이스만 등록)",
+     "claude": "marketplace claude-code-workflows", "codex": "marketplace claude-code-workflows", "needs": "-"},
+    {"id": "google-skills", "profile": "dev", "repo": "google/skills", "license": "Apache-2.0", "label": "Google Cloud 스킬 17종(마켓플레이스만 등록)",
+     "claude": "marketplace google-plugins", "codex": "marketplace google-plugins", "needs": "-"},
+    {"id": "claude-mem", "profile": "dev", "repo": "thedotmack/claude-mem", "license": "Apache-2.0", "label": "세션 기억 플러그인(백그라운드 작업자 실행 — 마켓플레이스만 등록)",
+     "claude": "marketplace thedotmack", "codex": "marketplace claude-mem-local", "needs": "Node.js 20+"}
+  ],
+  "links_only": [
+    {"repo": "hesreallyhim/awesome-claude-code", "license": "CC BY-NC-ND 4.0", "why": "설치물이 아닌 추천 목록. 링크로만 안내한다."},
+    {"repo": "lifeofpi-ux/ppt-automation", "license": "확인 불가", "why": "2026-10-13 기준 공개 저장소로 접근되지 않음(비공개 또는 이동). 공개되면 creator 묶음에 추가한다."}
+  ]
+}

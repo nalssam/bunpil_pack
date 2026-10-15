@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "bunpil-class",
+  "displayName": "분필 수업자료 팩",
+  "version": "0.3.0",
+  "description": "학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.",
+  "author": {
+    "name": "nalssam(날쌤) · 몽당분필",
+    "url": "https://nalssam-bunpil.vercel.app"
+  },
+  "homepage": "https://nalssam-bunpil.vercel.app",
+  "repository": "https://github.com/nalssam/bunpil_pack",
+  "license": "MIT",
+  "keywords": [
+    "teacher",
+    "worksheet",
+    "lesson-plan",
+    "rubric"
+  ]
+}

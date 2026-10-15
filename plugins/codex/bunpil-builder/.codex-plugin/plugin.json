@@ -1,0 +1,35 @@
+{
+  "name": "bunpil-builder",
+  "version": "0.3.0",
+  "description": "반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.",
+  "author": {
+    "name": "nalssam(날쌤) · 몽당분필",
+    "url": "https://nalssam-bunpil.vercel.app"
+  },
+  "homepage": "https://nalssam-bunpil.vercel.app",
+  "repository": "https://github.com/nalssam/bunpil_pack",
+  "license": "MIT",
+  "keywords": [
+    "teacher",
+    "harness",
+    "skills",
+    "evals"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "분필 하네스빌더 팩",
+    "shortDescription": "나만의 스킬 만들고 고치기",
+    "longDescription": "반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.",
+    "developerName": "nalssam(날쌤) · 몽당분필",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "이 일을 스킬로 만들어줘",
+      "앞으로는 학습지를 2단으로"
+    ],
+    "brandColor": "#E8583A"
+  }
+}

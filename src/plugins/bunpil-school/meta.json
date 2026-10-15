@@ -1,0 +1,25 @@
+{
+  "name": "bunpil-school",
+  "version": "0.3.0",
+  "author": {
+    "name": "nalssam(날쌤) · 몽당분필",
+    "url": "https://nalssam-bunpil.vercel.app"
+  },
+  "homepage": "https://nalssam-bunpil.vercel.app",
+  "repository": "https://github.com/nalssam/bunpil_pack",
+  "license": "MIT",
+  "displayName": "분필 학교업무 팩",
+  "shortDescription": "공문·가정통신문·품의·설문",
+  "description": "공문 처리 하네스(할 일·교직원 안내·초안·검토), 가정통신문, 물품 품의 산출내역, 학부모 설문 분석, 한글(HWPX) 문서 안내.",
+  "keywords": [
+    "teacher",
+    "school-admin",
+    "gongmun",
+    "hwpx"
+  ],
+  "category": "productivity",
+  "defaultPrompt": [
+    "input_docs 폴더 공문 처리해줘",
+    "현장체험학습 가정통신문"
+  ]
+}

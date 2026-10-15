@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>지도안 - {{교과}} {{단원}} ({{차시}})</title>
+<!--
+  분필팩 지도안 A4 템플릿 (약안 1쪽 표).
+  - {{...}}를 채운다. 세안이면 아래 본 표 뒤에 단원 개관·학습자 분석 등을 section으로 추가한다.
+  - 인쇄: A4, 배율 100%. 표가 한 쪽을 넘으면 --fs를 9.5pt로 줄인다.
+-->
+<style>
+  @page { size: A4; margin: 15mm; }
+  :root { --fs: 10pt; --line: #222; --soft: #efefef; }
+  * { box-sizing: border-box; }
+  html { background: #e8e8e8; }
+  body {
+    margin: 0 auto; padding: 15mm; width: 210mm; min-height: 297mm; background: #fff;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: var(--fs); line-height: 1.55; color: #111;
+  }
+  @media print {
+    html { background: #fff; }
+    body { width: auto; min-height: 0; margin: 0; padding: 0; }
+  }
+  h1 { font-size: 15pt; text-align: center; margin: 0 0 3mm; }
+  .draft { text-align: center; font-size: 8.5pt; color: #666; margin-bottom: 4mm; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 3mm; }
+  th, td { border: 1px solid var(--line); padding: 1.5mm 2mm; vertical-align: top; }
+  th { background: var(--soft); text-align: center; font-weight: bold; }
+  .head td { text-align: center; }
+  .proc td:first-child { width: 22mm; text-align: center; background: #fafafa; font-weight: bold; }
+  .proc td:nth-child(2) { width: auto; }
+  .proc td:nth-child(3) { width: 42mm; }
+  .proc td:nth-child(4) { width: 18mm; text-align: center; }
+  .proc tr { break-inside: avoid; page-break-inside: avoid; }
+  .proc .t { font-weight: normal; color: #444; display: block; font-size: 0.9em; }
+  .q { font-style: normal; }
+  .eval { border: 1px solid var(--line); padding: 2mm 3mm; }
+  .eval p { margin: 0.5mm 0; }
+  .assume { font-size: 8.5pt; color: #444; margin-top: 3mm; }
+</style>
+</head>
+<body>
+
+<h1>{{교과}} 수업 지도안 (약안)</h1>
+<div class="draft">초안 · 교사 확인 후 사용 · 가정한 사항: {{예: 차시 시간 40분 가정}}</div>
+
+<table class="head">
+  <tr><th>교과</th><th>학년·반</th><th>단원</th><th>차시</th><th>일시</th><th>수업자</th></tr>
+  <tr><td>{{교과}}</td><td>{{학년}}</td><td>{{단원명}}</td><td>{{n/N}}</td><td>(교사 입력)</td><td>(교사 입력)</td></tr>
+</table>
+<table class="head">
+  <tr><th style="width:30%">성취기준</th><th>학습 목표</th><th style="width:16%">수업 모형</th><th style="width:12%">시간</th></tr>
+  <tr><td>{{코드는 확실할 때만 / 내용}}</td><td>{{~할 수 있다.}}</td><td>{{모형}}</td><td>{{40}}분</td></tr>
+</table>
+
+<table class="proc">
+  <tr><th>단계(시간)</th><th>교수·학습 활동<br>(◇ 교사 / ▷ 학생)</th><th>자료(◈)·유의점(※)</th><th>평가</th></tr>
+  <tr>
+    <td>도입<span class="t">{{5}}분</span></td>
+    <td>◇ 동기유발 발문: <span class="q">"{{…?}}"</span><br>▷ 예상 반응: "{{…}}"<br>◇ 학습 목표 안내</td>
+    <td>◈ {{자료}}<br>※ {{유의점}}</td><td></td>
+  </tr>
+  <tr>
+    <td>전개<span class="t">활동1 {{10}}분</span></td>
+    <td>◇ {{교사 활동·발문}}<br>▷ {{학생 활동·예상 반응}}</td>
+    <td>◈ {{자료}}<br>※ {{유의점}}</td><td>{{방법}}</td>
+  </tr>
+  <tr>
+    <td><span class="t">활동2 {{10}}분</span></td>
+    <td>◇ …<br>▷ …</td><td>◈ …<br>※ …</td><td>{{방법}}</td>
+  </tr>
+  <tr>
+    <td><span class="t">활동3 {{10}}분</span></td>
+    <td>◇ …<br>▷ …</td><td>◈ …<br>※ …</td><td>{{방법}}</td>
+  </tr>
+  <tr>
+    <td>정리<span class="t">{{5}}분</span></td>
+    <td>◇ 핵심 정리 발문: <span class="q">"{{…?}}"</span><br>▷ 배운 점 말하기·자기평가<br>◇ 차시 예고</td>
+    <td>※ 형성평가 {{1~2}}문항</td><td>{{자기평가}}</td>
+  </tr>
+</table>
+
+<div class="eval">
+  <p><b>평가 요소</b> {{학습 목표와 대응}}</p>
+  <p><b>평가 방법</b> {{관찰·질문·활동지·자기평가}}</p>
+  <p><b>평가 기준</b> 상 — {{…}} / 중 — {{…}} / 하 — {{…}}</p>
+</div>
+
+<div class="assume">※ 학생 개인정보는 싣지 않았다. 성취기준 코드와 사실 관계는 교사가 확인한다.</div>
+
+</body>
+</html>

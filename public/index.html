@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="교사용 AI 하네스 팩. Claude Code와 ChatGPT Codex에 학습지·지도안·공문·가정통신문 스킬, 한글(HWPX)·문서 변환·브라우저 자동화 도구를 한 줄로 설치합니다.">
+<meta name="theme-color" content="#27473c">
+<link rel="canonical" href="https://nalssam-bunpil.vercel.app/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="nalssam's 분필팩">
+<meta property="og:title" content="nalssam's 분필팩 v0.3.0">
+<meta property="og:description" content="교사용 AI 하네스 팩. Claude Code와 ChatGPT Codex에 학습지·지도안·공문·가정통신문 스킬, 한글(HWPX)·문서 변환·브라우저 자동화 도구를 한 줄로 설치합니다.">
+<meta property="og:url" content="https://nalssam-bunpil.vercel.app/">
+<meta property="og:image" content="https://nalssam-bunpil.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<title>nalssam's 분필팩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gaegu:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 위는 교실 칠판(히어로와 분필 받침대), 아래는 교무수첩 종이. 설치 순서는 '교시'로 쌓고, 끝낸 교시는 빨간 펜 동그라미로 채점한다. */
+:root {
+  --paper: #f3f5f0;
+  --paper-2: #e7ece4;
+  --sheet: #fbfcf9;
+  --ink: #1b2a23;
+  --ink-2: #4a5c53;
+  --line: #c8d3ca;
+  --board: #2a4a3e;
+  --board-deep: #1d3329;
+  --frame: #a7aea6;
+  --chalk: #f2f0e6;
+  --chalk-dim: #c3cec6;
+  --chalk-y: #f3d35b;
+  --chalk-p: #f3a3b5;
+  --chalk-b: #9dcfe9;
+  --wood: #8a5a36;
+  --redpen: #cf3f2e;
+  --action: #2a4a3e;
+  --action-ink: #f2f0e6;
+  --link: #1f6a52;
+  --focus: #2f7dd1;
+  --dust: rgba(242, 240, 230, .06);
+  --on-chalk: #1b2a23;
+  --shadow: 0 1px 0 rgba(27, 42, 35, .06), 0 10px 30px -18px rgba(27, 42, 35, .35);
+  --font-display: "Black Han Sans", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, "D2Coding", monospace;
+  --font-hand: "Gaegu", "Nanum Pen Script", "Apple SD Gothic Neo", cursive;
+  --radius: 10px;
+  --wrap: 1080px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15241d; --paper-2: #1c3027; --sheet: #1a2c24; --ink: #ecebe1; --ink-2: #b2c0b7; --line: #33503f;
+    --board: #2a4a3e; --board-deep: #12211a; --frame: #5f6a63; --wood: #6c4529; --redpen: #ff7b67;
+    --action: #f3d35b; --action-ink: #17261f; --link: #9fe0c3; --focus: #8cc4ff;
+    --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 14px 34px -20px rgba(0, 0, 0, .8);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15241d; --paper-2: #1c3027; --sheet: #1a2c24; --ink: #ecebe1; --ink-2: #b2c0b7; --line: #33503f;
+  --board: #2a4a3e; --board-deep: #12211a; --frame: #5f6a63; --wood: #6c4529; --redpen: #ff7b67;
+  --action: #f3d35b; --action-ink: #17261f; --link: #9fe0c3; --focus: #8cc4ff;
+  --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 14px 34px -20px rgba(0, 0, 0, .8);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 1rem/1.72 var(--font-body); word-break: keep-all; overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--link); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+code, kbd, .mono { font-family: var(--font-mono); font-size: .92em; }
+kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 .38em; background: var(--sheet); font-size: .84em; white-space: nowrap; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: 20px; }
+[hidden] { display: none !important; }
+img, svg { max-width: 100%; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* 상단 막대 */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 16px; min-height: 56px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); flex: none; }
+.brand b { font: 400 1.18rem/1 var(--font-display); letter-spacing: .01em; }
+.brand svg { width: 26px; height: 26px; flex: none; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font: 500 .74rem/1 var(--font-mono); padding: 5px 7px; border-radius: 99px; border: 1px solid var(--line); color: var(--ink-2); background: var(--sheet); }
+.nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a { color: var(--ink-2); text-decoration: none; font-size: .9rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
+.nav a:hover { background: var(--paper-2); color: var(--ink); }
+
+/* 칠판 */
+.board-wrap { padding-block: 28px 0; }
+.board {
+  position: relative; border-radius: 6px; color: var(--chalk);
+  border: 9px solid var(--frame);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25), inset 0 10px 40px rgba(0, 0, 0, .28), var(--shadow);
+  background-color: var(--board);
+  background-image:
+    radial-gradient(ellipse 55% 40% at 18% 28%, var(--dust), transparent 70%),
+    radial-gradient(ellipse 45% 32% at 82% 72%, var(--dust), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 -.22'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/></svg>");
+  padding: clamp(26px, 5vw, 56px) clamp(20px, 5vw, 56px) clamp(30px, 5vw, 52px);
+}
+.board-top { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, .75fr); gap: clamp(24px, 4vw, 52px); align-items: start; }
+.board-note { justify-self: end; max-width: 300px; margin-top: 8px; padding: 18px 22px 20px; border: 2px dashed rgba(242, 240, 230, .32); border-radius: 18px 14px 20px 12px; transform: rotate(-1.6deg); font-family: var(--font-hand); }
+.board-note p { font-weight: 700; font-size: 1.3rem; color: var(--chalk-p); line-height: 1.2; }
+.board-note ol { list-style: none; display: grid; gap: 8px; margin-top: 12px; counter-reset: c; }
+.board-note li { counter-increment: c; display: grid; grid-template-columns: 30px minmax(0, 1fr); font-weight: 700; font-size: 1.22rem; line-height: 1.3; color: var(--chalk); }
+.board-note li::before { content: counter(c) "."; color: var(--chalk-y); }
+.board-note small { display: block; font: 400 .8rem/1.4 var(--font-body); color: var(--chalk-dim); margin-top: 2px; }
+.eyebrow { font: 700 1.12rem/1.3 var(--font-hand); color: var(--chalk-y); letter-spacing: .02em; }
+.chalk-title {
+  font: 400 clamp(2.5rem, 7.2vw, 4.7rem)/1.02 var(--font-display); letter-spacing: -.005em; margin-top: 10px;
+  color: var(--chalk); text-shadow: 0 0 1px rgba(242, 240, 230, .7), 0 0 18px rgba(242, 240, 230, .12);
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.5 1.75'/></filter><rect width='100%25' height='100%25' filter='url(%23m)'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.5 1.75'/></filter><rect width='100%25' height='100%25' filter='url(%23m)'/></svg>");
+}
+.chalk-title .apos { color: var(--chalk-p); }
+.lead { font: 700 clamp(1.25rem, 2.6vw, 1.6rem)/1.35 var(--font-hand); color: var(--chalk); margin-top: 16px; max-width: 30ch; }
+.lead u { text-decoration: none; background-image: linear-gradient(transparent 62%, rgba(243, 211, 91, .45) 62%); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 22px; color: var(--chalk-dim); font-size: .92rem; }
+.facts b { color: var(--chalk); font: 400 1.3rem/1 var(--font-display); margin-right: 4px; }
+.facts span { display: inline-flex; align-items: baseline; }
+.board-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 18px;
+  border-radius: 10px; border: 2px solid transparent; font-weight: 600; text-decoration: none; line-height: 1.25; text-align: left;
+}
+.btn small { display: block; font-weight: 400; font-size: .78rem; opacity: .85; }
+.btn-chalk { background: var(--chalk); color: var(--on-chalk); }
+.btn-chalk:hover { background: #fff; }
+.btn-line { border-color: rgba(242, 240, 230, .55); color: var(--chalk); background: transparent; }
+.btn-line:hover { border-color: var(--chalk); background: rgba(242, 240, 230, .06); }
+.btn svg { width: 20px; height: 20px; flex: none; }
+
+/* 칠판 아래 한 줄 설치 띠 */
+.quick { margin-top: clamp(26px, 4vw, 40px); background: rgba(10, 20, 15, .3); border: 1px solid rgba(242, 240, 230, .16); border-radius: 12px; padding: 18px 20px 20px; min-width: 0; display: grid; gap: 12px; }
+.quick-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.quick h2 { font: 700 1.3rem/1.3 var(--font-hand); color: var(--chalk-y); }
+.seg-row { display: flex; flex-wrap: wrap; gap: 10px; margin-left: auto; }
+.seg { display: inline-flex; padding: 3px; border-radius: 10px; border: 1px solid rgba(242, 240, 230, .3); gap: 2px; }
+.seg button { border: 0; background: transparent; color: var(--chalk-dim); padding: 7px 12px; border-radius: 7px; font-size: .9rem; font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--chalk); color: var(--on-chalk); }
+.seg button:not([aria-pressed="true"]):hover { color: var(--chalk); }
+.quick .where { font-size: .92rem; color: var(--chalk-dim); }
+.quick .what { font-size: .9rem; color: var(--chalk-dim); }
+.quick .what b { color: var(--chalk); font-weight: 600; }
+
+/* 칠판 받침대 */
+.tray { position: relative; height: 18px; margin: 0 14px; background: var(--wood); background: linear-gradient(var(--wood), color-mix(in srgb, var(--wood) 70%, #000)); border-radius: 0 0 6px 6px; box-shadow: 0 8px 18px -10px rgba(0, 0, 0, .5); }
+.tray i { position: absolute; bottom: 12px; height: 9px; border-radius: 4px; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .12); }
+.tray i:nth-child(1) { left: 12%; width: 54px; background: var(--chalk); transform: rotate(-2deg); }
+.tray i:nth-child(2) { left: 19%; width: 46px; background: var(--chalk-y); transform: rotate(3deg); }
+.tray i:nth-child(3) { left: 71%; width: 50px; background: var(--chalk-p); transform: rotate(-4deg); }
+.tray i:nth-child(4) { left: 79%; width: 17px; background: var(--chalk-b); transform: rotate(8deg); }
+
+/* 명령 상자 */
+.cmd { display: flex; align-items: stretch; background: var(--board-deep); color: var(--chalk); border-radius: 10px; border: 1px solid rgba(0, 0, 0, .25); min-width: 0; overflow: hidden; }
+.cmd .pr { flex: none; padding: 12px 0 12px 14px; color: var(--chalk-y); font: 500 .9rem/1.5 var(--font-mono); user-select: none; }
+.cmd code { flex: 1; min-width: 0; padding: 12px 12px; font: 500 .92rem/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; }
+.cmd .copy { flex: none; border: 0; border-left: 1px solid rgba(242, 240, 230, .14); background: rgba(242, 240, 230, .07); color: var(--chalk); padding: 0 16px; font-size: .86rem; font-weight: 600; min-width: 74px; }
+.cmd .copy:hover { background: rgba(242, 240, 230, .16); }
+.cmd .copy.done { color: var(--chalk-y); }
+.cmd.big code { font-size: 1rem; padding-block: 15px; }
+.cmd.big .pr { padding-block: 15px; font-size: 1rem; }
+
+/* 본문 공통 */
+main section { padding-block: clamp(48px, 7vw, 84px) 0; }
+.sec-head { display: grid; gap: 8px; margin-bottom: 26px; max-width: 70ch; }
+.sec-head .tag { font: 700 1.25rem/1.2 var(--font-hand); color: var(--redpen); }
+.sec-head h2 { font: 400 clamp(1.7rem, 3.6vw, 2.25rem)/1.15 var(--font-display); letter-spacing: -.005em; }
+.sec-head p { color: var(--ink-2); }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.muted { color: var(--ink-2); }
+.small { font-size: .88rem; }
+
+/* 설치 시간표 */
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-end; margin-bottom: -1px; position: relative; z-index: 1; }
+.tab {
+  border: 1px solid var(--line); border-bottom: 0; background: var(--paper-2); border-radius: 12px 12px 0 0;
+  padding: 12px 22px 11px; text-align: left; color: var(--ink-2); min-width: 0;
+}
+.tab b { display: block; font: 400 1.35rem/1.15 var(--font-display); color: var(--ink-2); }
+.tab span { font-size: .82rem; }
+.tab[aria-selected="true"] { background: var(--sheet); color: var(--ink); padding-bottom: 13px; }
+.tab[aria-selected="true"] b { color: var(--ink); }
+.tab:not([aria-selected="true"]):hover b { color: var(--ink); }
+.panel { border-radius: 0 var(--radius) var(--radius) var(--radius); padding: clamp(18px, 3.4vw, 34px); }
+.controls { display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; padding-bottom: 20px; border-bottom: 1px dashed var(--line); }
+.ctl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ctl > span { font-size: .86rem; color: var(--ink-2); font-weight: 600; }
+.pick { display: inline-flex; padding: 3px; border-radius: 10px; background: var(--paper-2); gap: 2px; flex-wrap: wrap; }
+.pick button { border: 0; background: transparent; color: var(--ink-2); padding: 7px 12px; border-radius: 7px; font-size: .9rem; font-weight: 600; }
+.pick button[aria-pressed="true"] { background: var(--action); color: var(--action-ink); }
+.progress { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-block: 18px; position: relative; }
+.progress .dots { display: flex; gap: 6px; }
+.progress .dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); }
+.progress .dots i.on { border-color: var(--redpen); background: var(--redpen); background: color-mix(in srgb, var(--redpen) 22%, transparent); }
+.progress .txt { font-weight: 600; }
+.progress .reset { margin-left: 6px; border: 0; background: none; color: var(--ink-2); font-size: .86rem; text-decoration: underline; text-underline-offset: 3px; }
+.stamp {
+  position: absolute; right: 4px; top: -34px; width: 124px; height: 124px; border-radius: 50%; display: grid; place-items: center; text-align: center;
+  color: var(--redpen); border: 4px double var(--redpen); font: 700 1.35rem/1.05 var(--font-hand); transform: rotate(-14deg) scale(.4); opacity: 0; pointer-events: none;
+  transition: transform .45s cubic-bezier(.2, 1.6, .4, 1), opacity .2s; background: var(--sheet); background: color-mix(in srgb, var(--sheet) 70%, transparent);
+}
+.stamp small { display: block; font: 600 .62rem/1 var(--font-body); letter-spacing: .12em; margin-top: 4px; }
+.stamp.on { transform: rotate(-14deg) scale(1); opacity: .92; }
+.steps { list-style: none; display: grid; gap: 0; counter-reset: period; }
+.step { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 4px 22px; padding-block: 22px; border-top: 1px solid var(--line); }
+.step:first-child { border-top: 0; }
+.period { display: grid; justify-items: start; align-content: start; gap: 6px; }
+.mark { border: 0; background: none; padding: 4px 0; color: var(--ink); display: inline-grid; justify-items: start; gap: 8px; text-align: left; }
+.mark .pnum { position: relative; font: 400 1.5rem/1 var(--font-display); padding: 10px 12px; margin-left: -12px; }
+.mark svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.mark path { fill: none; stroke: var(--redpen); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 330; stroke-dashoffset: 330; transition: stroke-dashoffset .5s ease-out; }
+.mark[aria-pressed="true"] path { stroke-dashoffset: 0; }
+.mark .hint { font: 500 .72rem/1 var(--font-body); color: var(--ink-2); white-space: nowrap; }
+.mark:hover .hint { color: var(--ink); }
+.mark[aria-pressed="true"] .hint { color: var(--redpen); }
+.period time { font: 500 .78rem/1.2 var(--font-mono); color: var(--ink-2); }
+.step-body { display: grid; gap: 12px; min-width: 0; max-width: 72ch; }
+.step-body h3 { font: 700 1.16rem/1.4 var(--font-body); }
+.step-body ul { padding-left: 1.15em; display: grid; gap: 4px; }
+.step-body ul.check { list-style: none; padding-left: 0; }
+.step-body ul.check label { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 6px; cursor: pointer; }
+.step-body ul.check input { width: 16px; height: 16px; margin: 6px 0 0; accent-color: var(--redpen); }
+.note { border-left: 3px solid var(--chalk-y); background: var(--paper-2); background: color-mix(in srgb, var(--chalk-y) 14%, var(--sheet)); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: .93rem; }
+.note.red { border-left-color: var(--redpen); background: var(--paper-2); background: color-mix(in srgb, var(--redpen) 8%, var(--sheet)); }
+details.stuck { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+details.stuck summary { cursor: pointer; padding: 9px 14px; font-weight: 600; font-size: .92rem; color: var(--ink-2); list-style: none; display: flex; align-items: center; gap: 8px; }
+details.stuck summary::-webkit-details-marker { display: none; }
+details.stuck summary::before { content: "+"; font: 500 1rem/1 var(--font-mono); width: 14px; color: var(--redpen); }
+details.stuck[open] summary::before { content: "−"; }
+details.stuck .in { padding: 0 14px 12px 36px; display: grid; gap: 6px; font-size: .92rem; }
+.prompt-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.say {
+  border: 1px dashed var(--line); background: var(--paper); border-radius: 99px; padding: 6px 13px;
+  font-size: .9rem; color: var(--ink); text-align: left;
+}
+.say:hover { border-style: solid; border-color: var(--ink-2); }
+.say.done { border-color: var(--redpen); color: var(--redpen); }
+body[data-os="win"] .only-mac, body[data-os="mac"] .only-win { display: none !important; }
+
+/* 무엇이 설치되나요 */
+.packs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pack { padding: 20px 22px; display: grid; gap: 10px; align-content: start; }
+.pack header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pack h3 { font: 400 1.3rem/1.2 var(--font-display); }
+.pack header code { color: var(--ink-2); font-size: .8rem; }
+.pack > p { color: var(--ink-2); font-size: .93rem; }
+.sk { list-style: none; display: grid; gap: 2px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.sk li { display: grid; grid-template-columns: minmax(0, 8.5em) minmax(0, 1fr); gap: 10px; align-items: baseline; padding-block: 4px; }
+.sk .nm { font-weight: 600; font-size: .93rem; }
+.sk .say { border: 0; padding: 2px 0; border-radius: 0; background: none; color: var(--ink-2); font-size: .88rem; text-decoration: underline dotted; text-underline-offset: 4px; text-decoration-color: var(--line); }
+.sk .say:hover { color: var(--ink); }
+.sk .say.done { color: var(--redpen); }
+.pack.wide { grid-column: 1 / -1; }
+.pack-stack { display: grid; gap: 18px; align-content: start; }
+details.prof-more { margin-top: 6px; }
+details.prof-more > summary { cursor: pointer; list-style: none; }
+details.prof-more > summary::-webkit-details-marker { display: none; }
+details.prof-more > summary h4::before { content: "+"; font: 500 1rem/1 var(--font-mono); color: var(--redpen); margin-right: 2px; }
+details.prof-more[open] > summary h4::before { content: "−"; }
+
+.cat { margin-top: 38px; }
+.cat h3 { font: 400 1.45rem/1.2 var(--font-display); margin-bottom: 6px; }
+.cat > p { color: var(--ink-2); max-width: 72ch; margin-bottom: 16px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--paper-2); font-weight: 600; font-size: .82rem; color: var(--ink-2); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.repo { white-space: nowrap; font-family: var(--font-mono); font-size: .82rem; }
+td .need { display: block; color: var(--ink-2); font-size: .8rem; margin-top: 2px; }
+.kind { display: inline-block; font-size: .78rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--paper-2); color: var(--ink); white-space: nowrap; }
+.kind.none { background: transparent; color: var(--ink-2); }
+.prof { display: grid; gap: 4px; margin: 26px 0 10px; }
+.prof h4 { margin: 0; font-size: 1.02rem; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.prof h4 code { font-size: .82rem; color: var(--redpen); }
+.prof p { color: var(--ink-2); font-size: .9rem; }
+
+/* 명령 만들기 */
+.builder { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 0; }
+.builder fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+.builder legend { font-weight: 700; font-size: .92rem; margin-bottom: 6px; padding: 0; }
+.b-form { padding: 22px; display: grid; gap: 18px; border-right: 1px solid var(--line); }
+.b-out { padding: 22px; background: var(--paper-2); display: grid; gap: 12px; align-content: start; min-width: 0; border-radius: 0 var(--radius) var(--radius) 0; }
+.b-out-in { position: sticky; top: calc(72px + env(safe-area-inset-top, 0px)); display: grid; gap: 12px; }
+.b-out h3 { font-size: 1rem; }
+.opt { display: flex; gap: 10px; align-items: flex-start; font-size: .93rem; }
+.opt input { margin-top: 5px; accent-color: var(--board); width: 16px; height: 16px; flex: none; }
+.b-out ul { padding-left: 1.1em; font-size: .9rem; color: var(--ink-2); display: grid; gap: 3px; }
+
+/* 표 공통·환경 */
+.env td:first-child { font-weight: 600; white-space: nowrap; }
+.yes { color: var(--link); font-weight: 700; }
+.no { color: var(--ink-2); }
+
+/* 관리 */
+.manage { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.manage .sheet { padding: 22px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.manage h3 { font: 400 1.25rem/1.2 var(--font-display); }
+
+/* 문제 해결 */
+.faq-tools { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.faq-tools input { flex: 1 1 280px; min-width: 0; font: inherit; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); }
+.faq { display: grid; gap: 8px; }
+.faq details { border: 1px solid var(--line); border-radius: 10px; background: var(--sheet); }
+.faq summary { cursor: pointer; padding: 13px 16px; font-weight: 600; list-style: none; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::before { content: "Q"; font: 400 1.05rem/1.5 var(--font-display); color: var(--redpen); }
+.faq .a { padding: 0 16px 14px 44px; display: grid; gap: 8px; color: var(--ink); font-size: .95rem; }
+.faq-empty { color: var(--ink-2); padding: 10px 2px; }
+
+/* 연수용 */
+.train { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 28px; padding: 26px; align-items: center; }
+.qr-card { background: #ffffff; border-radius: 12px; padding: 10px; width: 188px; box-shadow: var(--shadow); }
+.qr { display: block; width: 100%; height: auto; }
+.train .url { font: 400 clamp(1.4rem, 3.4vw, 2.1rem)/1.1 var(--font-display); word-break: break-all; }
+.train-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.btn-ink { background: var(--action); color: var(--action-ink); }
+.btn-ink:hover { filter: brightness(1.08); }
+.btn-ghost { border-color: var(--line); color: var(--ink); background: var(--sheet); }
+.btn-ghost:hover { border-color: var(--ink-2); }
+.train ul { margin-top: 14px; padding-left: 1.1em; color: var(--ink-2); font-size: .92rem; display: grid; gap: 4px; }
+
+/* 약속 */
+.promise { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; counter-reset: p; }
+.promise li { counter-increment: p; padding: 18px 18px 18px 54px; position: relative; background: var(--sheet); border: 1px solid var(--line); border-radius: var(--radius); }
+.promise li::before { content: counter(p); position: absolute; left: 16px; top: 14px; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--redpen); color: var(--redpen); display: grid; place-items: center; font: 400 .95rem/1 var(--font-display); }
+.promise b { display: block; margin-bottom: 2px; }
+.promise span { color: var(--ink-2); font-size: .92rem; }
+
+/* 발표 화면 */
+.present { position: fixed; inset: 0; z-index: 100; background: var(--board-deep); color: var(--chalk); display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px)); overflow: auto; }
+.present .inner { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: center; max-width: 1200px; width: 100%; }
+.present .qr-card { width: clamp(220px, 30vw, 380px); }
+.present h2 { font: 400 clamp(2.2rem, 5vw, 4rem)/1.05 var(--font-display); }
+.present .big-url { font: 500 clamp(1.4rem, 3.2vw, 2.6rem)/1.2 var(--font-mono); color: var(--chalk-y); margin-top: 18px; word-break: break-all; }
+.present .lines { display: grid; gap: 12px; margin-top: 28px; }
+.present .lines p { font: 700 clamp(1.2rem, 2vw, 1.7rem)/1.3 var(--font-hand); color: var(--chalk-dim); }
+.present .cmd code, .present .cmd .pr { font-size: clamp(1.05rem, 1.7vw, 1.55rem); }
+.present .close { position: absolute; top: max(14px, env(safe-area-inset-top, 0px)); right: 16px; border: 1px solid rgba(242, 240, 230, .4); background: transparent; color: var(--chalk); border-radius: 10px; padding: 8px 14px; }
+
+/* 바닥글 */
+footer { margin-top: clamp(56px, 8vw, 96px); border-top: 1px solid var(--line); padding-block: 30px 46px; color: var(--ink-2); font-size: .9rem; }
+footer .wrap { display: grid; gap: 16px; }
+footer .cols { display: flex; flex-wrap: wrap; gap: 10px 26px; }
+footer details summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+footer details .log { display: grid; gap: 10px; margin-top: 10px; max-width: 76ch; }
+footer details .log b { color: var(--ink); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 10px; font-size: .9rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 120; max-width: calc(100% - 32px); }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+.mobile-note { display: none; margin-top: 14px; font-size: .9rem; color: var(--chalk-dim); }
+body[data-mobile="1"] .mobile-note { display: block; }
+
+@media (max-width: 880px) {
+  .board-top { grid-template-columns: minmax(0, 1fr); }
+  .board-note { display: none; }
+  .b-out { border-radius: 0 0 var(--radius) var(--radius); }
+  .packs, .manage { grid-template-columns: minmax(0, 1fr); }
+  .builder { grid-template-columns: minmax(0, 1fr); }
+  .b-form { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 640px) {
+  .wrap { padding-inline: 16px; }
+  .nav { display: none; }
+  .board { border-width: 6px; padding: 24px 18px 26px; }
+  .quick { padding: 16px; }
+  .seg-row { margin-left: 0; }
+  .cmd { flex-wrap: wrap; }
+  .cmd code { flex-basis: calc(100% - 40px); }
+  .cmd .copy { flex: 1 1 100%; border-left: 0; border-top: 1px solid rgba(242, 240, 230, .14); padding: 10px; }
+  .step { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .period { grid-auto-flow: column; justify-content: start; align-items: center; gap: 14px; }
+  .period time { margin-top: 0; }
+  .tab { padding: 10px 14px; flex: 1 1 0; }
+  .tab b { font-size: 1.12rem; }
+  .train { grid-template-columns: minmax(0, 1fr); justify-items: start; }
+  .present .inner { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; }
+  .stamp { width: 92px; height: 92px; font-size: 1.1rem; top: -10px; }
+  .sk li { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="nalssam's 분필팩 처음으로">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="28" height="28" rx="6" fill="#2a4a3e"/><rect x="7" y="17" width="15" height="6" rx="2.5" fill="#f2f0e6" transform="rotate(-24 14 20)"/><rect x="18.5" y="9" width="7" height="6" rx="2.5" fill="#f3d35b" transform="rotate(-24 22 12)"/></svg>
+      <b>nalssam's 분필팩</b>
+      <span class="chip">v0.3.0</span>
+    </a>
+    <nav class="nav" aria-label="바로가기">
+      <a href="#install">설치 시간표</a>
+      <a href="#contents">설치되는 것</a>
+      <a href="#builder">명령 만들기</a>
+      <a href="#manage">업데이트·지우기</a>
+      <a href="#faq">문제 해결</a>
+      <a href="#training">연수용</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap board-wrap">
+    <section class="board" aria-labelledby="hero-title">
+      <div class="board-top">
+        <div>
+          <p class="eyebrow">날쌤이 고른 교사용 AI 하네스 팩 · 몽당분필</p>
+          <h1 class="chalk-title" id="hero-title">nalssam<span class="apos">'</span>s<br>분필팩</h1>
+          <p class="lead">선생님의 AI 조수, <u>한 줄이면</u> 내 교실에 맞춰집니다.</p>
+          <p class="facts" aria-label="구성">
+            <span><b>5</b>플러그인</span>
+            <span><b>20</b>스킬</span>
+            <span><b>21</b>추천 도구</span>
+            <span>관리자 권한 없이</span>
+          </p>
+          <div class="board-actions">
+            <a class="btn btn-chalk" href="https://nalssam-bunpil.vercel.app/bunpil-pack.zip" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>분필팩 내려받기<small>zip · 312KB · 풀고 더블클릭으로 설치</small></span>
+            </a>
+            <a class="btn btn-line" href="#install">처음이라면 1교시부터<small>순서대로 따라 하기</small></a>
+          </div>
+          <p class="mobile-note">휴대폰으로 보고 계시네요. 설치는 컴퓨터에서 합니다. <a href="#training" style="color:var(--chalk-y)">이 주소를 컴퓨터로 보내기</a></p>
+        </div>
+        <aside class="board-note" aria-label="오늘의 할 일">
+          <p>오늘의 할 일</p>
+          <ol>
+            <li><span>한 줄 붙여넣기<small>설치는 알아서 끝납니다</small></span></li>
+            <li><span>"설정 시작해줘"<small>10가지 질문으로 내 교실 맞춤</small></span></li>
+            <li><span>첫 학습지 만들기<small>결과물은 언제나 초안</small></span></li>
+          </ol>
+        </aside>
+      </div>
+      <div class="quick" aria-labelledby="quick-title">
+        <div class="quick-head">
+          <h2 id="quick-title">한 줄로 설치하기</h2>
+          <div class="seg-row">
+            <div class="seg" role="group" aria-label="쓰는 AI">
+              <button type="button" data-set-host="claude" aria-pressed="true">Claude</button>
+              <button type="button" data-set-host="codex" aria-pressed="false">ChatGPT Codex</button>
+            </div>
+            <div class="seg" role="group" aria-label="컴퓨터">
+              <button type="button" data-set-os="win" aria-pressed="true">Windows</button>
+              <button type="button" data-set-os="mac" aria-pressed="false">macOS</button>
+            </div>
+          </div>
+        </div>
+        <p class="where" data-quick-where>시작 메뉴에서 <b>PowerShell</b>을 열고 붙여넣은 뒤 Enter</p>
+        <div class="cmd big"><span class="pr" data-quick-pr>PS&gt;</span><code data-quick-cmd>irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code><button class="copy" type="button" data-copy-from="[data-quick-cmd]">복사</button></div>
+        <p class="what" data-quick-what><b>Claude Code</b>가 없으면 함께 설치하고, 분필팩 5종과 날쌤 추천 도구까지 한 번에 넣습니다. 약 5~10분.</p>
+      </div>
+    </section>
+    <div class="tray" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <!-- 설치 시간표 -->
+  <section id="install" class="wrap" aria-labelledby="install-title">
+    <div class="sec-head">
+      <p class="tag">따라 하기</p>
+      <h2 id="install-title">설치 시간표</h2>
+      <p>쓰는 AI를 고르고 1교시부터 차례로 따라 하세요. 끝낸 교시는 번호를 눌러 동그라미를 쳐 두면, 다음에 이 페이지를 열어도 어디까지 했는지 남아 있습니다.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="쓰는 AI">
+      <button class="tab" type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true" data-set-host="claude"><b>Claude</b><span>Claude Code · Claude 앱</span></button>
+      <button class="tab" type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" tabindex="-1" data-set-host="codex"><b>ChatGPT Codex</b><span>Codex CLI · Codex 앱</span></button>
+    </div>
+
+    <!-- Claude -->
+    <div class="panel sheet" role="tabpanel" id="panel-claude" aria-labelledby="tab-claude" data-host-panel="claude">
+      <div class="controls">
+        <div class="ctl"><span>컴퓨터</span>
+          <div class="pick" role="group" aria-label="컴퓨터"><button type="button" data-set-os="win" aria-pressed="true">Windows</button><button type="button" data-set-os="mac" aria-pressed="false">macOS</button></div>
+        </div>
+        <div class="ctl"><span>쓰는 곳</span>
+          <div class="pick" role="group" aria-label="Claude를 쓰는 곳"><button type="button" data-set-route="code" aria-pressed="true">Claude Code (터미널)</button><button type="button" data-set-route="app" aria-pressed="false">Claude 앱만 (채팅·Cowork)</button></div>
+        </div>
+      </div>
+
+      <div data-route-panel="code">
+        <div class="progress" data-progress="claude-code"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+        <ol class="steps" data-steps="claude-code">
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>준비물 확인</h3>
+              <ul class="check">
+                <li><label><input type="checkbox" id="prep-1"> <span><b>Claude 유료 요금제</b>(Pro·Max·Team·Enterprise). 무료 요금제에서는 Claude Code를 쓸 수 없습니다. 무료로 시작하려면 <a href="#codex" data-set-host="codex">ChatGPT Codex</a>를 고르세요.</span></label></li>
+                <li><label><input type="checkbox" id="prep-2"> <span><b>인터넷망 PC나 개인 노트북.</b> 업무망 PC는 인터넷이 막혀 있거나 프로그램 설치가 제한됩니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-3"> <span><span class="only-win">Windows 10(1809) 이상</span><span class="only-mac">macOS 13 이상</span>. 관리자 권한은 필요 없습니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-4"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
+              </ul>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>터미널 열기</h3>
+              <p class="only-win">키보드의 <kbd>⊞ Windows</kbd> 키를 누르고 <b>PowerShell</b>을 입력한 뒤 <b>Windows PowerShell</b>을 클릭합니다. 관리자로 실행하지 않아도 됩니다. <code>PS C:\Users\이름&gt;</code> 같은 줄이 보이면 준비 완료입니다.</p>
+              <p class="only-mac"><kbd>⌘ Command</kbd> + <kbd>Space</kbd>를 누르고 <b>터미널</b>을 입력한 뒤 Enter를 누릅니다. <code>이름@Mac ~ %</code> 같은 줄이 보이면 준비 완료입니다.</p>
+              <details class="stuck only-win"><summary>명령 프롬프트(검은 창)를 열었어요</summary><div class="in"><p>명령 프롬프트(<code>C:\&gt;</code>)가 아니라 <b>PowerShell</b>(<code>PS C:\&gt;</code>)이어야 합니다. 앞에 <code>PS</code>가 보이는 창을 여세요.</p></div></details>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
+            <div class="step-body">
+              <h3>한 줄 붙여넣고 Enter</h3>
+              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh</code><button class="copy" type="button">복사</button></div>
+              <p><span class="only-win">복사한 줄을 PowerShell 창에 <kbd>Ctrl</kbd>+<kbd>V</kbd>(또는 마우스 오른쪽 클릭)로 붙여넣고</span><span class="only-mac">복사한 줄을 터미널에 <kbd>⌘</kbd>+<kbd>V</kbd>로 붙여넣고</span> Enter를 누르면 아래 순서로 알아서 설치합니다.</p>
+              <ul>
+                <li>Claude Code(없을 때만, Anthropic 공식 설치 프로그램)</li>
+                <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
+                <li>분필팩 5종과 날쌤 추천 teacher 묶음(한글 HWPX 도구 3종, 문서 변환, 브라우저 자동화, 하네스 팩토리)</li>
+              </ul>
+              <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
+              <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
+              <p>초록색 <code class="only-win">[v]</code><code class="only-mac">✓</code> 줄이 이어지다가 <b>분필팩 설치 완료</b>가 보이면 끝입니다.</p>
+              <details class="stuck"><summary>빨간 줄이 있거나 중간에 멈췄어요</summary><div class="in">
+                <p>같은 줄을 한 번 더 실행하세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
+                <p>학교 인터넷에서 내려받기가 막히면 휴대폰 핫스팟으로 연결해 다시 실행해 보세요.</p>
+                <p class="only-win"><code>'irm'은(는) 내부 또는 외부 명령...</code>이 보이면 명령 프롬프트에 붙여넣은 것입니다. PowerShell을 여세요.</p>
+              </div></details>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="step-body">
+              <h3>새 창에서 Claude 시작하고 로그인</h3>
+              <p>설치한 명령을 찾을 수 있도록 <b>지금 창을 닫고 새 <span class="only-win">PowerShell</span><span class="only-mac">터미널</span> 창</b>을 엽니다. 그다음 작업 폴더를 만들고 Claude를 실행합니다.</p>
+              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>mkdir -Force ~\분필작업 &gt; $null; cd ~\분필작업; claude</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">%</span><code>mkdir -p ~/분필작업 &amp;&amp; cd ~/분필작업 &amp;&amp; claude</code><button class="copy" type="button">복사</button></div>
+              <ul>
+                <li>처음 실행하면 화면 색을 고르고, 로그인 방법에서 <b>Claude 구독 계정</b>을 고릅니다.</li>
+                <li>브라우저가 열리면 로그인하고 승인한 뒤 터미널로 돌아옵니다.</li>
+                <li>"이 폴더를 믿을까요?"라고 물으면 <b>예</b>를 고릅니다.</li>
+              </ul>
+              <p class="muted small">앞으로는 <code>분필작업</code> 폴더에 자료를 넣고 그 폴더에서 <code>claude</code>를 실행하면 됩니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
+            <div class="step-body">
+              <h3>설정 마법사로 내 교실 맞추기</h3>
+              <p>대화창에 아래처럼 입력하세요. 학교급, 학년, 과목, 맡은 업무, 문체 등 10가지를 묻고, 답에 맞춰 내 맞춤 지침(<code>CLAUDE.md</code>)을 작업 폴더에 만들어 줍니다.</p>
+              <div class="prompt-chips"><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
+              <p class="muted small">한 번 만들어 두면 이후 모든 요청이 내 교실 기준으로 맞춰집니다. 바뀐 점이 생기면 다시 실행하면 됩니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">6교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="step-body">
+              <h3>점검하고 첫 요청 해 보기</h3>
+              <ul>
+                <li><b>점검</b>: "분필 점검해줘"라고 하면 설치된 스킬, 지침 파일, 개인정보 가드, 도구 상태를 표로 보여 줍니다.</li>
+                <li><b>가드 시험</b>: "가드 시험: 연락처 010-0000-0000"을 보내 경고가 뜨면 개인정보 가드가 작동하는 것입니다.</li>
+                <li><b>노션·패들렛·캔바</b>: 대화창에 <code>/mcp</code> → 서비스 선택 → 브라우저에서 로그인합니다.</li>
+              </ul>
+              <div class="prompt-chips">
+                <button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button>
+                <button class="say" type="button" data-copy="4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘">"4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘"</button>
+                <button class="say" type="button" data-copy="받은 공문 정리하고 할 일 뽑아줘">"받은 공문 정리하고 할 일 뽑아줘"</button>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div data-route-panel="app" hidden>
+        <div class="progress" data-progress="claude-app"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+        <ol class="steps" data-steps="claude-app">
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>준비물 확인</h3>
+              <ul class="check">
+                <li><label><input type="checkbox" id="prep-5"> <span><b>Claude 유료 요금제</b>(Pro·Max·Team·Enterprise). 플러그인은 유료 요금제에서 쓸 수 있습니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-6"> <span>Claude 앱(웹 claude.ai 또는 데스크톱 앱)에 로그인되어 있으면 됩니다. 터미널은 쓰지 않습니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-7"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
+              </ul>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 2분</time></div>
+            <div class="step-body">
+              <h3>분필팩 목록(마켓플레이스) 추가</h3>
+              <p>왼쪽 메뉴의 <b>사용자 지정(Customize)</b> → <b>플러그인(Plugins)</b> → <b>추가(Add)</b> → <b>마켓플레이스 추가(Add marketplace)</b> → <b>저장소에서 추가(Add from a repository)</b>를 차례로 누르고 아래 주소를 붙여넣습니다.</p>
+              <div class="cmd"><span class="pr">주소</span><code>nalssam/bunpil_pack</code><button class="copy" type="button">복사</button></div>
+              <p class="muted small">Cowork에서는 먼저 <b>Cowork</b> 탭을 연 뒤 같은 순서로 들어갑니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 2분</time></div>
+            <div class="step-body">
+              <h3>분필 시작 팩부터 설치</h3>
+              <p>목록에 나온 <b>분필 시작 팩</b>을 먼저 설치하고, 필요한 팩(수업자료·학교업무·하네스빌더·커넥터)을 같은 방법으로 더합니다.</p>
+              <details class="stuck"><summary>마켓플레이스 추가가 안 돼요 (학교 방화벽 등)</summary><div class="in">
+                <p>플러그인 파일을 직접 올릴 수 있습니다. 아래에서 zip을 내려받아 <b>추가(Add)</b> 메뉴의 업로드로 올리세요.</p>
+                <p><a href="https://nalssam-bunpil.vercel.app/app/bunpil-start.zip" rel="noopener">분필 시작 팩</a> · <a href="https://nalssam-bunpil.vercel.app/app/bunpil-class.zip" rel="noopener">수업자료 팩</a> · <a href="https://nalssam-bunpil.vercel.app/app/bunpil-school.zip" rel="noopener">학교업무 팩</a> · <a href="https://nalssam-bunpil.vercel.app/app/bunpil-builder.zip" rel="noopener">하네스빌더 팩</a> · <a href="https://nalssam-bunpil.vercel.app/app/bunpil-connect.zip" rel="noopener">커넥터 팩</a></p>
+              </div></details>
+              <p class="note">앱에서 추가한 플러그인은 계정에 저장되어, 같은 계정으로 로그인한 Claude Code에서도 함께 쓸 수 있습니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
+            <div class="step-body">
+              <h3>설정 마법사로 내 교실 맞추기</h3>
+              <p>새 대화에서 아래처럼 입력하고 10가지 질문에 답합니다. 답에 맞춘 내 맞춤 지침을 만들어 줍니다.</p>
+              <div class="prompt-chips"><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 2분</time></div>
+            <div class="step-body">
+              <h3>점검하기</h3>
+              <p>"분필 점검해줘"라고 하면 무엇이 설치되었는지 보여 줍니다. 채팅에서는 자동 개인정보 점검(훅)과 서브에이전트가 회색으로 보이는데 정상입니다. Cowork와 Claude Code에서는 모두 작동합니다.</p>
+              <div class="prompt-chips"><button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button></div>
+              <p class="muted small">한글 HWPX 도구처럼 플러그인으로 된 추천 도구(<code>airmang/hwpx-plugins</code>, <code>chrisryugj/kordoc</code>, <code>revfactory/harness</code> 등)도 같은 방법으로 저장소 주소를 넣어 설치할 수 있습니다.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Codex -->
+    <div class="panel sheet" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex" data-host-panel="codex" hidden>
+      <div class="controls">
+        <div class="ctl"><span>컴퓨터</span>
+          <div class="pick" role="group" aria-label="컴퓨터"><button type="button" data-set-os="win" aria-pressed="true">Windows</button><button type="button" data-set-os="mac" aria-pressed="false">macOS</button></div>
+        </div>
+      </div>
+      <div class="progress" data-progress="codex"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+      <ol class="steps" data-steps="codex">
+        <li class="step">
+          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+          <div class="step-body">
+            <h3>준비물 확인</h3>
+            <ul class="check">
+              <li><label><input type="checkbox" id="prep-8"> <span><b>ChatGPT 계정.</b> Codex는 무료 요금제를 포함한 ChatGPT 요금제에서 쓸 수 있고, 쓸 수 있는 양은 요금제마다 다릅니다.</span></label></li>
+              <li><label><input type="checkbox" id="prep-9"> <span><b>인터넷망 PC나 개인 노트북.</b> 업무망 PC는 인터넷이 막혀 있거나 프로그램 설치가 제한됩니다.</span></label></li>
+              <li><label><input type="checkbox" id="prep-10"> <span>관리자 권한은 필요 없습니다.</span></label></li>
+              <li><label><input type="checkbox" id="prep-11"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
+            </ul>
+          </div>
+        </li>
+        <li class="step">
+          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+          <div class="step-body">
+            <h3>터미널 열기</h3>
+            <p class="only-win">키보드의 <kbd>⊞ Windows</kbd> 키를 누르고 <b>PowerShell</b>을 입력한 뒤 <b>Windows PowerShell</b>을 클릭합니다. <code>PS C:\Users\이름&gt;</code> 같은 줄이 보이면 준비 완료입니다.</p>
+            <p class="only-mac"><kbd>⌘ Command</kbd> + <kbd>Space</kbd>를 누르고 <b>터미널</b>을 입력한 뒤 Enter를 누릅니다.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
+          <div class="step-body">
+            <h3>한 줄 붙여넣고 Enter</h3>
+            <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex</code><button class="copy" type="button">복사</button></div>
+            <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh</code><button class="copy" type="button">복사</button></div>
+            <p>붙여넣고 Enter를 누르면 아래 순서로 알아서 설치합니다.</p>
+            <ul>
+              <li>Codex CLI(없을 때만, OpenAI 공식 설치 프로그램)</li>
+              <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
+              <li>분필팩 5종과 날쌤 추천 teacher 묶음</li>
+            </ul>
+            <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
+            <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
+            <p><b>분필팩 설치 완료</b>가 보이면 끝입니다.</p>
+            <details class="stuck"><summary>빨간 줄이 있거나 중간에 멈췄어요</summary><div class="in">
+              <p>같은 줄을 한 번 더 실행하세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
+              <p>학교 인터넷에서 막히면 휴대폰 핫스팟으로 연결해 다시 실행해 보세요.</p>
+            </div></details>
+          </div>
+        </li>
+        <li class="step">
+          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+          <div class="step-body">
+            <h3>새 창에서 Codex 시작하고 로그인</h3>
+            <p><b>지금 창을 닫고 새 <span class="only-win">PowerShell</span><span class="only-mac">터미널</span> 창</b>을 연 뒤 작업 폴더에서 Codex를 실행합니다.</p>
+            <div class="cmd only-win"><span class="pr">PS&gt;</span><code>mkdir -Force ~\분필작업 &gt; $null; cd ~\분필작업; codex</code><button class="copy" type="button">복사</button></div>
+            <div class="cmd only-mac"><span class="pr">%</span><code>mkdir -p ~/분필작업 &amp;&amp; cd ~/분필작업 &amp;&amp; codex</code><button class="copy" type="button">복사</button></div>
+            <ul>
+              <li><b>Sign in with ChatGPT</b>를 고르고 브라우저에서 로그인합니다.</li>
+              <li>폴더를 믿을지 물으면 <b>예</b>를 고릅니다.</li>
+            </ul>
+            <p class="muted small">Codex 앱(데스크톱)을 쓴다면 이 설치를 마친 뒤 앱을 다시 열고 플러그인 목록에 분필팩이 보이는지 확인하세요.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
+          <div class="step-body">
+            <h3>개인정보 가드 켜고 설정 마법사</h3>
+            <p>Codex는 플러그인의 자동 점검(훅)을 처음에 믿지 않습니다. 대화창에 <code>/hooks</code>를 입력하고 <b>분필 가드</b>를 확인한 뒤 <b>신뢰(trust)</b>를 고르세요. 분필팩을 업데이트한 뒤에는 한 번 더 신뢰해야 합니다.</p>
+            <p>그다음 아래처럼 입력하면 10가지 질문으로 내 맞춤 지침(<code>AGENTS.md</code>)을 만들어 줍니다.</p>
+            <div class="prompt-chips"><button class="say" type="button" data-copy="/hooks">/hooks</button><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">6교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+          <div class="step-body">
+            <h3>연결하고 점검하기</h3>
+            <ul>
+              <li><b>노션·패들렛·캔바</b>: 새 터미널에서 아래 명령을 실행하고 브라우저에서 로그인합니다(<code>padlet</code>, <code>canva</code>도 같은 방법).</li>
+            </ul>
+            <div class="cmd"><span class="pr only-win">PS&gt;</span><span class="pr only-mac">%</span><code>codex mcp login notion</code><button class="copy" type="button">복사</button></div>
+            <ul>
+              <li><b>점검</b>: "분필 점검해줘"</li>
+              <li><b>가드 시험</b>: "가드 시험: 연락처 010-0000-0000" → 경고가 뜨면 정상입니다.</li>
+            </ul>
+            <div class="prompt-chips">
+              <button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button>
+              <button class="say" type="button" data-copy="현장체험학습 가정통신문 초안 써줘">"현장체험학습 가정통신문 초안 써줘"</button>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 설치되는 것 -->
+  <section id="contents" class="wrap" aria-labelledby="contents-title">
+    <div class="sec-head">
+      <p class="tag">구성</p>
+      <h2 id="contents-title">무엇이 설치되나요</h2>
+      <p>분필팩 플러그인 5종에 스킬 20가지가 들어 있습니다. 회색 문장을 누르면 예시 요청이 복사됩니다. 대화창에 붙여넣고 내용만 바꿔 쓰세요.</p>
+    </div>
+    <div class="packs">
+<div class="pack-stack"><article class="pack sheet"><header><h3>분필 시작 팩</h3><code>bunpil-start</code></header><p>교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.</p><ul class="sk"><li><span class="nm">내 맞춤 지침 만들기</span><button class="say" type="button" data-copy="설정 시작해줘">“설정 시작해줘”</button></li><li><span class="nm">학생 개인정보 가드</span><button class="say" type="button" data-copy="이 파일에 개인정보 있는지 점검해줘">“이 파일에 개인정보 있는지 점검해줘”</button></li><li><span class="nm">설치 점검</span><button class="say" type="button" data-copy="분필 점검해줘">“분필 점검해줘”</button></li></ul></article><article class="pack sheet"><header><h3>분필 커넥터 팩</h3><code>bunpil-connect</code></header><p>노션·패들렛·캔바 원격 MCP 커넥터를 등록하고 하네스별 로그인 방법을 안내합니다.</p><ul class="sk"><li><span class="nm">노션·패들렛·캔바 연결</span><button class="say" type="button" data-copy="노션 연결해줘">“노션 연결해줘”</button></li></ul></article></div><article class="pack sheet"><header><h3>분필 수업자료 팩</h3><code>bunpil-class</code></header><p>학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.</p><ul class="sk"><li><span class="nm">수준별 학습지</span><button class="say" type="button" data-copy="4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘">“4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘”</button></li><li><span class="nm">수업 지도안</span><button class="say" type="button" data-copy="5학년 사회 &#x27;조선의 건국&#x27; 40분 지도안 써줘">“5학년 사회 &#x27;조선의 건국&#x27; 40분 지도안 써줘”</button></li><li><span class="nm">수업 슬라이드</span><button class="say" type="button" data-copy="이 지도안으로 수업 슬라이드 만들어줘">“이 지도안으로 수업 슬라이드 만들어줘”</button></li><li><span class="nm">페이퍼크래프트 도안</span><button class="say" type="button" data-copy="태양계 행성 페이퍼크래프트 도안 만들어줘">“태양계 행성 페이퍼크래프트 도안 만들어줘”</button></li><li><span class="nm">컬러링 도안</span><button class="say" type="button" data-copy="가을 주제 컬러링 도안 만들어줘">“가을 주제 컬러링 도안 만들어줘”</button></li><li><span class="nm">평가 루브릭</span><button class="say" type="button" data-copy="모둠 발표 평가 루브릭을 3단계로 만들어줘">“모둠 발표 평가 루브릭을 3단계로 만들어줘”</button></li></ul></article><article class="pack sheet"><header><h3>분필 학교업무 팩</h3><code>bunpil-school</code></header><p>공문 처리 하네스(할 일·교직원 안내·초안·검토), 가정통신문, 물품 품의 산출내역, 학부모 설문 분석, 한글(HWPX) 문서 안내.</p><ul class="sk"><li><span class="nm">공문 처리 하네스</span><button class="say" type="button" data-copy="받은 공문 정리하고 할 일 뽑아줘">“받은 공문 정리하고 할 일 뽑아줘”</button></li><li><span class="nm">가정통신문</span><button class="say" type="button" data-copy="현장체험학습 가정통신문 초안 써줘">“현장체험학습 가정통신문 초안 써줘”</button></li><li><span class="nm">품의 산출내역</span><button class="say" type="button" data-copy="과학실 물품 품의 산출내역 만들어줘">“과학실 물품 품의 산출내역 만들어줘”</button></li><li><span class="nm">학부모 설문 분석</span><button class="say" type="button" data-copy="학부모 설문 결과 분석해줘">“학부모 설문 결과 분석해줘”</button></li><li><span class="nm">한글 문서·기안문</span><button class="say" type="button" data-copy="내부 기안문 본문 써줘">“내부 기안문 본문 써줘”</button></li></ul></article><article class="pack sheet"><header><h3>분필 하네스빌더 팩</h3><code>bunpil-builder</code></header><p>반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.</p><ul class="sk"><li><span class="nm">나만의 스킬 만들기</span><button class="say" type="button" data-copy="매주 쓰는 주간학습안내를 스킬로 만들어줘">“매주 쓰는 주간학습안내를 스킬로 만들어줘”</button></li><li><span class="nm">실수를 규칙으로</span><button class="say" type="button" data-copy="방금 틀린 부분을 규칙으로 남겨줘">“방금 틀린 부분을 규칙으로 남겨줘”</button></li><li><span class="nm">스킬 시험</span><button class="say" type="button" data-copy="내 스킬 시험해줘">“내 스킬 시험해줘”</button></li><li><span class="nm">동료와 나누기</span><button class="say" type="button" data-copy="이 스킬을 동료에게 나눌 수 있게 묶어줘">“이 스킬을 동료에게 나눌 수 있게 묶어줘”</button></li><li><span class="nm">하네스 예시 100종</span><button class="say" type="button" data-copy="하네스 예시 중에 학교에 맞는 걸 골라줘">“하네스 예시 중에 학교에 맞는 걸 골라줘”</button></li></ul></article>
+    </div>
+
+    <div class="cat">
+      <h3>날쌤 추천 도구</h3>
+      <p>분필팩은 아래 도구를 복사하지 않고 각 원 저장소에서 바로 설치합니다. 기본은 <b>teacher</b> 묶음이고, <a href="#builder">명령 만들기</a>에서 creator·dev 묶음을 더할 수 있습니다. 업데이트와 라이선스는 원 저장소를 따릅니다.</p>
+<div class="prof"><h4><code>teacher</code> 기본. 한글·문서·업무 자동화(RPA)·하네스 <span class="muted small">7개</span></h4></div><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/airmang/hwpx-plugins" rel="noopener">airmang/hwpx-plugins</a></td><td>한글(HWPX) 편집 엔진</td><td><span class="kind">플러그인</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/chrisryugj/kordoc" rel="noopener">chrisryugj/kordoc</a></td><td>HWP·HWPX·PDF·DOCX·XLSX 읽기·비교·공문 프리셋 생성(MCP 17개 도구)<span class="need">필요: Node.js</span></td><td><span class="kind">플러그인 + MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/ZZombie04/hwpx_new" rel="noopener">ZZombie04/hwpx_new</a></td><td>한글 양식 기반 보고서·계획서 생성(MCP)<span class="need">필요: uv(또는 pipx)·Python 3.9+</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/microsoft/markitdown" rel="noopener">microsoft/markitdown</a></td><td>PDF·PPT·워드·엑셀 → 텍스트 변환(MCP)<span class="need">필요: uv</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/microsoft/playwright" rel="noopener">microsoft/playwright</a></td><td>브라우저 자동화(RPA) — 웹 양식 입력·자료 수집(MCP)<span class="need">필요: Node.js</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/revfactory/harness" rel="noopener">revfactory/harness</a></td><td>한 문장으로 에이전트 팀·스킬 만들기(하네스 팩토리)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/revfactory/harness-100" rel="noopener">revfactory/harness-100</a></td><td>하네스 예시 100종(한국어) — 분필팩 harness-gallery 스킬로 필요한 것만 가져오기<span class="need">필요: git</span></td><td><span class="kind">골라 가져오기</span></td><td><span class="kind">골라 가져오기</span></td></tr></tbody></table></div>
+<details class="prof-more"><summary class="prof"><h4><code>creator</code> 웹·디자인·영상 자료 만들기 <span class="muted small">5개</span></h4></summary><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" rel="noopener">nextlevelbuilder/ui-ux-pro-max-skill</a></td><td>UI·UX 디자인 지식(웹페이지·에듀테크 화면)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/Leonxlnx/taste-skill" rel="noopener">Leonxlnx/taste-skill</a></td><td>세련된 프런트엔드 디자인 감각<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/pbakaus/impeccable" rel="noopener">pbakaus/impeccable</a></td><td>디자인 다듬기·점검(/impeccable polish·audit)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/bradautomates/claude-video" rel="noopener">bradautomates/claude-video</a></td><td>영상 보고 요약(유튜브·파일 → 장면·자막)<span class="need">필요: Python 3.10+, ffmpeg, yt-dlp(실행 시)</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/aldegad/sprite-gen" rel="noopener">aldegad/sprite-gen</a></td><td>게임·애니메이션용 스프라이트 이미지 만들기<span class="need">필요: Node.js(설치), Python(실행)</span></td><td><span class="kind">스킬</span></td><td><span class="kind">스킬</span></td></tr></tbody></table></div></details>
+<details class="prof-more"><summary class="prof"><h4><code>dev</code> 고급·개발자용. 큰 모음은 마켓플레이스만 등록 <span class="muted small">9개</span></h4></summary><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/obra/superpowers-marketplace" rel="noopener">obra/superpowers-marketplace</a></td><td>계획→구현→검증 개발 습관 스킬 모음<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/multica-ai/andrej-karpathy-skills" rel="noopener">multica-ai/andrej-karpathy-skills</a></td><td>카파시식 코딩 지침<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/JuliusBrussee/caveman" rel="noopener">JuliusBrussee/caveman</a></td><td>응답 압축으로 토큰 절약<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/openai/codex-plugin-cc" rel="noopener">openai/codex-plugin-cc</a></td><td>Claude Code에서 Codex에게 검토·작업 맡기기<span class="need">필요: Codex 설치·로그인</span></td><td><span class="kind">플러그인</span> (Codex가 있을 때)</td><td><span class="kind none">—</span></td></tr><tr><td class="repo"><a href="https://github.com/Panniantong/Agent-Reach" rel="noopener">Panniantong/Agent-Reach</a></td><td>에이전트가 웹·SNS를 읽게 하는 도구(설치는 에이전트가 안내)<span class="need">필요: Node.js, 이후 Python</span></td><td><span class="kind">스킬</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/affaan-m/ECC" rel="noopener">affaan-m/ECC</a></td><td>Everything Claude Code — 스킬 1,000여 개(마켓플레이스만 등록, 골라 설치)</td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr><tr><td class="repo"><a href="https://github.com/wshobson/agents" rel="noopener">wshobson/agents</a></td><td>개발 워크플로 플러그인 90여 종(마켓플레이스만 등록)</td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr><tr><td class="repo"><a href="https://github.com/google/skills" rel="noopener">google/skills</a></td><td>Google Cloud 스킬 17종(마켓플레이스만 등록)</td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr><tr><td class="repo"><a href="https://github.com/thedotmack/claude-mem" rel="noopener">thedotmack/claude-mem</a></td><td>세션 기억 플러그인(백그라운드 작업자 실행 — 마켓플레이스만 등록)<span class="need">필요: Node.js 20+</span></td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr></tbody></table></div></details>
+<p class="muted small" style="margin-top:14px">함께 보면 좋은 곳: <a href="https://github.com/hesreallyhim/awesome-claude-code" rel="noopener">hesreallyhim/awesome-claude-code</a> (추천 목록, 링크로만 안내)</p>
+    </div>
+  </section>
+
+  <!-- 명령 만들기 -->
+  <section id="builder" class="wrap" aria-labelledby="builder-title">
+    <div class="sec-head">
+      <p class="tag">골라서 설치</p>
+      <h2 id="builder-title">명령 직접 만들기</h2>
+      <p>추천 묶음을 더하거나 한쪽에만 설치하고 싶을 때 씁니다. 고르는 대로 아래 명령이 바뀝니다.</p>
+    </div>
+    <div class="builder sheet">
+      <form class="b-form" id="b-form">
+        <fieldset><legend>어디에 설치할까요</legend>
+          <label class="opt"><input type="radio" name="b-host" id="b-host-claude" value="claude" checked> Claude Code</label>
+          <label class="opt"><input type="radio" name="b-host" id="b-host-codex" value="codex"> Codex</label>
+          <label class="opt"><input type="radio" name="b-host" id="b-host-both" value="both"> 컴퓨터에 있는 것 모두</label>
+        </fieldset>
+        <fieldset><legend>컴퓨터</legend>
+          <label class="opt"><input type="radio" name="b-os" id="b-os-win" value="win" checked> Windows (PowerShell)</label>
+          <label class="opt"><input type="radio" name="b-os" id="b-os-mac" value="mac"> macOS·Linux (터미널)</label>
+        </fieldset>
+        <fieldset><legend>추천 묶음</legend>
+          <label class="opt"><input type="checkbox" id="b-p-teacher" value="teacher" checked> <span><b>teacher</b> 한글·문서·업무 자동화·하네스</span></label>
+          <label class="opt"><input type="checkbox" id="b-p-creator" value="creator"> <span><b>creator</b> 웹·디자인·영상 자료</span></label>
+          <label class="opt"><input type="checkbox" id="b-p-dev" value="dev"> <span><b>dev</b> 개발자용(큰 모음은 목록만 등록)</span></label>
+        </fieldset>
+        <fieldset><legend>옵션</legend>
+          <label class="opt"><input type="checkbox" id="b-install" checked> <span>Claude Code·Codex가 없으면 함께 설치</span></label>
+          <label class="opt"><input type="checkbox" id="b-tools" checked> <span>Node.js·uv·Git이 없으면 함께 설치</span></label>
+          <label class="opt"><input type="checkbox" id="b-nohwpx"> <span>한글(HWPX) 플러그인 빼기</span></label>
+        </fieldset>
+      </form>
+      <div class="b-out"><div class="b-out-in">
+        <h3>만들어진 명령</h3>
+        <div class="cmd"><span class="pr" id="b-pr">PS&gt;</span><code id="b-cmd"></code><button class="copy" type="button">복사</button></div>
+        <ul id="b-notes"></ul>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 환경별 차이 -->
+  <section id="env" class="wrap" aria-labelledby="env-title">
+    <div class="sec-head">
+      <p class="tag">어디서 쓰나요</p>
+      <h2 id="env-title">환경별로 되는 것</h2>
+      <p>같은 분필팩이라도 쓰는 곳에 따라 작동하는 기능이 조금 다릅니다.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="env">
+        <thead><tr><th scope="col">기능</th><th scope="col">Claude 웹 채팅</th><th scope="col">Cowork</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead>
+        <tbody>
+          <tr><td>분필팩 스킬 20종</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
+          <tr><td>개인정보 자동 점검(훅)</td><td class="no">× 지침으로 대신</td><td class="yes">○</td><td class="yes">○</td><td><span class="yes">○</span> <span class="small muted">/hooks 신뢰 후</span></td></tr>
+          <tr><td>공문 처리 서브에이전트</td><td class="no">× 순서대로 처리</td><td class="yes">○</td><td class="yes">○</td><td class="no">× 순서대로 처리</td></tr>
+          <tr><td>노션·패들렛·캔바</td><td>커넥터 연결 후</td><td>커넥터 연결 후</td><td><code>/mcp</code> 로그인 후</td><td><code>codex mcp login</code> 후</td></tr>
+          <tr><td>추천 MCP(한글·문서 변환·브라우저 자동화)</td><td class="no">×</td><td>컴퓨터에서 실행할 때</td><td class="yes">○</td><td class="yes">○</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 업데이트·지우기 -->
+  <section id="manage" class="wrap" aria-labelledby="manage-title">
+    <div class="sec-head">
+      <p class="tag">관리</p>
+      <h2 id="manage-title">업데이트하고 지우기</h2>
+    </div>
+    <div class="manage">
+      <div class="sheet">
+        <h3>업데이트</h3>
+        <p>설치할 때 쓴 한 줄을 <b>그대로 다시 실행</b>하면 됩니다. 빠진 것은 채우고, 설치된 것은 최신으로 바꿉니다. Codex는 업데이트 뒤 <code>/hooks</code>에서 분필 가드를 다시 신뢰하세요.</p>
+        <p class="muted small">지금 버전: v0.3.0 (2026. 10. 15.) · <a href="https://nalssam-bunpil.vercel.app/version.json" rel="noopener">version.json</a></p>
+      </div>
+      <div class="sheet">
+        <h3>지우기</h3>
+        <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/uninstall.ps1 | iex</code><button class="copy" type="button">복사</button></div>
+        <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/uninstall.sh | sh</code><button class="copy" type="button">복사</button></div>
+        <p class="muted small">분필팩 5종과 내려받은 분필팩 폴더를 지웁니다. 다른 곳에서도 쓰는 추천 도구, 설치한 Node.js·uv·Git과 PATH 설정, 선생님 작업 폴더의 파일(CLAUDE.md·AGENTS.md 등)은 그대로 두고, 직접 지우는 방법을 화면에 알려 줍니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 문제 해결 -->
+  <section id="faq" class="wrap" aria-labelledby="faq-title">
+    <div class="sec-head">
+      <p class="tag">막혔을 때</p>
+      <h2 id="faq-title">문제 해결과 자주 묻는 질문</h2>
+    </div>
+    <div class="faq-tools">
+      <label class="sr" for="faq-q">질문 찾기</label>
+      <input id="faq-q" type="search" placeholder="예: 스크립트, 회색, 업무망, 맥" autocomplete="off">
+      <span class="muted small" id="faq-count" aria-live="polite"></span>
+    </div>
+    <div class="faq" id="faq-list">
+      <details><summary>'irm'은(는) 내부 또는 외부 명령이 아니라고 나와요</summary><div class="a"><p>명령 프롬프트(cmd)에 붙여넣은 경우입니다. 시작 메뉴에서 <b>PowerShell</b>을 열고 다시 붙여넣으세요. 창 맨 앞에 <code>PS</code>가 보여야 합니다.</p></div></details>
+      <details><summary>"이 시스템에서 스크립트를 실행할 수 없으므로…"가 나와요</summary><div class="a"><p>한 줄 설치(<code>irm … | iex</code>)는 파일을 저장하지 않아 대부분 그대로 됩니다. 이 메시지가 <code>codex</code>나 <code>npm</code>을 실행할 때 나온다면 PowerShell에서 아래를 한 번 실행하세요.</p><div class="cmd"><span class="pr">PS&gt;</span><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code><button class="copy" type="button">복사</button></div><p class="muted small">학교에서 관리하는 PC라 바뀌지 않으면 정보 담당 선생님께 문의하세요.</p></div></details>
+      <details><summary>claude 또는 codex 명령을 찾을 수 없다고 나와요</summary><div class="a"><p>설치 직후에는 터미널 창을 <b>닫고 새로 열어야</b> 새 명령을 찾습니다. 새 창에서도 안 되면 설치 한 줄을 다시 실행하세요.</p></div></details>
+      <details><summary>빨간 [x] 또는 ✗ 줄이 보여요</summary><div class="a"><p>같은 한 줄을 다시 실행하세요. 설치된 것은 건너뛰고 실패한 것만 다시 시도합니다. 계속 실패하면 그 줄을 캡처해 문의해 주세요.</p></div></details>
+      <details><summary>학교 인터넷에서 내려받기가 안 돼요</summary><div class="a"><p>학교 방화벽이 막는 경우가 많습니다. 휴대폰 핫스팟에 연결해 다시 실행하거나, 집에서 <a href="https://nalssam-bunpil.vercel.app/bunpil-pack.zip" rel="noopener">분필팩 zip</a>을 받아 USB로 옮긴 뒤 압축을 풀고 더블클릭으로 설치하세요. 분필팩 5종은 인터넷 없이도 설치되고, 추천 도구는 인터넷이 필요합니다.</p></div></details>
+      <details><summary>업무망 PC에 설치해도 되나요?</summary><div class="a"><p>업무망 PC는 인터넷이 막혀 있고 프로그램 설치가 제한되며, 학교마다 규정이 있습니다. 인터넷망 PC나 개인 기기에 설치하세요. 업무망 자료를 옮길 때는 학교 규정을 따릅니다.</p></div></details>
+      <details><summary>Windows에서 "Windows의 PC 보호" 창이 떠요 (zip 더블클릭 설치)</summary><div class="a"><p>인터넷에서 받은 파일이라 뜨는 확인 창입니다. <b>추가 정보</b> → <b>실행</b>을 누르세요. 걱정되면 zip 대신 PowerShell 한 줄 설치를 쓰면 됩니다.</p></div></details>
+      <details><summary>맥에서 Install-Mac.command가 열리지 않아요</summary><div class="a"><p>파일을 오른쪽 클릭해 <b>열기</b>를 누르세요. 그래도 막히면 <b>시스템 설정 → 개인정보 보호 및 보안</b>에서 <b>그래도 열기</b>를 누릅니다. 가장 쉬운 방법은 터미널 한 줄 설치입니다.</p></div></details>
+      <details><summary>Claude 앱에 플러그인 메뉴가 없어요</summary><div class="a"><p>플러그인은 Claude 유료 요금제(Pro·Max·Team·Enterprise)에서 쓸 수 있습니다. 무료로 시작하려면 ChatGPT Codex 탭을 따라 하세요.</p></div></details>
+      <details><summary>일부 기능이 회색으로 보여요</summary><div class="a"><p>웹 채팅은 자동 점검(훅)과 서브에이전트를 쓰지 않아 회색으로 보입니다. 정상입니다. Cowork나 Claude Code에서는 모든 기능이 작동합니다.</p></div></details>
+      <details><summary>Codex에서 개인정보 가드가 작동하지 않아요</summary><div class="a"><p>Codex 대화창에서 <code>/hooks</code>를 입력하고 분필 가드를 <b>신뢰(trust)</b>하세요. 분필팩을 업데이트하면 다시 신뢰해야 합니다.</p></div></details>
+      <details><summary>가짜 번호에도 경고가 떠요</summary><div class="a"><p>가드는 번호의 형식만 보고 판단합니다. 실제 개인정보가 아니면 그대로 진행해도 됩니다. 주민등록번호 형식(000000-0000000)은 입력 자체를 막습니다.</p></div></details>
+      <details><summary>가드를 잠시 끄고 싶어요 (수업 예시 작업 등)</summary><div class="a"><p>환경변수 <code>BUNPIL_GUARD=off</code>를 주고 실행하거나, 잠시 분필 시작 팩을 비활성화하세요. 작업이 끝나면 다시 켜 두세요.</p></div></details>
+      <details><summary>브라우저 자동화 첫 실행이 느려요</summary><div class="a"><p>처음 한 번 브라우저 구성 요소를 내려받기 때문입니다. 한 번만 기다리면 이후에는 빠릅니다.</p></div></details>
+      <details><summary>설치하면 컴퓨터에 무엇이 바뀌나요?</summary><div class="a"><ul>
+        <li>홈 폴더의 <code>.bunpil</code> 폴더에 분필팩을 둡니다. Node.js를 관리자 권한 없이 설치할 때도 이 폴더(<code>.bunpil/node</code>)를 씁니다.</li>
+        <li>Claude Code·Codex에 분필팩과 추천 도구의 플러그인·MCP 연결을 등록하고, 추천 스킬은 각 프로그램의 사용자 스킬 폴더에 복사합니다.</li>
+        <li>없을 때만 Claude Code·Codex·Node.js·uv·Git을 공식 설치 프로그램으로 설치합니다. Windows에서 Git·Node.js를 winget으로 설치할 때는 확인 창이 뜹니다.</li>
+        <li>새 창에서도 명령을 찾도록 PATH를 남깁니다. <span class="only-mac">맥·리눅스는 <code>~/.bunpil/env</code> 파일을 만들고 셸 설정 파일(<code>~/.zshrc</code>, <code>~/.bashrc</code>, <code>~/.bash_profile</code>, <code>~/.profile</code> 중 있는 것, 맥은 <code>~/.zshrc</code>가 없으면 새로 만듦)에 <code># bunpil-path</code> 표시가 붙은 한 줄을 더합니다.</span><span class="only-win">Windows는 사용자 PATH에 폴더를 더합니다(기존 항목은 그대로 둠).</span></li>
+        <li class="only-win">Codex를 npm으로 설치한 경우에만, PowerShell에서 <code>codex</code> 명령이 실행되도록 현재 사용자의 실행 정책을 RemoteSigned로 바꿉니다. 되돌리기: <code>Set-ExecutionPolicy -Scope CurrentUser Undefined</code></li>
+      </ul><p>지우기 명령은 분필팩 5종과 <code>.bunpil/bunpil-pack</code> 폴더를 지우고, 나머지는 그대로 둔 채 직접 지우는 방법을 알려 줍니다.</p></div></details>
+      <details><summary>학생도 쓸 수 있나요? 생활기록부 문구도 써 주나요?</summary><div class="a"><p>분필팩은 교사의 수업 준비와 행정 업무용입니다. 학생이 직접 쓰는 도구가 아닙니다. 생활기록부 서술형 문구는 만들지 않습니다(2026 기재요령).</p></div></details>
+    </div>
+    <p class="faq-empty" id="faq-empty" hidden>맞는 질문이 없습니다. 다른 낱말로 찾아보세요.</p>
+  </section>
+
+  <!-- 연수용 -->
+  <section id="training" class="wrap" aria-labelledby="training-title">
+    <div class="sec-head">
+      <p class="tag">연수·동료 안내</p>
+      <h2 id="training-title">연수에서 함께 설치하기</h2>
+      <p>연수 화면에 띄우거나 메신저로 보내 함께 설치할 때 씁니다.</p>
+    </div>
+    <div class="train sheet">
+      <div class="qr-card"><svg class="qr" viewBox="0 0 33 33" role="img" aria-label="nalssam-bunpil.vercel.app QR 코드" shape-rendering="crispEdges"><rect width="33" height="33" fill="#ffffff"/><path fill="#14211b" d="M2 2h7v1h-7zM12 2h3v1h-3zM16 2h1v1h-1zM19 2h4v1h-4zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM11 3h4v1h-4zM18 3h1v1h-1zM20 3h1v1h-1zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM13 4h1v1h-1zM16 4h2v1h-2zM19 4h2v1h-2zM22 4h1v1h-1zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM13 5h1v1h-1zM15 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM11 6h1v1h-1zM14 6h1v1h-1zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM12 7h1v1h-1zM14 7h1v1h-1zM17 7h1v1h-1zM19 7h3v1h-3zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM14 9h2v1h-2zM17 9h3v1h-3zM2 10h1v1h-1zM5 10h1v1h-1zM7 10h2v1h-2zM10 10h1v1h-1zM12 10h3v1h-3zM16 10h1v1h-1zM18 10h1v1h-1zM21 10h1v1h-1zM23 10h1v1h-1zM25 10h1v1h-1zM2 11h1v1h-1zM5 11h1v1h-1zM10 11h3v1h-3zM15 11h1v1h-1zM17 11h1v1h-1zM19 11h1v1h-1zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h1v1h-1zM12 12h5v1h-5zM18 12h1v1h-1zM21 12h2v1h-2zM25 12h1v1h-1zM27 12h3v1h-3zM2 13h2v1h-2zM7 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM20 13h3v1h-3zM24 13h1v1h-1zM28 13h2v1h-2zM3 14h3v1h-3zM8 14h1v1h-1zM11 14h2v1h-2zM16 14h4v1h-4zM23 14h3v1h-3zM27 14h1v1h-1zM29 14h2v1h-2zM2 15h5v1h-5zM12 15h5v1h-5zM18 15h6v1h-6zM2 16h3v1h-3zM8 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM15 16h2v1h-2zM18 16h1v1h-1zM20 16h1v1h-1zM24 16h7v1h-7zM7 17h1v1h-1zM9 17h1v1h-1zM12 17h3v1h-3zM17 17h1v1h-1zM19 17h1v1h-1zM22 17h1v1h-1zM26 17h2v1h-2zM29 17h1v1h-1zM2 18h1v1h-1zM4 18h2v1h-2zM8 18h2v1h-2zM12 18h1v1h-1zM14 18h2v1h-2zM18 18h2v1h-2zM22 18h2v1h-2zM29 18h1v1h-1zM3 19h1v1h-1zM7 19h1v1h-1zM9 19h1v1h-1zM12 19h1v1h-1zM15 19h2v1h-2zM18 19h1v1h-1zM23 19h3v1h-3zM27 19h1v1h-1zM30 19h1v1h-1zM2 20h1v1h-1zM6 20h3v1h-3zM10 20h1v1h-1zM13 20h2v1h-2zM16 20h1v1h-1zM18 20h3v1h-3zM23 20h1v1h-1zM25 20h2v1h-2zM29 20h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM12 21h2v1h-2zM16 21h5v1h-5zM22 21h1v1h-1zM24 21h2v1h-2zM29 21h2v1h-2zM2 22h1v1h-1zM4 22h1v1h-1zM6 22h3v1h-3zM13 22h2v1h-2zM22 22h5v1h-5zM28 22h1v1h-1zM10 23h5v1h-5zM16 23h1v1h-1zM18 23h2v1h-2zM22 23h1v1h-1zM26 23h1v1h-1zM28 23h3v1h-3zM2 24h7v1h-7zM11 24h1v1h-1zM14 24h1v1h-1zM18 24h1v1h-1zM22 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM29 24h1v1h-1zM2 25h1v1h-1zM8 25h1v1h-1zM10 25h2v1h-2zM13 25h1v1h-1zM16 25h2v1h-2zM20 25h1v1h-1zM22 25h1v1h-1zM26 25h5v1h-5zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM18 26h2v1h-2zM22 26h5v1h-5zM30 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM10 27h2v1h-2zM22 27h8v1h-8zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM14 28h1v1h-1zM18 28h2v1h-2zM26 28h3v1h-3zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM11 29h1v1h-1zM13 29h1v1h-1zM15 29h2v1h-2zM18 29h2v1h-2zM21 29h2v1h-2zM24 29h3v1h-3zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h6v1h-6zM17 30h1v1h-1zM19 30h2v1h-2zM22 30h2v1h-2zM25 30h1v1h-1zM27 30h1v1h-1zM29 30h1v1h-1z"/></svg></div>
+      <div>
+        <p class="url">nalssam-bunpil.vercel.app</p>
+        <div class="train-actions">
+          <button class="btn btn-ink" type="button" id="present-open">큰 화면으로 띄우기</button>
+          <button class="btn btn-ghost" type="button" data-copy="https://nalssam-bunpil.vercel.app">주소 복사</button>
+          <button class="btn btn-ghost" type="button" id="share-copy">안내 문구 복사</button>
+        </div>
+        <ul>
+          <li>연수 전에 참여 선생님께 요금제를 확인해 달라고 안내하세요(Claude Pro 이상 또는 ChatGPT 계정).</li>
+          <li>실습실이 업무망이면 설치가 막힙니다. 인터넷망 실습실이나 개인 노트북을 준비해 주세요.</li>
+          <li>함께 1교시부터 진행하면 20~30분이면 모두 첫 요청까지 마칠 수 있습니다.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 약속 -->
+  <section id="principles" class="wrap" aria-labelledby="principles-title">
+    <div class="sec-head">
+      <p class="tag">분필팩 약속</p>
+      <h2 id="principles-title">이렇게 씁니다</h2>
+    </div>
+    <ol class="promise">
+      <li><b>모든 결과물은 초안입니다</b><span>발송·제출·결재는 선생님이 합니다.</span></li>
+      <li><b>학생 실명·연락처는 넣지 않습니다</b><span>넣으려 하면 분필팩이 먼저 알려 드립니다.</span></li>
+      <li><b>생활기록부 문구는 만들지 않습니다</b><span>서술형 기재는 2026 기재요령에 따라 선생님이 씁니다.</span></li>
+      <li><b>교사용 도구입니다</b><span>학생이 직접 쓰는 도구가 아닙니다.</span></li>
+    </ol>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <span>nalssam's 분필팩 v0.3.0 · 2026. 10. 15.</span>
+      <span>만든 사람: 날쌤(nalssam) · 몽당분필</span>
+      <a href="https://github.com/nalssam/bunpil_pack" rel="noopener">GitHub nalssam/bunpil_pack</a>
+      <span>코드 MIT · 문서 CC BY 4.0</span>
+    </div>
+    <p>누구도 소외되지 않는 기술, 혼자 닳지 않는 교사. 추천 도구는 각 저장소 작성자의 것이며 업데이트와 라이선스는 원 저장소를 따릅니다.</p>
+    <details>
+      <summary>변경 기록</summary>
+      <div class="log">
+        <p><b>0.3.0 (2026-10-15)</b> 웹사이트와 한 줄 설치 주소 공개. Claude·Codex별 설치 스크립트(claude/codex.sh·ps1), 더블클릭 설치 파일, Claude Code·Codex·Node.js·uv 자동 설치, Windows에서 Git Bash 없이 작동하는 개인정보 가드.</p>
+        <p><b>0.2.0 (2026-10-13)</b> 날쌤 추천 도구 묶음(teacher·creator·dev) 반영, 하네스 예시 100종 가져오기 스킬.</p>
+        <p><b>0.1.0 (2026-10-13)</b> 첫 공개: 플러그인 5종, Claude·Codex 동시 지원, 개인정보 가드.</p>
+      </div>
+    </details>
+  </div>
+</footer>
+
+<div class="present" id="present" hidden role="dialog" aria-modal="true" aria-labelledby="present-title">
+  <button class="close" type="button" id="present-close">닫기 (Esc)</button>
+  <div class="inner">
+    <div class="qr-card"><svg class="qr" viewBox="0 0 33 33" role="img" aria-label="nalssam-bunpil.vercel.app QR 코드" shape-rendering="crispEdges"><rect width="33" height="33" fill="#ffffff"/><path fill="#14211b" d="M2 2h7v1h-7zM12 2h3v1h-3zM16 2h1v1h-1zM19 2h4v1h-4zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM11 3h4v1h-4zM18 3h1v1h-1zM20 3h1v1h-1zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM13 4h1v1h-1zM16 4h2v1h-2zM19 4h2v1h-2zM22 4h1v1h-1zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM13 5h1v1h-1zM15 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM11 6h1v1h-1zM14 6h1v1h-1zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM12 7h1v1h-1zM14 7h1v1h-1zM17 7h1v1h-1zM19 7h3v1h-3zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM14 9h2v1h-2zM17 9h3v1h-3zM2 10h1v1h-1zM5 10h1v1h-1zM7 10h2v1h-2zM10 10h1v1h-1zM12 10h3v1h-3zM16 10h1v1h-1zM18 10h1v1h-1zM21 10h1v1h-1zM23 10h1v1h-1zM25 10h1v1h-1zM2 11h1v1h-1zM5 11h1v1h-1zM10 11h3v1h-3zM15 11h1v1h-1zM17 11h1v1h-1zM19 11h1v1h-1zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h1v1h-1zM12 12h5v1h-5zM18 12h1v1h-1zM21 12h2v1h-2zM25 12h1v1h-1zM27 12h3v1h-3zM2 13h2v1h-2zM7 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM20 13h3v1h-3zM24 13h1v1h-1zM28 13h2v1h-2zM3 14h3v1h-3zM8 14h1v1h-1zM11 14h2v1h-2zM16 14h4v1h-4zM23 14h3v1h-3zM27 14h1v1h-1zM29 14h2v1h-2zM2 15h5v1h-5zM12 15h5v1h-5zM18 15h6v1h-6zM2 16h3v1h-3zM8 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM15 16h2v1h-2zM18 16h1v1h-1zM20 16h1v1h-1zM24 16h7v1h-7zM7 17h1v1h-1zM9 17h1v1h-1zM12 17h3v1h-3zM17 17h1v1h-1zM19 17h1v1h-1zM22 17h1v1h-1zM26 17h2v1h-2zM29 17h1v1h-1zM2 18h1v1h-1zM4 18h2v1h-2zM8 18h2v1h-2zM12 18h1v1h-1zM14 18h2v1h-2zM18 18h2v1h-2zM22 18h2v1h-2zM29 18h1v1h-1zM3 19h1v1h-1zM7 19h1v1h-1zM9 19h1v1h-1zM12 19h1v1h-1zM15 19h2v1h-2zM18 19h1v1h-1zM23 19h3v1h-3zM27 19h1v1h-1zM30 19h1v1h-1zM2 20h1v1h-1zM6 20h3v1h-3zM10 20h1v1h-1zM13 20h2v1h-2zM16 20h1v1h-1zM18 20h3v1h-3zM23 20h1v1h-1zM25 20h2v1h-2zM29 20h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM12 21h2v1h-2zM16 21h5v1h-5zM22 21h1v1h-1zM24 21h2v1h-2zM29 21h2v1h-2zM2 22h1v1h-1zM4 22h1v1h-1zM6 22h3v1h-3zM13 22h2v1h-2zM22 22h5v1h-5zM28 22h1v1h-1zM10 23h5v1h-5zM16 23h1v1h-1zM18 23h2v1h-2zM22 23h1v1h-1zM26 23h1v1h-1zM28 23h3v1h-3zM2 24h7v1h-7zM11 24h1v1h-1zM14 24h1v1h-1zM18 24h1v1h-1zM22 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM29 24h1v1h-1zM2 25h1v1h-1zM8 25h1v1h-1zM10 25h2v1h-2zM13 25h1v1h-1zM16 25h2v1h-2zM20 25h1v1h-1zM22 25h1v1h-1zM26 25h5v1h-5zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM18 26h2v1h-2zM22 26h5v1h-5zM30 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM10 27h2v1h-2zM22 27h8v1h-8zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM14 28h1v1h-1zM18 28h2v1h-2zM26 28h3v1h-3zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM11 29h1v1h-1zM13 29h1v1h-1zM15 29h2v1h-2zM18 29h2v1h-2zM21 29h2v1h-2zM24 29h3v1h-3zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h6v1h-6zM17 30h1v1h-1zM19 30h2v1h-2zM22 30h2v1h-2zM25 30h1v1h-1zM27 30h1v1h-1zM29 30h1v1h-1z"/></svg></div>
+    <div>
+      <h2 id="present-title">nalssam's 분필팩</h2>
+      <p class="big-url">nalssam-bunpil.vercel.app</p>
+      <div class="lines">
+        <p>Claude 쓰는 선생님 · PowerShell</p>
+        <div class="cmd big"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code></div>
+        <p>Codex 쓰는 선생님 · PowerShell</p>
+        <div class="cmd big"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex</code></div>
+        <p>맥은 사이트에서 macOS를 고르세요</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+  var DATA = {"version":"0.3.0","plugins":[{"id":"bunpil-start","name":"분필 시작 팩","short":"설정 마법사와 개인정보 가드","desc":"교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.","skills":[{"id":"setup","label":"내 맞춤 지침 만들기","prompt":"설정 시작해줘"},{"id":"privacy-guard","label":"학생 개인정보 가드","prompt":"이 파일에 개인정보 있는지 점검해줘"},{"id":"checkup","label":"설치 점검","prompt":"분필 점검해줘"}]},{"id":"bunpil-class","name":"분필 수업자료 팩","short":"학습지·지도안·수업 PPT·도안","desc":"학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.","skills":[{"id":"worksheet","label":"수준별 학습지","prompt":"4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘"},{"id":"lesson-plan","label":"수업 지도안","prompt":"5학년 사회 '조선의 건국' 40분 지도안 써줘"},{"id":"class-slides","label":"수업 슬라이드","prompt":"이 지도안으로 수업 슬라이드 만들어줘"},{"id":"papercraft","label":"페이퍼크래프트 도안","prompt":"태양계 행성 페이퍼크래프트 도안 만들어줘"},{"id":"coloring","label":"컬러링 도안","prompt":"가을 주제 컬러링 도안 만들어줘"},{"id":"rubric","label":"평가 루브릭","prompt":"모둠 발표 평가 루브릭을 3단계로 만들어줘"}]},{"id":"bunpil-school","name":"분필 학교업무 팩","short":"공문·가정통신문·품의·설문","desc":"공문 처리 하네스(할 일·교직원 안내·초안·검토), 가정통신문, 물품 품의 산출내역, 학부모 설문 분석, 한글(HWPX) 문서 안내.","skills":[{"id":"gongmun","label":"공문 처리 하네스","prompt":"받은 공문 정리하고 할 일 뽑아줘"},{"id":"newsletter","label":"가정통신문","prompt":"현장체험학습 가정통신문 초안 써줘"},{"id":"pumui","label":"품의 산출내역","prompt":"과학실 물품 품의 산출내역 만들어줘"},{"id":"parent-survey","label":"학부모 설문 분석","prompt":"학부모 설문 결과 분석해줘"},{"id":"hwpx-doc","label":"한글 문서·기안문","prompt":"내부 기안문 본문 써줘"}]},{"id":"bunpil-builder","name":"분필 하네스빌더 팩","short":"나만의 스킬 만들고 고치기","desc":"반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.","skills":[{"id":"skill-maker","label":"나만의 스킬 만들기","prompt":"매주 쓰는 주간학습안내를 스킬로 만들어줘"},{"id":"harness-fix","label":"실수를 규칙으로","prompt":"방금 틀린 부분을 규칙으로 남겨줘"},{"id":"eval-run","label":"스킬 시험","prompt":"내 스킬 시험해줘"},{"id":"share-skill","label":"동료와 나누기","prompt":"이 스킬을 동료에게 나눌 수 있게 묶어줘"},{"id":"harness-gallery","label":"하네스 예시 100종","prompt":"하네스 예시 중에 학교에 맞는 걸 골라줘"}]},{"id":"bunpil-connect","name":"분필 커넥터 팩","short":"노션·패들렛·캔바 연결","desc":"노션·패들렛·캔바 원격 MCP 커넥터를 등록하고 하네스별 로그인 방법을 안내합니다.","skills":[{"id":"connect","label":"노션·패들렛·캔바 연결","prompt":"노션 연결해줘"}]}],"catalog":[{"id":"hwpx-plugin","profile":"teacher","repo":"airmang/hwpx-plugins","license":"Apache-2.0","label":"한글(HWPX) 편집 엔진","claude":"plugin hwpx-plugin@hwpx","codex":"plugin hwpx-plugin@hwpx","needs":"-"},{"id":"kordoc","profile":"teacher","repo":"chrisryugj/kordoc","license":"MIT","label":"HWP·HWPX·PDF·DOCX·XLSX 읽기·비교·공문 프리셋 생성(MCP 17개 도구)","claude":"plugin kordoc@kordoc + mcp kordoc (npx -y kordoc mcp)","codex":"mcp kordoc (npx -y kordoc mcp)","needs":"Node.js"},{"id":"hwpx-new","profile":"teacher","repo":"ZZombie04/hwpx_new","license":"MIT","label":"한글 양식 기반 보고서·계획서 생성(MCP)","claude":"uv tool install → hwpx-new setup","codex":"uv tool install → hwpx-new setup","needs":"uv(또는 pipx)·Python 3.9+"},{"id":"markitdown","profile":"teacher","repo":"microsoft/markitdown","license":"MIT","label":"PDF·PPT·워드·엑셀 → 텍스트 변환(MCP)","claude":"mcp markitdown (uvx markitdown-mcp)","codex":"mcp markitdown (uvx markitdown-mcp)","needs":"uv"},{"id":"playwright","profile":"teacher","repo":"microsoft/playwright","license":"Apache-2.0","label":"브라우저 자동화(RPA) — 웹 양식 입력·자료 수집(MCP)","claude":"mcp playwright (npx -y @playwright/mcp@latest)","codex":"mcp playwright (npx -y @playwright/mcp@latest)","needs":"Node.js"},{"id":"harness","profile":"teacher","repo":"revfactory/harness","license":"Apache-2.0","label":"한 문장으로 에이전트 팀·스킬 만들기(하네스 팩토리)","claude":"plugin harness@harness-marketplace","codex":"skills add","needs":"Codex: Node.js"},{"id":"harness-100","profile":"teacher","repo":"revfactory/harness-100","license":"Apache-2.0","label":"하네스 예시 100종(한국어) — 분필팩 harness-gallery 스킬로 필요한 것만 가져오기","claude":"가져오기 스킬","codex":"가져오기 스킬","needs":"git"},{"id":"ui-ux-pro-max","profile":"creator","repo":"nextlevelbuilder/ui-ux-pro-max-skill","license":"MIT","label":"UI·UX 디자인 지식(웹페이지·에듀테크 화면)","claude":"plugin ui-ux-pro-max@ui-ux-pro-max-skill","codex":"skills add","needs":"Codex: Node.js"},{"id":"taste-skill","profile":"creator","repo":"Leonxlnx/taste-skill","license":"MIT","label":"세련된 프런트엔드 디자인 감각","claude":"plugin taste-skill@taste-skill","codex":"skills add","needs":"Codex: Node.js"},{"id":"impeccable","profile":"creator","repo":"pbakaus/impeccable","license":"Apache-2.0","label":"디자인 다듬기·점검(/impeccable polish·audit)","claude":"plugin impeccable@impeccable","codex":"skills add","needs":"Codex: Node.js"},{"id":"watch","profile":"creator","repo":"bradautomates/claude-video","license":"MIT","label":"영상 보고 요약(유튜브·파일 → 장면·자막)","claude":"plugin watch@claude-video","codex":"plugin watch@claude-video","needs":"Python 3.10+, ffmpeg, yt-dlp(실행 시)"},{"id":"sprite-gen","profile":"creator","repo":"aldegad/sprite-gen","license":"Apache-2.0","label":"게임·애니메이션용 스프라이트 이미지 만들기","claude":"skills add","codex":"skills add","needs":"Node.js(설치), Python(실행)"},{"id":"superpowers","profile":"dev","repo":"obra/superpowers-marketplace","license":"MIT","label":"계획→구현→검증 개발 습관 스킬 모음","claude":"plugin superpowers@superpowers-marketplace","codex":"skills add obra/superpowers","needs":"Codex: Node.js"},{"id":"karpathy-skills","profile":"dev","repo":"multica-ai/andrej-karpathy-skills","license":"확인 필요(라이선스 파일 없음)","label":"카파시식 코딩 지침","claude":"plugin andrej-karpathy-skills@karpathy-skills","codex":"skills add","needs":"Codex: Node.js"},{"id":"caveman","profile":"dev","repo":"JuliusBrussee/caveman","license":"Apache-2.0/MIT","label":"응답 압축으로 토큰 절약","claude":"plugin caveman@caveman","codex":"skills add","needs":"Codex: Node.js"},{"id":"codex-plugin-cc","profile":"dev","repo":"openai/codex-plugin-cc","license":"Apache-2.0","label":"Claude Code에서 Codex에게 검토·작업 맡기기","claude":"plugin codex@openai-codex (Codex가 있을 때만)","codex":"-","needs":"Codex 설치·로그인"},{"id":"agent-reach","profile":"dev","repo":"Panniantong/Agent-Reach","license":"MIT","label":"에이전트가 웹·SNS를 읽게 하는 도구(설치는 에이전트가 안내)","claude":"skills add","codex":"skills add","needs":"Node.js, 이후 Python"},{"id":"ecc","profile":"dev","repo":"affaan-m/ECC","license":"MIT","label":"Everything Claude Code — 스킬 1,000여 개(마켓플레이스만 등록, 골라 설치)","claude":"marketplace ecc","codex":"marketplace ecc","needs":"-"},{"id":"wshobson-agents","profile":"dev","repo":"wshobson/agents","license":"MIT","label":"개발 워크플로 플러그인 90여 종(마켓플레이스만 등록)","claude":"marketplace claude-code-workflows","codex":"marketplace claude-code-workflows","needs":"-"},{"id":"google-skills","profile":"dev","repo":"google/skills","license":"Apache-2.0","label":"Google Cloud 스킬 17종(마켓플레이스만 등록)","claude":"marketplace google-plugins","codex":"marketplace google-plugins","needs":"-"},{"id":"claude-mem","profile":"dev","repo":"thedotmack/claude-mem","license":"Apache-2.0","label":"세션 기억 플러그인(백그라운드 작업자 실행 — 마켓플레이스만 등록)","claude":"marketplace thedotmack","codex":"marketplace claude-mem-local","needs":"Node.js 20+"}],"linksOnly":[{"repo":"hesreallyhim/awesome-claude-code","license":"CC BY-NC-ND 4.0","why":"설치물이 아닌 추천 목록. 링크로만 안내한다."},{"repo":"lifeofpi-ux/ppt-automation","license":"확인 불가","why":"2026-10-13 기준 공개 저장소로 접근되지 않음(비공개 또는 이동). 공개되면 creator 묶음에 추가한다."}],"profiles":{"teacher":"기본. 한글·문서·업무 자동화(RPA)·하네스","creator":"웹·디자인·영상 자료 만들기","dev":"고급·개발자용. 큰 모음은 마켓플레이스만 등록","all":"teacher + creator + dev"}};
+  var SITE = "https://nalssam-bunpil.vercel.app";
+  var body = document.body;
+
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem("bunpil." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem("bunpil." + k, JSON.stringify(v)); } catch (e) { /* 저장 못 해도 화면은 그대로 */ } }
+  };
+
+  function detect() {
+    var ua = navigator.userAgent || "";
+    var p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+    var mobile = /iPhone|iPad|iPod|Android/i.test(ua) || (navigator.userAgentData && navigator.userAgentData.mobile);
+    var os = /win/i.test(p) || /Windows/i.test(ua) ? "win" : (/mac|iphone|ipad/i.test(p) || /Mac OS X|Linux/i.test(ua) ? "mac" : "win");
+    if (mobile) os = "win";
+    return { os: os, mobile: !!mobile };
+  }
+  var env = detect();
+  if (env.mobile) body.setAttribute("data-mobile", "1");
+
+  var state = {
+    host: store.get("host", "claude"),
+    os: store.get("os", env.os),
+    route: store.get("route", "code")
+  };
+  var hash = (location.hash || "").replace("#", "");
+  if (hash === "claude" || hash === "codex") state.host = hash;
+
+  var toastEl = document.getElementById("toast"), toastTimer = 0;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add("on");
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove("on"); }, 1800);
+  }
+
+  /* 설치 명령 */
+  function cmdFor(host, os) { return os === "win" ? "irm " + SITE + "/" + host + ".ps1 | iex" : "curl -fsSL " + SITE + "/" + host + ".sh | sh"; }
+  var WHERE = {
+    win: "시작 메뉴에서 <b>PowerShell</b>을 열고 붙여넣은 뒤 Enter",
+    mac: "<b>터미널</b>(⌘+Space → 터미널)을 열고 붙여넣은 뒤 Enter"
+  };
+  var WHAT = {
+    claude: "<b>Claude Code</b>가 없으면 함께 설치하고, 분필팩 5종과 날쌤 추천 도구까지 한 번에 넣습니다. 약 5~10분.",
+    codex: "<b>Codex CLI</b>가 없으면 함께 설치하고, 분필팩 5종과 날쌤 추천 도구까지 한 번에 넣습니다. 약 5~10분."
+  };
+
+  function setPressed(sel, attr, val) {
+    document.querySelectorAll(sel).forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute(attr) === val)); });
+  }
+  function apply() {
+    body.setAttribute("data-os", state.os);
+    body.setAttribute("data-host", state.host);
+    setPressed("[data-set-os]", "data-set-os", state.os);
+    setPressed(".seg [data-set-host]", "data-set-host", state.host);
+    setPressed("[data-set-route]", "data-set-route", state.route);
+    document.querySelectorAll(".tab").forEach(function (t) {
+      var on = t.getAttribute("data-set-host") === state.host;
+      t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1;
+    });
+    document.querySelectorAll("[data-host-panel]").forEach(function (p) { p.hidden = p.getAttribute("data-host-panel") !== state.host; });
+    document.querySelectorAll("[data-route-panel]").forEach(function (p) { p.hidden = p.getAttribute("data-route-panel") !== state.route; });
+    document.querySelector("[data-quick-cmd]").textContent = cmdFor(state.host, state.os);
+    document.querySelector("[data-quick-pr]").textContent = state.os === "win" ? "PS>" : "%";
+    document.querySelector("[data-quick-where]").innerHTML = WHERE[state.os];
+    document.querySelector("[data-quick-what]").innerHTML = WHAT[state.host];
+    var bo = document.getElementById(state.os === "win" ? "b-os-win" : "b-os-mac");
+    if (bo && !bo.dataset.touched) { bo.checked = true; }
+    var bh = document.getElementById(state.host === "claude" ? "b-host-claude" : "b-host-codex");
+    if (bh && !bh.dataset.touched && !document.getElementById("b-host-both").checked) { bh.checked = true; }
+    build();
+  }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-set-host],[data-set-os],[data-set-route]");
+    if (!t) return;
+    if (t.hasAttribute("data-set-host")) {
+      state.host = t.getAttribute("data-set-host"); store.set("host", state.host);
+      if (t.tagName === "A") { e.preventDefault(); document.getElementById("install").scrollIntoView(); }
+    }
+    if (t.hasAttribute("data-set-os")) { state.os = t.getAttribute("data-set-os"); store.set("os", state.os); }
+    if (t.hasAttribute("data-set-route")) { state.route = t.getAttribute("data-set-route"); store.set("route", state.route); }
+    apply();
+  });
+
+  /* 탭 키보드 */
+  document.querySelector(".tabs").addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+    var i = tabs.indexOf(document.activeElement); if (i < 0) return;
+    var n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+    state.host = n.getAttribute("data-set-host"); store.set("host", state.host); apply(); n.focus();
+  });
+
+  /* 복사 */
+  function selectNode(node) {
+    try { var r = document.createRange(); r.selectNodeContents(node); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) { }
+  }
+  function copy(text, btn, node) {
+    var done = function (ok) {
+      if (!ok && node) selectNode(node);
+      if (btn) {
+        btn.classList.add("done");
+        if (btn.classList.contains("copy")) { btn.textContent = ok ? "복사됨" : "선택됨"; }
+        setTimeout(function () { btn.classList.remove("done"); if (btn.classList.contains("copy")) btn.textContent = "복사"; }, 1600);
+      }
+      toast(ok ? "복사했습니다. 붙여넣어 쓰세요." : (node ? "선택했습니다. Ctrl+C(맥은 ⌘+C)로 복사하세요." : "복사가 막혀 있습니다. 글자를 직접 선택해 복사하세요."));
+    };
+    try {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    } catch (e) { done(false); }
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".copy,[data-copy]");
+    if (!b) return;
+    if (b.hasAttribute("data-copy")) { copy(b.getAttribute("data-copy"), b, null); return; }
+    var from = b.getAttribute("data-copy-from");
+    var code = from ? document.querySelector(from) : b.parentNode.querySelector("code");
+    if (code) copy(code.textContent, b, code);
+  });
+
+  /* 교시 진도 */
+  function setupSteps(list) {
+    var id = list.getAttribute("data-steps");
+    var prog = document.querySelector('[data-progress="' + id + '"]');
+    var marks = Array.prototype.slice.call(list.querySelectorAll(".mark"));
+    var dots = prog.querySelector(".dots"), txt = prog.querySelector(".txt"), stamp = prog.querySelector(".stamp");
+    var done = store.get("done." + id, []);
+    marks.forEach(function (m, i) {
+      var svgNS = "http://www.w3.org/2000/svg";
+      var svg = document.createElementNS(svgNS, "svg"); svg.setAttribute("viewBox", "0 0 100 60"); svg.setAttribute("preserveAspectRatio", "none"); svg.setAttribute("aria-hidden", "true");
+      var path = document.createElementNS(svgNS, "path");
+      path.setAttribute("d", "M58 6 C 26 3, 4 14, 5 31 C 6 49, 34 57, 60 55 C 86 53, 98 40, 95 25 C 92 10, 70 3, 44 6");
+      path.setAttribute("vector-effect", "non-scaling-stroke");
+      svg.appendChild(path); m.querySelector(".pnum").appendChild(svg);
+      m.setAttribute("aria-label", (i + 1) + "교시 완료 표시");
+      m.addEventListener("click", function () {
+        var k = done.indexOf(i);
+        if (k >= 0) done.splice(k, 1); else done.push(i);
+        store.set("done." + id, done); render();
+      });
+      var d = document.createElement("i"); dots.appendChild(d);
+    });
+    prog.querySelector(".reset").addEventListener("click", function () { done = []; store.set("done." + id, done); render(); });
+    function render() {
+      marks.forEach(function (m, i) { var on = done.indexOf(i) >= 0; m.setAttribute("aria-pressed", String(on)); m.querySelector(".hint").textContent = on ? "완료" : "눌러서 완료 표시"; });
+      Array.prototype.forEach.call(dots.children, function (d, i) { d.className = done.indexOf(i) >= 0 ? "on" : ""; });
+      var n = done.length, total = marks.length;
+      txt.textContent = n === total ? "오늘 진도 끝! " + total + "교시 모두 마쳤습니다" : "오늘의 진도 " + n + " / " + total + "교시";
+      stamp.classList.toggle("on", n === total);
+    }
+    render();
+  }
+  document.querySelectorAll("[data-steps]").forEach(setupSteps);
+
+  /* 명령 만들기 */
+  function val(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ""; }
+  function build() {
+    var host = val("b-host"), os = val("b-os");
+    var profiles = ["teacher", "creator", "dev"].filter(function (p) { return document.getElementById("b-p-" + p).checked; });
+    var inst = document.getElementById("b-install").checked, tools = document.getElementById("b-tools").checked, nohwpx = document.getElementById("b-nohwpx").checked;
+    var notes = [], cmd;
+    if (os === "mac") {
+      var f = [];
+      if (host === "claude") f.push("--claude"); if (host === "codex") f.push("--codex");
+      if (!profiles.length) f.push("--bunpil-only"); else if (profiles.join(",") !== "teacher") f.push("--profile " + profiles.join(","));
+      if (inst) { if (host !== "codex") f.push("--install-claude"); if (host !== "claude") f.push("--install-codex"); }
+      if (tools) f.push("--with-tools");
+      if (nohwpx) f.push("--no-hwpx");
+      cmd = "curl -fsSL " + SITE + "/install.sh | sh" + (f.length ? " -s -- " + f.join(" ") : "");
+    } else {
+      var v = [];
+      if (host === "claude" || host === "codex") v.push('$env:BUNPIL_ONLY="' + host + '"');
+      if (!profiles.length) v.push('$env:BUNPIL_RECS="0"'); else if (profiles.join(",") !== "teacher") v.push('$env:BUNPIL_PROFILE="' + profiles.join(",") + '"');
+      if (inst) { if (host !== "codex") v.push('$env:BUNPIL_INSTALL_CLAUDE="1"'); if (host !== "claude") v.push('$env:BUNPIL_INSTALL_CODEX="1"'); }
+      if (tools) v.push('$env:BUNPIL_WITH_TOOLS="1"');
+      if (nohwpx) v.push('$env:BUNPIL_HWPX="0"');
+      cmd = (v.length ? v.join("; ") + "; " : "") + "irm " + SITE + "/install.ps1 | iex" + (v.length ? "; Remove-Item Env:BUNPIL_* -ErrorAction SilentlyContinue" : "");
+    }
+    document.getElementById("b-pr").textContent = os === "win" ? "PS>" : "%";
+    document.getElementById("b-cmd").textContent = cmd;
+    if (!profiles.length) notes.push("추천 도구 없이 분필팩 5종만 설치합니다.");
+    else notes.push("추천 묶음: " + profiles.join(" + ") + (profiles.indexOf("dev") >= 0 ? " (dev의 큰 모음은 목록만 등록하고 골라 설치)" : ""));
+    if (host === "both") notes.push(inst ? "Claude Code와 Codex 모두에 설치하고, 없는 쪽은 새로 설치합니다." : "컴퓨터에서 찾은 Claude Code·Codex에만 설치합니다.");
+    if (!tools) notes.push("Node.js·uv·Git이 없으면 일부 추천 도구는 건너뜁니다.");
+    if (os === "win") notes.push("PowerShell에 붙여넣으세요. 끝에 붙은 Remove-Item은 이 창에 남은 설정값을 지웁니다.");
+    var ul = document.getElementById("b-notes"); ul.innerHTML = "";
+    notes.forEach(function (n) { var li = document.createElement("li"); li.textContent = n; ul.appendChild(li); });
+  }
+  var bform = document.getElementById("b-form");
+  bform.addEventListener("submit", function (e) { e.preventDefault(); });
+  bform.addEventListener("change", function (e) { if (e.target && e.target.name) e.target.dataset.touched = "1"; build(); });
+
+  /* 문제 해결 찾기 */
+  var q = document.getElementById("faq-q"), items = Array.prototype.slice.call(document.querySelectorAll("#faq-list details"));
+  function norm(s) { return (s || "").toLowerCase().replace(/\s+/g, ""); }
+  q.addEventListener("input", function () {
+    var k = norm(q.value), shown = 0;
+    items.forEach(function (d) { var hit = !k || norm(d.textContent).indexOf(k) >= 0; d.hidden = !hit; if (hit) shown++; if (k && hit) d.open = true; if (!k) d.open = false; });
+    document.getElementById("faq-empty").hidden = shown > 0;
+    document.getElementById("faq-count").textContent = k ? shown + "개 찾음" : "";
+  });
+
+  /* 연수용 */
+  var present = document.getElementById("present"), lastFocus = null;
+  function openPresent() {
+    lastFocus = document.activeElement; present.hidden = false; document.getElementById("present-close").focus();
+    try { if (present.requestFullscreen) present.requestFullscreen().catch(function () { }); } catch (e) { }
+  }
+  function closePresent() {
+    present.hidden = true;
+    try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () { }); } catch (e) { }
+    if (lastFocus) lastFocus.focus();
+  }
+  document.getElementById("present-open").addEventListener("click", openPresent);
+  document.getElementById("present-close").addEventListener("click", closePresent);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !present.hidden) closePresent(); });
+  document.getElementById("share-copy").addEventListener("click", function (e) {
+    var msg = "nalssam's 분필팩 — 교사용 AI 하네스 팩\n" +
+      "Claude Code·ChatGPT Codex에 학습지·지도안·공문·가정통신문 스킬과 한글(HWPX)·문서 도구를 한 줄로 설치합니다.\n" +
+      "설치 안내: " + SITE;
+    copy(msg, e.currentTarget, null);
+  });
+
+  apply();
+  if (hash === "claude" || hash === "codex") { var ins = document.getElementById("install"); if (ins) ins.scrollIntoView(); }
+  void DATA;
+})();
+</script>
+
+</body>
+</html>

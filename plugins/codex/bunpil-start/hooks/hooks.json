@@ -1,0 +1,31 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${PLUGIN_ROOT}/hooks/guard.sh\" prompt",
+            "commandWindows": "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%PLUGIN_ROOT%\\hooks\\guard.ps1\" prompt",
+            "statusMessage": "분필 가드 점검",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${PLUGIN_ROOT}/hooks/guard.sh\" write",
+            "commandWindows": "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"%PLUGIN_ROOT%\\hooks\\guard.ps1\" write",
+            "statusMessage": "분필 가드 점검",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>학습지 - {{주제}} ({{수준}})</title>
+<!--
+  분필팩 학습지 A4 템플릿.
+  - {{...}} 부분을 채운다. 정답은 이 파일에 넣지 않는다(별도 _정답.html 파일).
+  - 글자 크기: 저학년 14pt 이상, 중학년 12~13pt, 고학년 11~12pt (--fs 값을 바꾼다).
+  - 인쇄: 용지 A4, 배율 100%, 여백 기본.
+-->
+<style>
+  @page { size: A4; margin: 15mm; }
+  :root { --fs: 12pt; --line: #222; --soft: #f1f1f1; }
+  * { box-sizing: border-box; }
+  html { background: #e8e8e8; }
+  body {
+    margin: 0 auto; padding: 15mm; width: 210mm; min-height: 297mm; background: #fff;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: var(--fs); line-height: 1.7; color: #111;
+  }
+  @media print {
+    html { background: #fff; }
+    body { width: auto; min-height: 0; margin: 0; padding: 0; }
+    .no-print { display: none !important; }
+  }
+  h1 { font-size: 1.5em; margin: 0 0 4mm; }
+  .meta { color: #444; font-size: 0.85em; margin-bottom: 4mm; }
+
+  /* 이름·번호 칸 (비워 둔다) */
+  .namebox { width: 100%; border: 1.5px solid var(--line); border-collapse: collapse; margin-bottom: 6mm; }
+  .namebox td { border: 1px solid var(--line); padding: 2mm 3mm; height: 11mm; }
+  .namebox .k { width: 16mm; background: var(--soft); text-align: center; font-weight: bold; }
+  .namebox .grow { width: auto; }
+
+  .goal { border: 1px dashed #666; border-radius: 3mm; padding: 3mm 4mm; margin-bottom: 6mm; background: #fafafa; }
+  .goal b { margin-right: 2mm; }
+
+  /* 문항 */
+  .q { margin: 0 0 7mm; break-inside: avoid; page-break-inside: avoid; }
+  .q .no {
+    display: inline-block; min-width: 8mm; height: 8mm; line-height: 8mm; margin-right: 2mm;
+    text-align: center; border: 1.5px solid var(--line); border-radius: 50%; font-weight: bold; font-size: 0.9em;
+  }
+  .q .pt { font-size: 0.8em; color: #555; margin-left: 2mm; }
+  .blank { display: inline-block; min-width: 28mm; border-bottom: 1.5px solid var(--line); height: 1.2em; vertical-align: bottom; }
+  .choices { list-style: none; margin: 2mm 0 0 10mm; padding: 0; }
+  .choices li { margin: 1mm 0; }
+  .ox { display: inline-block; width: 18mm; border: 1.5px solid var(--line); text-align: center; margin-left: 3mm; letter-spacing: 6mm; }
+  .answer-box { border: 1.5px solid var(--line); border-radius: 2mm; min-height: 22mm; margin: 2mm 0 0 10mm; }
+  .answer-box.tall { min-height: 40mm; }
+  .answer-lines { margin: 2mm 0 0 10mm; }
+  .answer-lines div { border-bottom: 1px solid #888; height: 9mm; }
+  .hint { margin: 1mm 0 0 10mm; font-size: 0.85em; color: #555; }
+
+  /* 연결하기 */
+  .match { display: flex; justify-content: space-between; margin: 3mm 10mm 0; }
+  .match ul { list-style: none; margin: 0; padding: 0; width: 42%; }
+  .match li { border: 1.5px solid var(--line); border-radius: 2mm; padding: 2mm 3mm; margin-bottom: 3mm; text-align: center; }
+
+  /* 그림·자료 자리 */
+  .figure { border: 1.5px dashed #888; min-height: 40mm; display: flex; align-items: center; justify-content: center; color: #777; margin: 2mm 0 0 10mm; }
+  table.data { border-collapse: collapse; margin: 2mm 0 0 10mm; }
+  table.data th, table.data td { border: 1px solid var(--line); padding: 1.5mm 4mm; text-align: center; }
+
+  .footer { margin-top: 8mm; font-size: 0.75em; color: #666; border-top: 1px solid #bbb; padding-top: 2mm; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<h1>{{제목}}</h1>
+<div class="meta">{{학년}} {{교과}} · {{단원/주제}} · 수준: {{기본|보충|심화}}</div>
+
+<table class="namebox" aria-label="이름 쓰는 칸">
+  <tr>
+    <td class="k">학년</td><td style="width:22mm"></td>
+    <td class="k">반</td><td style="width:22mm"></td>
+    <td class="k">번호</td><td style="width:22mm"></td>
+    <td class="k">이름</td><td class="grow"></td>
+  </tr>
+</table>
+
+<div class="goal"><b>오늘의 학습 목표</b>{{학습 목표 한 문장}}</div>
+
+<!-- ===== 문항 예시 (필요한 형식만 남기고 복사해서 쓴다) ===== -->
+
+<!-- 1. 빈칸 채우기 -->
+<div class="q">
+  <span class="no">1</span>
+  {{문장 앞부분}} <span class="blank"></span> {{문장 뒷부분}}
+  <span class="pt">({{배점/표시}})</span>
+</div>
+
+<!-- 2. OX -->
+<div class="q">
+  <span class="no">2</span> {{참/거짓을 가릴 문장}} <span class="ox">O X</span>
+</div>
+
+<!-- 3. 고르기 -->
+<div class="q">
+  <span class="no">3</span> {{질문}}
+  <ul class="choices">
+    <li>① {{보기1}}</li>
+    <li>② {{보기2}}</li>
+    <li>③ {{보기3}}</li>
+    <li>④ {{보기4}}</li>
+  </ul>
+</div>
+
+<!-- 4. 연결하기 -->
+<div class="q">
+  <span class="no">4</span> 알맞은 것끼리 선으로 이어 봅시다.
+  <div class="match">
+    <ul><li>{{왼쪽1}}</li><li>{{왼쪽2}}</li><li>{{왼쪽3}}</li></ul>
+    <ul><li>{{오른쪽1}}</li><li>{{오른쪽2}}</li><li>{{오른쪽3}}</li></ul>
+  </div>
+</div>
+
+<!-- 5. 단답·서술 (보충: 힌트 한 줄 추가 / 심화: answer-box tall) -->
+<div class="q">
+  <span class="no">5</span> {{질문}}
+  <div class="hint">힌트: {{보충 수준에서만 쓴다}}</div>
+  <div class="answer-box"></div>
+</div>
+
+<!-- 6. 줄 쓰기 -->
+<div class="q">
+  <span class="no">6</span> {{이유를 쓰는 질문}}
+  <div class="answer-lines"><div></div><div></div><div></div></div>
+</div>
+
+<!-- 그림·자료 자리 (교과서 그림을 넣지 않는다. 교사가 직접 준비한 자료를 넣거나 비워 둔다) -->
+<!-- <div class="figure">그림 자리: {{무엇을 넣을지}}</div> -->
+
+<div class="footer">
+  <span>{{학교/학급 표기는 교사가 직접 입력}}</span>
+  <span>초안 · 교사 확인 후 사용</span>
+</div>
+
+</body>
+</html>

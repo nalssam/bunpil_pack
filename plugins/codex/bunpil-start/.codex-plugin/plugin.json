@@ -1,0 +1,41 @@
+{
+  "name": "bunpil-start",
+  "version": "0.3.0",
+  "description": "교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.",
+  "author": {
+    "name": "nalssam(날쌤) · 몽당분필",
+    "url": "https://nalssam-bunpil.vercel.app"
+  },
+  "homepage": "https://nalssam-bunpil.vercel.app",
+  "repository": "https://github.com/nalssam/bunpil_pack",
+  "license": "MIT",
+  "keywords": [
+    "teacher",
+    "korean",
+    "setup",
+    "privacy"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "분필 시작 팩",
+    "shortDescription": "설정 마법사와 개인정보 가드",
+    "longDescription": "교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.",
+    "developerName": "nalssam(날쌤) · 몽당분필",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "설정 시작해줘",
+      "분필 점검해줘"
+    ],
+    "brandColor": "#E8583A"
+  },
+  "hooks": "./hooks/hooks.json",
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/setup/SKILL.md"
+    }
+  }
+}
