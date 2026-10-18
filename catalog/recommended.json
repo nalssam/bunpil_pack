@@ -1,12 +1,12 @@
 {
   "version": "2026-10-18",
-  "note": "날쌤 추천 모음. 분필팩은 이 저장소들을 복사·재배포하지 않고, 각 원 저장소에서 직접 설치만 한다. 설치 스크립트(install.sh, install.ps1)와 이 목록은 함께 고친다. nalssam 묶음은 날쌤팩(nalssam/nalssam-pack) 설치기가 고정 커밋으로 설치하고, 분필팩은 그 설치기를 부르기만 한다. 중복 정리: Playwright는 teacher에, codex-plugin-cc는 dev에 이미 있어 다시 넣지 않고, Cinetic은 nalssam 묶음에서 creator로 합쳤다(--nalssam이면 날쌤팩이 설치하므로 분필팩은 건너뜀).",
+  "note": "날쌤 추천 모음. 분필팩은 이 저장소들을 복사·재배포하지 않고, 각 원 저장소에서 직접 설치만 한다. 설치 스크립트(install.sh, install.ps1)와 이 목록은 함께 고친다. studio 묶음은 이 저장소의 studio/ 폴더(예전 날쌤팩 설치기, MIT)가 고정 커밋으로 설치한다. 중복 정리: Playwright는 teacher에, codex-plugin-cc는 dev에 이미 있어 다시 넣지 않고, Cinetic은 creator에 한 줄로 두었다(studio 묶음을 함께 고르면 studio가 먼저 설치하므로 분필팩은 겹치는 항목을 건너뜀).",
   "profiles": {
     "teacher": "기본. 한글·문서·업무 자동화(RPA)·웹 수집·하네스",
     "creator": "웹·디자인·영상(모션그래픽)·인스타그램 자료 만들기",
     "dev": "고급·개발자용. 큰 모음은 마켓플레이스만 등록",
-    "all": "teacher + creator + dev",
-    "nalssam": "날쌤팩 전체(고급) — 영상·모션·발표·분석 도구를 고정 버전으로 함께 설치. macOS·Linux·WSL2, 수 GB"
+    "studio": "고급 · 영상·모션·발표·분석 도구를 고정 버전으로 한꺼번에(수 GB, 10~30분). macOS·Linux·WSL2",
+    "all": "teacher + creator + dev + studio"
   },
   "items": [
     {
@@ -93,13 +93,13 @@
       "id": "claude-in-chrome",
       "profile": "teacher",
       "repo": "anthropics/claude-code",
+      "name": "Claude in Chrome",
+      "url": "https://code.claude.com/docs/en/chrome",
       "license": "-",
       "label": "크롬 연결 — 지금 열어 둔 탭 읽기·클릭(Claude in Chrome 확장)",
       "claude": "안내 claude --chrome",
       "codex": "-",
-      "needs": "크롬 확장 설치, Claude 유료 요금제",
-      "name": "Claude in Chrome",
-      "url": "https://code.claude.com/docs/en/chrome"
+      "needs": "크롬 확장 설치, Claude 유료 요금제"
     },
     {
       "id": "harness",
@@ -196,7 +196,7 @@
       "profile": "creator",
       "repo": "Leonxlnx/cinetic",
       "license": "MIT",
-      "label": "문장 한두 줄로 소개·출시 영상(소리 포함) 제작 스킬 — 날쌤팩에도 있는 도구라, 날쌤팩을 같이 설치하면 그쪽 것을 씀",
+      "label": "문장 한두 줄로 소개·출시 영상(소리 포함) 제작 스킬 — studio 묶음에도 있는 도구라, 함께 고르면 studio의 고정 버전을 씀",
       "claude": "skills add Leonxlnx/cinetic (macOS·Linux·WSL2)",
       "codex": "skills add Leonxlnx/cinetic (macOS·Linux·WSL2)",
       "needs": "bash, Node 22+, ffmpeg 6+, Python 3.11+, Chromium"
@@ -325,61 +325,63 @@
     },
     {
       "id": "motion",
-      "profile": "nalssam",
+      "profile": "studio",
       "repo": "ZZombie04/motion",
       "license": "MIT",
       "label": "Motion Director — 말 한마디로 모션그래픽 연출·렌더(스킬 + MCP 22개 도구)",
-      "claude": "날쌤팩",
-      "codex": "날쌤팩",
+      "claude": "스튜디오",
+      "codex": "스튜디오",
       "needs": "Chromium, ffmpeg"
     },
     {
       "id": "showreel",
-      "profile": "nalssam",
+      "profile": "studio",
       "repo": "revfactory/showreel",
       "license": "MIT",
       "label": "한국어 모션그래픽 영상 제작(기획→대본→나레이션→렌더→검수)",
-      "claude": "날쌤팩",
-      "codex": "날쌤팩",
+      "claude": "스튜디오",
+      "codex": "스튜디오",
       "needs": "ffmpeg, 나레이션은 ElevenLabs 키"
     },
     {
       "id": "motion-graphics",
-      "profile": "nalssam",
+      "profile": "studio",
       "repo": "Barty-Bart/motion-graphics",
       "license": "MIT",
       "label": "영상 편집 스킬 모음(자막에 맞춘 모션그래픽 B-roll 등)",
-      "claude": "날쌤팩",
-      "codex": "날쌤팩",
+      "claude": "스튜디오",
+      "codex": "스튜디오",
       "needs": "ffmpeg"
     },
     {
       "id": "rea",
-      "profile": "nalssam",
+      "profile": "studio",
       "repo": "nalssam/rea",
       "license": "MIT",
       "label": "REA — 앱·바이너리 동작 분석(MCP 207개 도구)",
-      "claude": "날쌤팩",
-      "codex": "날쌤팩",
+      "claude": "스튜디오",
+      "codex": "스튜디오",
       "needs": "정밀 분석은 Ghidra 등 별도 엔진"
     },
     {
       "id": "aftereffects-mcp",
-      "profile": "nalssam",
+      "profile": "studio",
       "repo": "nalssam/aftereffects-mcp",
       "license": "MIT",
       "label": "After Effects를 AI가 직접 조작(MCP)",
-      "claude": "날쌤팩",
-      "codex": "날쌤팩",
+      "claude": "스튜디오",
+      "codex": "스튜디오",
       "needs": "Adobe After Effects 2022+(macOS·Windows)"
     },
     {
       "id": "claude-native-122",
-      "profile": "nalssam",
-      "repo": "nalssam/nalssam-pack",
+      "profile": "studio",
+      "repo": "nalssam/bunpil_pack",
+      "name": "studio/ (설치 엔진)",
+      "url": "https://github.com/nalssam/bunpil_pack/tree/main/studio",
       "license": "MIT",
-      "label": "Claude Code 네이티브 플러그인 122개(개발 워크플로·Google Cloud 포함, --claude 옵션)",
-      "claude": "날쌤팩",
+      "label": "스튜디오 설치 엔진 — Claude Code 네이티브 플러그인 122개(개발 워크플로·Google Cloud 포함)와 스킬·MCP를 고정 커밋으로 설치",
+      "claude": "스튜디오",
       "codex": "-",
       "needs": "Claude Code, Google Cloud 플러그인은 계정 설정"
     }

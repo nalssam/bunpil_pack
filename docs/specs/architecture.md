@@ -1,6 +1,6 @@
 # 분필팩 아키텍처 명세 (WP1)
 
-버전 0.1 · 2026-10-13 · Opus 5.5
+버전 0.1 · 2026-10-13 · Opus 5.5 (0.6.0 개정 2026-10-18: 5장 저장소 구조, 10장 설치 구조 추가)
 
 ## 1. 이름
 
@@ -17,7 +17,7 @@
 | bunpil-start (분필 시작 팩) | `setup`, `privacy-guard`, `checkup` | 훅(Claude Code·Cowork) | 훅(Codex, 신뢰 필요), Codex onboardingSkill=setup |
 | bunpil-class (수업자료 팩) | `worksheet`, `lesson-plan`, `class-slides`, `class-video`, `papercraft`, `coloring`, `rubric` | — | — |
 | bunpil-school (학교업무 팩) | `gongmun`, `newsletter`, `pumui`, `parent-survey`, `hwpx-doc` | 서브에이전트 5종(gongmun용) | — |
-| bunpil-builder (하네스빌더 팩) | `skill-maker`, `harness-fix`, `eval-run`, `share-skill` | 서브에이전트 `skill-auditor` | — |
+| bunpil-builder (하네스빌더 팩) | `skill-maker`, `harness-fix`, `eval-run`, `share-skill`, `harness-gallery` | 서브에이전트 `skill-auditor` | — |
 | bunpil-connect (커넥터 팩) | `connect` | — | 원격 MCP 3종(Notion·Padlet·Canva) |
 
 ## 3. 공통 작성 규칙 (모든 SKILL.md)
@@ -60,9 +60,14 @@ bunpil-pack/
 ├── plugins/claude/<plugin>/             # 빌드 산출물(커밋)
 ├── plugins/codex/<plugin>/              # 빌드 산출물(커밋)
 ├── dist/                                # 업로드용 zip
-├── tools/build.py, tools/check.py
+├── install.sh, install.ps1              # 설치 스크립트 원본(claude·codex·uninstall 변형은 make_site.py가 생성)
+├── catalog/recommended.json             # 추천 묶음 teacher · creator · dev · studio
+├── studio/                              # studio 묶음 설치 엔진(예전 날쌤팩 v1.0.1, MIT)
+├── tools/build.py, tools/make_site.py, tools/check.py
+├── tests/guard_test.py
 ├── evals/cases/<skill>.yaml
-├── site/                                # 랜딩페이지
+├── site/template.html                   # 웹사이트 원본(→ site/index.html, public/)
+├── public/                              # 배포 산출물(Vercel이 그대로 제공)
 └── docs/
 ```
 
@@ -101,3 +106,19 @@ bunpil-pack/
 | Codex가 훅 JSON 출력(additionalContext)을 Claude와 같게 해석 | Codex 설치 후 실측 |
 | Codex가 `.codex-plugin/plugin.json`의 `hooks` 경로 필드 인식 | 실측 |
 | Cowork 훅 실행 환경(Linux VM 여부) | 실측 |
+
+## 10. 설치 구조 (0.6.0)
+
+**한 저장소, 한 사이트.** 분필팩(플러그인 5종)과 추천 묶음 4개(teacher · creator · dev · studio)를 `nalssam/bunpil_pack` 하나로 배포한다. 예전에 따로 있던 날쌤팩(nalssam/nalssam-pack v1.0.1)은 `studio/` 폴더의 설치 엔진으로 합쳐 studio 묶음이 되었다.
+
+| 항목 | 규칙 |
+|---|---|
+| 설치 경로 순서 | ① 앱 채팅창에 붙여넣기(Claude 앱 Code 탭, ChatGPT 앱 Codex) → ② 터미널·명령 프롬프트·PowerShell·VS Code → ③ Claude 앱 메뉴만(분필팩 5종) → ④ zip 더블클릭. 안내 문서와 사이트는 ①을 먼저 보여 준다. |
+| 채팅 설치 문장 | 첫 문단(`tools/make_site.py`의 `CHAT_LEAD`) + 명령 한 줄. 사이트·README·docs/install.md가 같은 문장을 쓰고 `tools/check.py`가 일치를 점검한다. |
+| Windows 채팅 명령 | `powershell -NoProfile -Command "irm … \| iex"`. 달러 기호가 없어 PowerShell·명령 프롬프트·Git Bash 어디서 실행돼도 같다. 옵션은 `[Environment]::SetEnvironmentVariable('BUNPIL_X','값')`로 앞에 둔다. |
+| 키·비밀번호 | 채팅창에 붙여넣지 않는다. 키가 필요한 Perplexity는 키가 있을 때만 연결하고, 키는 터미널의 환경변수로 준다. |
+| studio 엔진 | `studio/pack.py`의 install · plan · doctor · uninstall. 원본 저장소와 Claude 네이티브 플러그인 122개를 `pack.lock.json`의 커밋으로 고정한다. macOS·Linux·WSL2만 지원하고, Windows 한 줄 설치는 WSL2 안내만 보여 준다. |
+| 겹치는 도구 | studio 설치가 성공하면 분필팩은 같은 도구(hwpx_new, pptx_maker 등)의 설치를 건너뛰고, 실패하면 분필팩이 따로 설치한다. |
+| 옛 옵션 | `--nalssam` · `BUNPIL_NALSSAM=1` · `--profile nalssam`은 studio 묶음을 고른 것으로 받아들인다. `--profile all`은 네 묶음 모두다. |
+| 바꾸지 않는 식별자 | 이미 설치한 환경과 이어지도록 `nalssam-pack`(명령), `~/.local/share/nalssam-pack`(설치 기록), 셸 설정의 `# 날쌤팩` 표시, `nalssam-*` MCP 이름, 설치기 이름 `installer-v1.0.1`은 그대로 둔다. 마켓플레이스 이름은 `bunpil`. |
+| 앱 설치 확인 범위 | 앱(Claude Code 탭, ChatGPT Codex) 화면 순서와 승인 버튼 이름은 공식 문서를 근거로 적었고 실제 앱에서 실행해 확인하지 않았다. 사이트와 문서는 버튼 이름을 "허락·허용·승인"처럼 넓게 쓴다. |

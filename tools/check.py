@@ -3,13 +3,17 @@
 
 검사: SKILL.md frontmatter(name·description만, name=폴더명, 설명 길이),
 개인정보 원칙 블록, 점검 절, 본문 길이, 'Claude' 표기(허용 목록 외),
-금지 디렉터리(bin/), 개인정보 패턴(src·evals), 플러그인 이름 규칙, dist zip 구조.
+금지 디렉터리(bin/), 개인정보 패턴(src·evals), 플러그인 이름 규칙, dist zip 구조,
+설치 문장(채팅창에 붙여넣는 첫 문단)이 사이트·README·설치 안내에서 같은지, 문서 링크·사이트 앵커.
 사용: python3 tools/check.py   (실패 시 종료 코드 1)
 """
+import html
 import re
 import sys
 import zipfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src" / "plugins"
@@ -131,6 +135,7 @@ def check_site():
             for need in ("bunpil-pack/.claude-plugin/marketplace.json", "bunpil-pack/.agents/plugins/marketplace.json",
                          "bunpil-pack/install.sh", "bunpil-pack/install.ps1", "bunpil-pack/Install-Windows.bat",
                          "bunpil-pack/Install-Mac.command", "bunpil-pack/VERSION",
+                         "bunpil-pack/studio/pack.py", "bunpil-pack/studio/pack.lock.json", "bunpil-pack/studio/install.sh",
                          "bunpil-pack/plugins/claude/bunpil-start/hooks/hooks.windows.json"):
                 if need not in names:
                     errors.append(f"bunpil-pack.zip: {need} 없음")
@@ -158,11 +163,51 @@ def check_site():
         errors.append("vercel.json 없음")
 
 
+def check_install_text():
+    """설치 문장은 tools/make_site.py 한 곳에서 만든다. 사이트·README·설치 안내가 그 문장과 같은지,
+    Windows 채팅 명령에 달러 기호가 없는지, 문서 링크와 사이트 앵커가 살아 있는지 본다."""
+    import make_site  # 문장의 단일 원본
+    lead, lead_un = make_site.chat_lead(), make_site.CHAT_LEAD_UNINSTALL
+    docs = {"README.md": ROOT / "README.md", "docs/install.md": ROOT / "docs" / "install.md"}
+    texts = {}
+    for name, f in docs.items():
+        if not f.exists():
+            errors.append(f"{name} 없음"); continue
+        t = texts[name] = f.read_text(encoding="utf-8")
+        for what, sentence in (("설치 문장", lead), ("지우기 문장", lead_un)):
+            if sentence not in t:
+                errors.append(f"{name}: {what}이 tools/make_site.py의 문장과 다르거나 없음")
+        for m in re.finditer(r"\]\(([^)\s]+)\)", t):
+            target = m.group(1)
+            if re.match(r"^(https?:|mailto:|#)", target):
+                continue
+            if not (f.parent / target.split("#")[0]).exists():
+                errors.append(f"{name}: 링크 대상 없음 → {target}")
+    idx = ROOT / "public" / "index.html"
+    if idx.exists():
+        h = texts["public/index.html"] = idx.read_text(encoding="utf-8")
+        for what, sentence in (("설치 문장", lead), ("지우기 문장", lead_un)):
+            if html.escape(sentence, quote=True) not in h:
+                errors.append(f"public/index.html: {what}이 tools/make_site.py의 문장과 다르거나 없음")
+        body = re.sub(r"<script\b.*?</script>", "", h, flags=re.S)
+        ids = re.findall(r'\sid="([^"]+)"', body)
+        for dup in sorted({i for i in ids if ids.count(i) > 1}):
+            errors.append(f"public/index.html: id가 겹침 → {dup}")
+        for a in sorted(set(re.findall(r'href="#([^"]+)"', body))):
+            if a not in ids:
+                errors.append(f"public/index.html: 앵커 #{a} 의 대상 id가 없음")
+    for name, t in texts.items():
+        for m in re.finditer(r'powershell -NoProfile -Command (?:"|&quot;)([^\n`]*?)(?:"|&quot;)(?=[`<\s]|$)', t):
+            if "$" in m.group(1):
+                errors.append(f"{name}: Windows 채팅 명령에 달러 기호($)가 있음(cmd·Git Bash에서 깨짐) → {m.group(1)[:60]}")
+
+
 def main():
     n = check_skills()
     check_personal_info()
     check_structure()
     check_site()
+    check_install_text()
     for w in warns:
         print("주의:", w)
     for e in errors:

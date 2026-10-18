@@ -2,6 +2,9 @@
 # ─────────────────────────────────────────────────────────────
 #  nalssam's 분필팩 — 한 줄 설치 (macOS · Linux)
 #
+#  가장 쉬운 길: Claude 앱(Code 탭)·ChatGPT 앱(Codex)의 채팅창에 사이트의 '설치 문장'을 붙여넣는다.
+#  그 문장이 아래 명령을 대신 실행한다. 터미널·명령 프롬프트·VS Code 터미널에서 직접 실행해도 같다.
+#
 #    Claude 쓰는 선생님   curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh
 #    Codex 쓰는 선생님    curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh
 #    직접 고르기          curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- [옵션]
@@ -10,27 +13,28 @@
 #  하는 일
 #   1) 컴퓨터에 있는 Claude Code, Codex(ChatGPT)를 찾는다 (옵션을 주면 없을 때 설치한다)
 #   2) 분필팩(플러그인 5종)을 내려받아 ~/.bunpil 에 두고 설치한다 (Git 없어도 됨)
-#   3) 날쌤 추천 스킬·MCP·플러그인 묶음을 함께 설치한다 (catalog/recommended.json)
+#   3) 추천 스킬·MCP·플러그인 묶음을 함께 설치한다 (catalog/recommended.json)
 #        teacher(기본) 한글·발표 자료·문서 변환·브라우저 자동화(RPA)·웹 수집·하네스 / creator 웹·디자인·영상·인스타 / dev 개발자용
-#        --nalssam 을 주면 날쌤팩(영상·모션·분석 도구, 고정 버전)도 함께 설치한다
+#        studio 영상·모션그래픽·발표·분석 도구를 고정 버전으로 한꺼번에 (수 GB·10~30분, macOS·Linux·WSL2) — studio/ 폴더의 설치 엔진을 쓴다
 #   4) 이미 설치되어 있으면 최신으로 바꾼다 (다시 실행 = 업데이트)
 #  관리자 권한(sudo)이 필요 없다.
 #
 #  옵션
-#   --profile teacher|creator|dev|all   추천 묶음(쉼표로 여러 개, 기본 teacher)
+#   --profile teacher|creator|dev|studio|all   추천 묶음(쉼표로 여러 개, 기본 teacher). all = 넷 다
 #   --claude | --codex                  한쪽에만 설치
 #   --install-claude | --install-codex  없으면 Claude Code / Codex CLI까지 설치
 #   --with-tools                        Node.js·uv가 없으면 함께 설치 (brew 또는 공식 배포본)
 #   --bunpil-only  분필팩 5종만   --no-hwpx  한글 플러그인 빼기
 #   --ask          Claude Code·Codex가 모두 없으면 무엇을 설치할지 물어보기
-#   --nalssam      날쌤팩(nalssam/nalssam-pack)도 설치 — Claude Code가 있으면 --claude 로. 수 GB·10분 이상
 #   --uninstall    분필팩 지우기
+#   (예전 이름 --nalssam · --profile nalssam · BUNPIL_NALSSAM=1 은 studio 묶음으로 받아들인다)
 #  환경변수
 #   BUNPIL_SITE  내려받을 주소(기본 https://nalssam-bunpil.vercel.app)
 #   BUNPIL_REPO  GitHub 저장소(owner/repo)를 마켓플레이스로 직접 쓸 때
 #   BUNPIL_HOME  분필팩을 둘 폴더(기본 ~/.bunpil)
 #   BUNPIL_PROFILE · BUNPIL_ONLY(claude|codex) · BUNPIL_INSTALL_CLAUDE · BUNPIL_INSTALL_CODEX
-#   BUNPIL_WITH_TOOLS · BUNPIL_ASK · BUNPIL_RECS(0=분필팩만) · BUNPIL_HWPX(0=빼기) · BUNPIL_NALSSAM · BUNPIL_UNINSTALL  (값 1 = 켜기)
+#   BUNPIL_WITH_TOOLS · BUNPIL_ASK · BUNPIL_RECS(0=분필팩만) · BUNPIL_HWPX(0=빼기) · BUNPIL_UNINSTALL  (값 1 = 켜기)
+#   BUNPIL_STUDIO_DIR  studio 설치 엔진 폴더(기본 ~/.bunpil/bunpil-pack/studio) · NALSSAM_PACK_ROOT  스튜디오 설치 기록 폴더(기본 ~/.local/share/nalssam-pack)
 #   PERPLEXITY_API_KEY  있으면 최신 검색 Perplexity(MCP)도 연결 (유료 키, Claude Code·Codex 설정에 저장됨)
 # ─────────────────────────────────────────────────────────────
 set -u
@@ -52,16 +56,15 @@ PERPLEXITY_MCP="@perplexity-ai/mcp-server"
 FIRECRAWL_URL="https://mcp.firecrawl.dev/v2/mcp"      # 키 없이 쓰는 무료 구간(수집·검색·읽기 3종)
 GLIF_URL="https://glif.app/api/mcp"
 NODE_DIST="${BUNPIL_NODE_DIST:-https://nodejs.org/dist/latest-v24.x}"
-PPTX_COMMIT="ae3d919005100472805bf39ddab234bd1cf72577"   # ZZombie04/pptx_maker (날쌤팩 v1.0.1과 같은 커밋)
-NALSSAM_VERSION="v1.0.1"                                 # nalssam/nalssam-pack 릴리스
-NALSSAM_ROOT="${NALSSAM_PACK_ROOT:-$HOME/.local/share/nalssam-pack}"
+PPTX_COMMIT="ae3d919005100472805bf39ddab234bd1cf72577"   # ZZombie04/pptx_maker (스튜디오 엔진과 같은 커밋)
+STUDIO_ROOT="${NALSSAM_PACK_ROOT:-$HOME/.local/share/nalssam-pack}"   # 스튜디오 설치 기록 폴더. 예전 날쌤팩과 같은 자리라 이미 설치한 분의 환경이 이어진다
 BUNPIL_HOME="${BUNPIL_HOME:-$HOME/.bunpil}"
 PACK_DIR="$BUNPIL_HOME/bunpil-pack"
 ENV_FILE="$BUNPIL_HOME/env"
 ORIG_PATH="$PATH"
 
 want_claude=1; want_codex=1; install_claude=0; install_codex=0; with_tools=0; ask=0
-profiles="${BUNPIL_PROFILE:-teacher}"; recs=1; skip_hwpx=0; uninstall=0; nalssam=0
+profiles="${BUNPIL_PROFILE:-teacher}"; recs=1; skip_hwpx=0; uninstall=0; legacy_studio=0
 case "${BUNPIL_ONLY:-}" in claude) want_codex=0 ;; codex) want_claude=0 ;; esac
 [ "${BUNPIL_INSTALL_CLAUDE:-0}" = 1 ] && install_claude=1
 [ "${BUNPIL_INSTALL_CODEX:-0}" = 1 ] && install_codex=1
@@ -70,17 +73,17 @@ case "${BUNPIL_ONLY:-}" in claude) want_codex=0 ;; codex) want_claude=0 ;; esac
 [ "${BUNPIL_RECS:-1}" = 0 ] && recs=0
 [ "${BUNPIL_HWPX:-1}" = 0 ] && skip_hwpx=1
 [ "${BUNPIL_UNINSTALL:-0}" = 1 ] && uninstall=1
-[ "${BUNPIL_NALSSAM:-0}" = 1 ] && nalssam=1
+[ "${BUNPIL_NALSSAM:-0}" = 1 ] && legacy_studio=1   # 예전 이름(날쌤팩) 호환
 
 usage() {
   cat <<'EOF'
 분필팩 설치 옵션
-  --profile teacher|creator|dev|all   추천 묶음(기본 teacher)
+  --profile teacher|creator|dev|studio|all   추천 묶음(기본 teacher, 쉼표로 여러 개)
   --claude | --codex                  한쪽에만 설치
   --install-claude | --install-codex  Claude Code / Codex CLI까지 설치
   --with-tools                        Node.js·uv도 설치
-  --nalssam                           날쌤팩(영상·모션·분석 도구)도 설치
   --bunpil-only  --no-hwpx  --ask  --uninstall
+묶음: teacher 한글·문서·자동화 / creator 웹·디자인·영상 / dev 개발자용 / studio 영상·모션·분석 도구(수 GB, 10~30분)
 EOF
 }
 while [ $# -gt 0 ]; do
@@ -94,7 +97,7 @@ while [ $# -gt 0 ]; do
     --bunpil-only) recs=0 ;;
     --no-hwpx) skip_hwpx=1 ;;
     --uninstall) uninstall=1 ;;
-    --nalssam) nalssam=1 ;;
+    --nalssam) legacy_studio=1 ;;
     --profile) shift; profiles="${1:-teacher}" ;;
     --profile=*) profiles="${1#--profile=}" ;;
     -h|--help) usage; exit 0 ;;
@@ -102,11 +105,24 @@ while [ $# -gt 0 ]; do
   esac
   [ $# -gt 0 ] && shift
 done
-case ",$profiles," in *,nalssam,*) nalssam=1 ;; esac
-case ",$profiles," in *,all,*) profiles="teacher,creator,dev" ;; esac
-profiles=$(printf '%s' "$profiles" | tr ',' '\n' | grep -v '^nalssam$' | grep -v '^$' | paste -sd, -)
+# 예전 이름(날쌤팩) 호환: --nalssam · BUNPIL_NALSSAM=1 · --profile nalssam 은 모두 studio 묶음을 고른 것으로 본다
+[ "$legacy_studio" = 1 ] && profiles="$profiles,studio"
+case ",$profiles," in *,nalssam,*) profiles="$profiles,studio" ;; esac
+case ",$profiles," in *,all,*) profiles="teacher,creator,dev,studio" ;; esac
+bad_profiles=""; good_profiles=""
+set -f
+for t in $(printf '%s' "$profiles" | tr ',' ' '); do
+  case "$t" in
+    teacher|creator|dev|studio) case ",$good_profiles," in *",$t,"*) ;; *) good_profiles="${good_profiles:+$good_profiles,}$t" ;; esac ;;
+    nalssam|all) ;;
+    *) bad_profiles="$bad_profiles $t" ;;
+  esac
+done
+set +f
+profiles="$good_profiles"
 [ -n "$profiles" ] || profiles="teacher"
 in_profile() { case ",$profiles," in *",$1,"*) return 0 ;; esac; return 1; }
+studio=0; [ "$recs" = 1 ] && in_profile studio && studio=1
 
 if [ -t 1 ]; then B=$(printf '\033[1m'); G=$(printf '\033[32m'); Y=$(printf '\033[33m'); R=$(printf '\033[31m'); D=$(printf '\033[2m'); N=$(printf '\033[0m'); else B=""; G=""; Y=""; R=""; D=""; N=""; fi
 say()  { printf '%s\n' "$*"; }
@@ -203,6 +219,7 @@ say ""
 say "${B}nalssam's 분필팩${N} — 선생님의 AI 조수를 한 줄로"
 say "누구도 소외되지 않는 기술, 혼자 닳지 않는 교사"
 say ""
+[ -n "$bad_profiles" ] && warn "알 수 없는 묶음 이름은 건너뜁니다:$bad_profiles  (teacher · creator · dev · studio · all 중에서 고르세요)"
 
 # ── 지우기 ───────────────────────────────────────────────────
 if [ "$uninstall" = 1 ]; then
@@ -224,7 +241,7 @@ if [ "$uninstall" = 1 ]; then
   say "                                 Codex: codex plugin remove <이름>@<마켓> · codex mcp remove <이름>"
   [ -d "$BUNPIL_HOME/node" ] && say "  • 분필팩이 설치한 Node.js($BUNPIL_HOME/node)"
   [ -f "$ENV_FILE" ] && say "  • PATH 설정($ENV_FILE)과 셸 설정 파일(~/.zshrc 등)의 'bunpil-path' 줄 — 지우면 Node.js 등을 찾지 못할 수 있습니다"
-  [ -f "$NALSSAM_ROOT/state.json" ] && say "  • 날쌤팩 — 따로 지우려면  nalssam-pack uninstall  (날쌤팩이 만든 연결만 해제)"
+  [ -f "$STUDIO_ROOT/state.json" ] && say "  • 스튜디오 묶음 — 따로 지우려면  nalssam-pack uninstall  (스튜디오가 만든 연결만 해제, 새 터미널에서)"
   say "  • 작업 폴더의 CLAUDE.md·AGENTS.md·my-harness 폴더(선생님 파일)"
   [ "$errors" -gt 0 ] && exit 1
   exit 0
@@ -302,9 +319,9 @@ HAS_CLAUDE=0; HAS_CODEX=0
 if [ "$HAS_CLAUDE" = 0 ] && [ "$HAS_CODEX" = 0 ]; then
   fail "Claude Code도 Codex도 찾지 못했습니다."
   say ""
-  say "  • Claude 쓰는 선생님:  curl -fsSL $SITE/claude.sh | sh"
-  say "  • Codex 쓰는 선생님:   curl -fsSL $SITE/codex.sh | sh"
-  say "  • 터미널 없이 Claude 앱에서: $SITE 의 'Claude 앱' 안내를 따르세요"
+  say "  • Claude 쓰는 선생님:  curl -fsSL $SITE/claude.sh | sh   (Claude 앱 Code 탭 채팅창에 이 줄을 붙여넣어도 됩니다)"
+  say "  • Codex 쓰는 선생님:   curl -fsSL $SITE/codex.sh | sh    (ChatGPT 앱 Codex 채팅창에 붙여넣어도 됩니다)"
+  say "  • 명령 없이 Claude 앱 메뉴로만: $SITE 의 'Claude 앱 메뉴' 안내를 따르세요"
   exit 1
 fi
 HAS_NPX=0; has npx && HAS_NPX=1
@@ -330,7 +347,7 @@ prepare_pack() {
   if [ -n "$LOCAL_SRC" ]; then
     if [ -d "$PACK_DIR" ] && [ "$(cd "$LOCAL_SRC" && pwd)" = "$(cd "$PACK_DIR" && pwd)" ]; then rm -rf "$tmp"; SOURCE="$PACK_DIR"; ok "분필팩 폴더 사용 ($PACK_DIR)"; return 0; fi
     mkdir -p "$tmp/new/bunpil-pack"
-    for x in .claude-plugin .agents plugins catalog VERSION install.sh install.ps1 README.md LICENSE NOTICE; do
+    for x in .claude-plugin .agents plugins catalog studio VERSION install.sh install.ps1 README.md LICENSE NOTICE; do
       [ -e "$LOCAL_SRC/$x" ] && cp -R "$LOCAL_SRC/$x" "$tmp/new/bunpil-pack/"
     done
   else
@@ -364,7 +381,7 @@ prepare_pack() {
 
 # ── 공통 도우미 ──────────────────────────────────────────────
 c_plugin() {   # c_plugin <저장소> <플러그인@마켓> <표시이름>
-  if in_nalssam "$1"; then skip "$3 — $NALSSAM_SKIP"; return; fi
+  if in_studio "$1"; then skip "$3 — $STUDIO_SKIP"; return; fi
   if c_has_plugin "$2"; then
     if claude plugin update "$2" >/dev/null 2>&1; then ok "$3 — 최신 확인"; else warn "$3 — 업데이트 확인 실패(지금 버전 유지)"; fi
     return
@@ -375,7 +392,7 @@ c_plugin() {   # c_plugin <저장소> <플러그인@마켓> <표시이름>
   if claude plugin install "$2" -y >/dev/null 2>&1; then ok "$3"; else fail "$3 — 설치 실패 (claude plugin install ${2%@*} --marketplace $1)"; fi
 }
 c_market() {   # c_market <저장소> <마켓이름> <표시이름>
-  if in_nalssam "$1"; then skip "$3 — $NALSSAM_SKIP"; return; fi
+  if in_studio "$1"; then skip "$3 — $STUDIO_SKIP"; return; fi
   if [ "$HAS_GIT" = 0 ]; then skip "$3 — $GIT_SKIP"; return; fi
   if c_has_market "$2"; then
     if claude plugin marketplace update "$2" >/dev/null 2>&1; then ok "$3 — 목록 갱신"; else warn "$3 — 목록 갱신 실패(지금 목록 유지)"; fi
@@ -383,14 +400,14 @@ c_market() {   # c_market <저장소> <마켓이름> <표시이름>
   else fail "$3 — 목록 등록 실패"; fi
 }
 x_plugin() {   # x_plugin <저장소> <플러그인@마켓> <표시이름>
-  if in_nalssam "$1"; then skip "$3 — $NALSSAM_SKIP"; return; fi
+  if in_studio "$1"; then skip "$3 — $STUDIO_SKIP"; return; fi
   if [ "$HAS_GIT" = 0 ]; then skip "$3 — $GIT_SKIP"; return; fi
   m="${2#*@}"
   if x_has_market "$m"; then codex plugin marketplace upgrade "$m" >/dev/null 2>&1; else codex plugin marketplace add "$1" >/dev/null 2>&1; fi
   if codex plugin add "$2" >/dev/null 2>&1; then ok "$3"; else fail "$3 — 설치 실패 (codex plugin add $2)"; fi
 }
 x_market() {
-  if in_nalssam "$1"; then skip "$3 — $NALSSAM_SKIP"; return; fi
+  if in_studio "$1"; then skip "$3 — $STUDIO_SKIP"; return; fi
   if [ "$HAS_GIT" = 0 ]; then skip "$3 — $GIT_SKIP"; return; fi
   if x_has_market "$2"; then
     if codex plugin marketplace upgrade "$2" >/dev/null 2>&1; then ok "$3 — 목록 갱신"; else warn "$3 — 목록 갱신 실패(지금 목록 유지)"; fi
@@ -398,7 +415,7 @@ x_market() {
   else fail "$3 — 목록 등록 실패"; fi
 }
 skills_add() { # skills_add <저장소> <claude-code|codex> <표시이름>
-  if in_nalssam "$1"; then skip "$3 — $NALSSAM_SKIP"; return; fi
+  if in_studio "$1"; then skip "$3 — $STUDIO_SKIP"; return; fi
   if [ "$HAS_NPX" = 0 ]; then skip "$3 — Node.js가 없어 건너뜀"; return; fi
   if [ "$HAS_GIT" = 0 ]; then skip "$3 — $GIT_SKIP"; return; fi
   if DISABLE_TELEMETRY=1 DO_NOT_TRACK=1 npx -y "$SKILLS_CLI" add "$1" -g -a "$2" -y --copy >/dev/null 2>&1; then ok "$3"
@@ -406,7 +423,7 @@ skills_add() { # skills_add <저장소> <claude-code|codex> <표시이름>
 }
 mcp_add() {    # mcp_add <claude|codex> <이름> <표시이름> <명령...>
   host="$1"; name="$2"; label="$3"; shift 3
-  if [ "$NALSSAM_DONE" = 1 ]; then case "$name" in kordoc|markitdown) skip "$label — $NALSSAM_SKIP"; return ;; esac; fi
+  if [ "$STUDIO_DONE" = 1 ]; then case "$name" in kordoc|markitdown) skip "$label — $STUDIO_SKIP"; return ;; esac; fi
   if [ "$host" = claude ]; then
     if claude mcp get "$name" >/dev/null 2>&1; then ok "$label — 이미 연결됨"; return; fi
     if claude mcp add -s user "$name" -- "$@" >/dev/null 2>&1; then ok "$label"; else fail "$label — MCP 등록 실패"; fi
@@ -444,15 +461,15 @@ warm_markitdown() {  # 첫 실행 때 내려받는 시간(30초 안팎) 때문�
   [ "$HAS_UVX" = 1 ] && uvx markitdown-mcp --help >/dev/null 2>&1
   return 0
 }
-NALSSAM_DONE=0
-NALSSAM_REPOS="Leonxlnx/cinetic chrisryugj/kordoc revfactory/harness nextlevelbuilder/ui-ux-pro-max-skill Leonxlnx/taste-skill pbakaus/impeccable bradautomates/claude-video aldegad/sprite-gen obra/superpowers obra/superpowers-marketplace multica-ai/andrej-karpathy-skills JuliusBrussee/caveman openai/codex-plugin-cc Panniantong/Agent-Reach affaan-m/ECC wshobson/agents google/skills thedotmack/claude-mem"
-in_nalssam() { [ "$NALSSAM_DONE" = 1 ] || return 1; case " $NALSSAM_REPOS " in *" $1 "*) return 0 ;; esac; return 1; }
-NALSSAM_SKIP="날쌤팩에 들어 있어 건너뜀"
+STUDIO_DONE=0
+STUDIO_REPOS="Leonxlnx/cinetic chrisryugj/kordoc revfactory/harness nextlevelbuilder/ui-ux-pro-max-skill Leonxlnx/taste-skill pbakaus/impeccable bradautomates/claude-video aldegad/sprite-gen obra/superpowers obra/superpowers-marketplace multica-ai/andrej-karpathy-skills JuliusBrussee/caveman openai/codex-plugin-cc Panniantong/Agent-Reach affaan-m/ECC wshobson/agents google/skills thedotmack/claude-mem"
+in_studio() { [ "$STUDIO_DONE" = 1 ] || return 1; case " $STUDIO_REPOS " in *" $1 "*) return 0 ;; esac; return 1; }
+STUDIO_SKIP="스튜디오 묶음에 들어 있어 건너뜀"
 
 HWPXNEW_DONE=0
 hwpx_new() {   # 한 번만 설치하고 Claude Code·Codex에 MCP 연결
   [ "$HWPXNEW_DONE" = 1 ] && return; HWPXNEW_DONE=1
-  if [ "$NALSSAM_DONE" = 1 ]; then skip "한글 양식 보고서(hwpx_new) — $NALSSAM_SKIP"; return; fi
+  if [ "$STUDIO_DONE" = 1 ]; then skip "한글 양식 보고서(hwpx_new) — $STUDIO_SKIP"; return; fi
   only=""; [ "$HAS_CLAUDE" = 1 ] && only="claude-code"; [ "$HAS_CODEX" = 1 ] && only="${only:+$only,}codex"
   zsrc="https://github.com/ZZombie04/hwpx_new/archive/refs/heads/main.zip"
   gsrc="git+https://github.com/ZZombie04/hwpx_new.git"
@@ -470,7 +487,7 @@ PPTX_DONE=0
 pptx_maker() { # 한국어 발표 자료 엔진: 고정 커밋으로 설치하고 Claude Code·Codex에 MCP·스킬 연결
   [ "$PPTX_DONE" = 1 ] && return; PPTX_DONE=1
   label="발표 자료(PPTX) 엔진 · ZZombie04/pptx_maker"
-  if [ "$NALSSAM_DONE" = 1 ]; then skip "$label — $NALSSAM_SKIP"; return; fi
+  if [ "$STUDIO_DONE" = 1 ]; then skip "$label — $STUDIO_SKIP"; return; fi
   targets=""; [ "$HAS_CLAUDE" = 1 ] && targets="claude-code"
   [ "$HAS_CODEX" = 1 ] && targets="${targets:+$targets,}codex,skill"
   if ! has uv; then skip "$label — uv가 없어 건너뜀"; return; fi
@@ -483,37 +500,47 @@ pptx_maker() { # 한국어 발표 자료 엔진: 고정 커밋으로 설치하�
   else fail "$label — 설치 실패 (uv tool install \"pptx-maker @ $psrc_zip\")"; fi
 }
 
-nalssam_pack() { # 날쌤팩: 고정 버전 설치기를 그대로 부른다(Claude Code가 있으면 --claude)
-  say "${B}[날쌤팩 $NALSSAM_VERSION]${N} 영상·모션·발표·분석 도구 — 수 GB를 내려받아 10분 이상 걸릴 수 있습니다"
-  case "$(uname -s)" in Darwin|Linux) ;; *) skip "날쌤팩 — macOS·Linux·WSL2에서만 설치됩니다"; return 0 ;; esac
-  if ! has bash; then skip "날쌤팩 — bash가 없어 건너뜀"; return 0; fi
-  if [ "$HAS_GIT" = 0 ]; then skip "날쌤팩 — $GIT_SKIP"; return 0; fi
-  n_args=""; [ "$HAS_CLAUDE" = 1 ] && n_args="--claude"
-  n_script="${BUNPIL_NALSSAM_INSTALLER:-}"
-  if [ -z "$n_script" ]; then
-    n_script="$BUNPIL_HOME/.nalssam-install.$$.sh"
-    if ! download "https://raw.githubusercontent.com/nalssam/nalssam-pack/$NALSSAM_VERSION/install.sh" "$n_script"; then
-      rm -f "$n_script"; fail "날쌤팩 설치 파일을 받지 못했습니다 — 인터넷 연결을 확인하세요"; return 0
+studio_pack() { # 스튜디오 묶음: 분필팩 폴더 안의 studio/install.sh(고정 버전 설치 엔진)를 부른다(Claude Code가 있으면 --claude)
+  say "${B}[스튜디오]${N} 영상·모션·발표·분석 도구 — 수 GB를 내려받아 10분 이상 걸릴 수 있습니다"
+  case "$(uname -s)" in Darwin|Linux) ;; *) skip "스튜디오 — macOS·Linux·WSL2에서만 설치됩니다"; return 0 ;; esac
+  if ! has bash; then skip "스튜디오 — bash가 없어 건너뜀"; return 0; fi
+  if [ "$HAS_GIT" = 0 ]; then skip "스튜디오 — $GIT_SKIP"; return 0; fi
+  s_dir="${BUNPIL_STUDIO_DIR:-}"; s_tmp=""
+  if [ -z "$s_dir" ]; then
+    if [ -f "$PACK_DIR/studio/pack.py" ]; then s_dir="$PACK_DIR/studio"
+    elif [ -f "$SOURCE/studio/pack.py" ]; then s_dir="$SOURCE/studio"       # BUNPIL_REPO 에 폴더를 준 경우
+    elif [ "$SOURCE_IS_REPO" = 1 ]; then                                    # 저장소로 받은 경우: studio 폴더만 얻으려고 얕게 복제
+      s_tmp="$BUNPIL_HOME/.studio-src.$$"; rm -rf "$s_tmp"
+      if git clone --depth 1 -q "https://github.com/$SOURCE.git" "$s_tmp" >/dev/null 2>&1 && [ -f "$s_tmp/studio/pack.py" ]; then s_dir="$s_tmp/studio"; fi
     fi
   fi
-  NALSSAM_PACK_ROOT="$NALSSAM_ROOT" bash "$n_script" $n_args 2>&1 | sed 's/^/    /'
-  n_rc=0; [ -f "$NALSSAM_ROOT/report.json" ] && grep -q '"status": "failed"' "$NALSSAM_ROOT/report.json" && n_rc=1
-  [ -z "${BUNPIL_NALSSAM_INSTALLER:-}" ] && rm -f "$n_script"
-  if [ ! -f "$NALSSAM_ROOT/state.json" ]; then fail "날쌤팩 설치가 끝나지 않았습니다 — 위 메시지를 확인하세요"; return 0; fi
-  if [ "$n_rc" = 0 ]; then NALSSAM_DONE=1; ok "날쌤팩 설치 — 겹치는 추천 도구는 날쌤팩 것을 씁니다"
-  else warn "날쌤팩 일부 단계가 실패했습니다 — $NALSSAM_ROOT/report.json 확인 후 'nalssam-pack install'로 다시 시도하세요. 겹치는 추천 도구는 분필팩이 따로 설치합니다"; fi
+  if [ -z "$s_dir" ] || [ ! -f "$s_dir/install.sh" ] || [ ! -f "$s_dir/pack.py" ]; then
+    [ -n "$s_tmp" ] && rm -rf "$s_tmp"
+    fail "스튜디오 설치 파일(studio/)을 찾지 못했습니다 — 인터넷 연결을 확인하고 같은 명령을 다시 실행해 분필팩을 새로 받으세요"; return 0
+  fi
+  s_args=""; [ "$HAS_CLAUDE" = 1 ] && s_args="--claude"
+  s_rcf="$BUNPIL_HOME/.studio-rc.$$"; rm -f "$s_rcf"
+  # 엔진의 종료 코드를 파일에 남긴다(뒤의 파이프가 종료 코드를 가리므로). 출력은 한 줄씩 바로 들여써서 내보낸다
+  # (sed 는 출력이 파이프로 이어지면 모아서 내보내, AI 채팅창에서는 진행 상황이 한참 뒤에야 보인다)
+  { NALSSAM_PACK_ROOT="$STUDIO_ROOT" bash "$s_dir/install.sh" $s_args; echo $? > "$s_rcf"; } 2>&1 | while IFS= read -r s_line || [ -n "$s_line" ]; do printf '    %s\n' "$s_line"; done
+  s_rc=1; [ -f "$s_rcf" ] && s_rc=$(cat "$s_rcf" 2>/dev/null); rm -f "$s_rcf"
+  [ -n "$s_tmp" ] && rm -rf "$s_tmp"
+  if [ ! -f "$STUDIO_ROOT/state.json" ]; then fail "스튜디오 설치가 끝나지 않았습니다 — 위 메시지를 확인하세요"; return 0; fi
+  s_bad=0; [ -f "$STUDIO_ROOT/report.json" ] && grep -q '"status": "failed"' "$STUDIO_ROOT/report.json" && s_bad=1
+  if [ "$s_rc" = 0 ] && [ "$s_bad" = 0 ]; then STUDIO_DONE=1; ok "스튜디오 설치 — 겹치는 추천 도구는 스튜디오 것(고정 버전)을 씁니다"
+  else fail "스튜디오 일부 단계가 실패했습니다 — $STUDIO_ROOT/report.json 확인 후 'nalssam-pack install'로 다시 시도하세요. 겹치는 추천 도구는 분필팩이 따로 설치합니다"; fi
 }
 
-nalssam_claude_mcp() { # 날쌤팩 공통 MCP 중 분필팩에 없는 것을 Claude Code에 연결(겹치는 이름은 건너뜀)
-  [ -d "$NALSSAM_ROOT/bin" ] || return 0
+studio_claude_mcp() { # 스튜디오 공통 MCP 중 분필팩에 없는 것을 Claude Code에 연결(겹치는 이름은 건너뜀)
+  [ -d "$STUDIO_ROOT/bin" ] || return 0
   for spec in "rea|nalssam-rea|-|rea mcp|앱·바이너리 분석 REA" "motion-mcp|nalssam-motion|-|motion-mcp|모션그래픽 Motion Director" \
               "pptx-maker-mcp|nalssam-pptx|pptx_maker|pptx-maker-mcp|발표 자료 엔진" "hwpx-new-mcp|nalssam-hwpx|hwpx_new|hwpx-new-mcp|한글 양식 보고서" \
               "markitdown-mcp|nalssam-markitdown|markitdown|markitdown-mcp|파일 → 텍스트 변환" "kordoc-mcp|nalssam-kordoc|kordoc|kordoc-mcp|한글·PDF 문서 도구"; do
     n_bin=${spec%%|*}; rest=${spec#*|}; n_name=${rest%%|*}; rest=${rest#*|}; n_have=${rest%%|*}; rest=${rest#*|}; n_cmd=${rest%%|*}; n_label=${rest#*|}
-    [ -x "$NALSSAM_ROOT/bin/$n_bin" ] || continue
+    [ -x "$STUDIO_ROOT/bin/$n_bin" ] || continue
     if [ "$n_have" != "-" ] && claude mcp get "$n_have" >/dev/null 2>&1; then continue; fi
-    set -- $n_cmd; n_first="$NALSSAM_ROOT/bin/$1"; shift
-    mcp_add claude "$n_name" "$n_label(MCP, 날쌤팩)" "$n_first" "$@"
+    set -- $n_cmd; n_first="$STUDIO_ROOT/bin/$1"; shift
+    mcp_add claude "$n_name" "$n_label(MCP, 스튜디오)" "$n_first" "$@"
   done
 }
 
@@ -647,7 +674,7 @@ say ""
 say "${B}[분필팩 준비]${N}"
 if ! prepare_pack; then say ""; warn "분필팩을 준비하지 못해 멈춥니다."; exit 1; fi
 say ""
-if [ "$nalssam" = 1 ]; then nalssam_pack; say ""; fi
+if [ "$studio" = 1 ]; then studio_pack; say ""; fi
 if [ "$HAS_CLAUDE" = 1 ]; then
   say "${B}[Claude Code]${N} $(claude --version 2>/dev/null | head -1)"
   if bunpil_claude && [ "$recs" = 1 ]; then recs_claude; fi
@@ -664,35 +691,38 @@ if [ "$recs" = 1 ] && in_profile teacher; then
   pptx_maker
   say ""
 fi
-if [ "$nalssam" = 1 ] && [ "$HAS_CLAUDE" = 1 ] && [ -f "$NALSSAM_ROOT/state.json" ]; then
-  say "${B}[날쌤팩 → Claude Code MCP]${N}"
-  nalssam_claude_mcp
+if [ "$studio" = 1 ] && [ "$HAS_CLAUDE" = 1 ] && [ -f "$STUDIO_ROOT/state.json" ]; then
+  say "${B}[스튜디오 → Claude Code MCP]${N}"
+  studio_claude_mcp
   say ""
 fi
 
 say "${B}다음 단계${N}"
 if [ "$PATH_CHANGED" = 1 ]; then
-  say "  ※ 새로 설치한 명령이 잡히도록 ${B}지금 터미널 창을 닫고 새 창을 여세요${N}."
+  say "  ※ 새로 설치한 명령이 잡히도록 ${B}Claude·ChatGPT 앱을 완전히 종료했다가 다시 여세요${N}. 터미널을 쓰는 중이면 창을 닫고 새 창을 여세요."
 fi
 if [ "$HAS_CLAUDE" = 1 ]; then
-  say "  Claude Code"
-  say "   1. 작업 폴더를 만들고 실행:  mkdir -p ~/분필작업 && cd ~/분필작업 && claude"
-  say "   2. 처음이면 브라우저에서 로그인 → 대화창에 \"설정 시작해줘\""
-  say "   3. 노션·패들렛·캔바 연결: 대화창에서  /mcp  → 서비스 선택 → 로그인"
-  [ "$GLIF_ON" = 1 ] && say "      Glif(이미지·영상 AI)도  /mcp  → glif → 로그인"
-  say "   4. 크롬 연결(지금 열어 둔 탭 읽기·클릭): 크롬 웹스토어에서 'Claude' 확장 설치 → claude --chrome"
+  say "  Claude (Claude 앱의 Code 탭이 기본 · 터미널은 다른 방법)"
+  say "   1. ${B}새 대화${N}를 시작하세요. 방금 설치한 플러그인은 새 대화부터 보입니다"
+  say "   2. 작업 폴더(예: 분필작업)를 만들어 Code 탭에서 [Local]로 열고 \"설정 시작해줘\""
+  say "      터미널이면:  mkdir -p ~/분필작업 && cd ~/분필작업 && claude"
+  say "   3. 노션·패들렛·캔바 연결: Code 탭 입력창 옆 [+] → [Connectors]에서 로그인 (터미널은 대화창에서  /mcp)"
+  [ "$GLIF_ON" = 1 ] && say "      Glif(이미지·영상 AI)도 같은 곳에서 glif → 로그인"
+  say "   4. 크롬 연결(선택): 크롬 웹스토어에서 'Claude' 확장 설치. Claude Code에서 쓰려면 터미널에서  claude --chrome"
   say "      늘 켜 두려면 대화창에서  /chrome  → Enabled by default  (유료 요금제 필요, WSL은 지원 안 함)"
 fi
 if [ "$HAS_CODEX" = 1 ]; then
-  say "  Codex"
-  say "   1. 작업 폴더를 만들고 실행:  mkdir -p ~/분필작업 && cd ~/분필작업 && codex"
-  say "   2. 처음이면 'Sign in with ChatGPT'로 로그인 → /hooks 에서 분필 가드 신뢰(trust)"
-  say "   3. 대화창에 \"설정 시작해줘\"  ·  노션 연결:  codex mcp login notion"
+  say "  Codex (ChatGPT 앱의 Codex가 기본 · 터미널은 다른 방법)"
+  say "   1. ${B}새 대화${N}를 시작하세요. 방금 연결한 플러그인·MCP는 앱을 껐다 켜면 확실히 잡힙니다 (앱과 터미널은 같은 설정을 씁니다)"
+  say "   2. 작업 폴더(예: 분필작업)를 만들어 Codex에서 폴더로 열고 \"설정 시작해줘\""
+  say "      터미널이면:  mkdir -p ~/분필작업 && cd ~/분필작업 && codex   (처음이면 'Sign in with ChatGPT')"
+  say "   3. 분필 가드(훅)를 신뢰하라는 안내가 나오면 허용하세요. 안 보이면 터미널에서 codex 를 열고  /hooks"
+  say "   4. 노션 연결(터미널):  codex mcp login notion"
   [ "$GLIF_ON" = 1 ] && say "      Glif(이미지·영상 AI) 로그인:  codex mcp login glif"
 fi
 if [ "$PPLX_SKIPPED" = 1 ]; then
-  say "  Perplexity(최신 검색)는 유료 API 키가 필요합니다. console.perplexity.ai 에서 키를 받은 뒤"
-  say "   같은 명령의  | sh  부분을  | PERPLEXITY_API_KEY=받은키 sh  로 바꿔 다시 실행하세요."
+  say "  Perplexity(최신 검색)는 유료 API 키가 필요합니다. console.perplexity.ai 에서 키를 받은 뒤, 키는 채팅에 붙여넣지 말고"
+  say "   터미널에서 같은 명령의  | sh  부분을  | PERPLEXITY_API_KEY=받은키 sh  로 바꿔 다시 실행하세요."
 fi
 if [ "$recs" = 1 ] && { [ "$HAS_NPX" = 0 ] || [ "$HAS_UVX" = 0 ]; }; then
   if [ "$with_tools" = 1 ]; then say "  Node.js·uv를 준비하지 못해 일부 도구를 건너뛰었습니다. 인터넷 연결을 확인하고 같은 명령을 다시 실행하세요."
@@ -704,8 +734,8 @@ if [ "$recs" = 1 ] && [ "$HAS_GIT" = 0 ]; then
     *) say "  Git을 설치하면 건너뛴 추천 도구도 설치됩니다. 설치 후 같은 명령을 다시 실행하세요." ;;
   esac
 fi
-if [ "$nalssam" = 1 ] && [ -f "$NALSSAM_ROOT/state.json" ]; then
-  say "  날쌤팩: 설치 기록 $NALSSAM_ROOT/report.json · 연결 점검  nalssam-pack doctor --verify-mcp"
+if [ "$studio" = 1 ] && [ -f "$STUDIO_ROOT/state.json" ]; then
+  say "  스튜디오 점검: 새 대화에서 \"스튜디오 설치 점검해줘\" (터미널은  nalssam-pack doctor --verify-mcp) · 설치 기록 $STUDIO_ROOT/report.json"
   say "         계정이 필요한 것(ElevenLabs·Gemini·Google Cloud·After Effects 등)은 각자 연결해야 합니다."
 fi
 say "  업데이트는 같은 명령을 다시 실행하면 됩니다. 자세한 안내: $SITE"

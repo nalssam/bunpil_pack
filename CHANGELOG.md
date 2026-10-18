@@ -1,5 +1,15 @@
 # 변경 기록
 
+## 0.6.0 — 2026-10-18
+- **날쌤팩을 분필팩 안으로 합침**: 따로 배포하던 날쌤팩(nalssam/nalssam-pack v1.0.1, MIT)의 설치 엔진을 `studio/` 폴더로 가져와 **studio 묶음**으로 만듦. 이제 저장소·설치 명령·웹사이트가 `nalssam/bunpil_pack` 하나. `--profile studio`를 쓰고, 옛 `--nalssam` · `BUNPIL_NALSSAM=1` · `--profile nalssam`은 같은 뜻으로 계속 받아들임. 이미 설치한 환경과 이어지도록 명령 이름(`nalssam-pack`)과 설치 기록 폴더(`~/.local/share/nalssam-pack`)는 그대로 둠
+- `--profile all`은 teacher + creator + dev + studio(수 GB). Windows는 studio를 바로 설치하지 않고 WSL2 안내만 보여 줌(전과 같음)
+- **설치 안내를 앱 채팅창 기준으로 전환**: Claude 앱의 Code 탭, ChatGPT 앱의 Codex 채팅창에 "안내 한 문단 + 명령 한 줄"을 붙여넣으면 AI가 대신 설치. 터미널·명령 프롬프트·PowerShell·VS Code는 "다른 방법"으로 내림. Windows용 채팅 명령은 `powershell -NoProfile -Command "…"` 형태라 PowerShell·명령 프롬프트·Git Bash 어디서 실행돼도 같음. 설치 문장은 `tools/make_site.py` 한 곳에서 만들어 사이트·README·설치 안내가 같음
+- 웹사이트 개편: Claude 앱 Code 탭 / ChatGPT 앱 Codex / 앱 메뉴만 / 터미널·VS Code 경로별 6교시 설치 시간표, **묶음 고르기**(teacher · creator · dev · studio), **설치 문장 만들기**(채팅창 문장과 터미널 명령을 함께 생성), 환경별 차이 표 머리글(Chat · Cowork · Code 탭 · Codex), 문제 해결 개편
+- README·docs/install.md를 같은 기준으로 다시 씀. 업데이트·지우기도 채팅창 문장으로 안내
+- 설치 점검(checkup)·수업 슬라이드(class-slides) 스킬의 안내 문구를 "날쌤팩"에서 "studio 묶음"으로 바꾸고 앱·터미널 환경별로 구분
+- studio 설치 후 점검은 채팅창에서 "스튜디오 설치 점검해줘"(터미널은 `nalssam-pack doctor --verify-mcp`)
+- Claude 앱 안내를 공식 문서(2026-10-18 열람)에 맞춤: 입력창 옆 권한 선택은 **Manual**로 두기(Auto는 인터넷에서 받은 스크립트 실행을 막을 수 있음), Code 탭의 커넥터는 **+ → Connectors**, 플러그인 관리는 **+ → Plugins → Manage plugins**, Chat·Cowork는 사용자 지정
+
 ## 0.5.0 — 2026-10-18
 - teacher 묶음에 웹사이트 내용 수집 **Firecrawl**(호스팅 MCP, 키 없이 쓰는 무료 구간 — 수집·검색·읽기) 연결
 - teacher 묶음에 최신 뉴스·문서 검색 **Perplexity**(@perplexity-ai/mcp-server) — 유료 키라 `PERPLEXITY_API_KEY`가 있을 때만 연결하고, 없으면 건너뛰고 방법 안내

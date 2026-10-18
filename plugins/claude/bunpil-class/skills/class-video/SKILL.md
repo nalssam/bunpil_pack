@@ -61,7 +61,7 @@ description: 수업 설명 영상, 개념 애니메이션, 수업 도입 영상,
 
 ## 방법 B. 소개·도입 영상 (Cinetic 스킬)
 
-1. Cinetic 스킬이 있는지 `~/.claude/skills/cinetic`, `~/.agents/skills/cinetic`을 확인한다. 없으면 분필팩 한 줄 설치를 `--profile creator`로 다시 실행하라고 안내한다(macOS·Linux·WSL2).
+1. Cinetic 스킬이 있는지 `~/.claude/skills/cinetic`, `~/.agents/skills/cinetic`을 확인한다. 없으면 분필팩 사이트의 "설치 문장 만들기"에서 creator 묶음을 더한 설치 문장을 채팅창에 다시 붙여넣으라고 안내한다(터미널은 `--profile creator`. macOS·Linux·WSL2에서만 된다).
 2. 있으면 **그 스킬의 절차를 그대로 따른다.** 요청은 짧게 쓴다. 예: "[학교·행사 한 줄 소개]의 20초 소개 영상을 소리까지 넣어서 만들어 줘. 브랜드(색·글꼴)는 학교 기준을 따라 줘."
 3. 처음에는 그 스킬의 안내대로 **시험 렌더** 한 번으로 컴퓨터가 렌더 가능한지 확인한다. 막히면 오류를 그대로 보여 주고 방법 C로 바꾼다.
 4. 만들기 전에 컨셉·장면 구성안을 교사에게 보여 주고 승인받는다.

@@ -31,6 +31,14 @@ SITE_SRC = ROOT / "site"
 KST = datetime.timezone(datetime.timedelta(hours=9))
 MARKER = "# @BUNPIL_PRESET@"
 
+# 채팅창(Claude 앱 Code 탭·ChatGPT 앱 Codex)에 붙여넣는 설치 문장 = 안내 한 문단 + 명령 한 줄.
+# 앱의 AI가 오래 걸리는 명령을 중간에 끊는 일이 있어 '백그라운드로 실행하고 기다려줘'를 문장에 넣는다.
+# 사이트의 모든 설치 문장(히어로·설치 시간표·문장 만들기·큰 화면)이 이 한 곳의 문구를 쓴다.
+CHAT_LEAD = "분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. {wait} 끝나면 설치된 것과 실패한 것을 짧게 알려줘."
+CHAT_WAIT = "5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘."
+CHAT_WAIT_STUDIO = "수 GB를 받아 10~30분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘."
+CHAT_LEAD_UNINSTALL = "분필팩을 지워줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행하고, 지운 것과 그대로 둔 것을 짧게 알려줘."
+
 # 미리 정한 값: (sh 환경변수, ps1 해시테이블, 설명)
 PRESETS = {
     "claude": ({"BUNPIL_ONLY": "claude", "BUNPIL_INSTALL_CLAUDE": "1", "BUNPIL_WITH_TOOLS": "1"},
@@ -70,6 +78,24 @@ SKILLS = {
 
 def now_kst() -> datetime.datetime:
     return datetime.datetime.now(KST)
+
+
+def chat_lead(wait: str = CHAT_WAIT) -> str:
+    return CHAT_LEAD.replace("{wait}", wait)
+
+
+def json_js(text: str) -> str:
+    """자바스크립트 문자열 자리에 그대로 넣을 수 있는 JSON 문자열."""
+    return json.dumps(text, ensure_ascii=False).replace("</", "<\\/")
+
+
+def studio_counts() -> tuple:
+    """스튜디오 설치 엔진의 잠금 파일에서 원본 저장소 수(참고용 포함, 의존 플러그인 저장소 제외)와 Claude 플러그인 수를 읽는다."""
+    lock = json.loads((ROOT / "studio" / "pack.lock.json").read_text(encoding="utf-8"))
+    sources = sum(1 for x in lock["sources"] if x.get("available") and x.get("kind") != "claude-plugin-dependency")
+    plugins = len(lock["claude_plugins"])
+    assert sources > 0 and plugins > 0, "studio/pack.lock.json 에서 숫자를 읽지 못했다"
+    return sources, plugins
 
 
 def sh_preset(env: dict, note: str) -> str:
@@ -152,21 +178,36 @@ read -r _ || true
 def readme_first(version: str) -> str:
     return f"""nalssam's 분필팩 v{version} — 먼저 읽어 주세요
 
-[Windows]
-  1. 이 zip 파일을 오른쪽 클릭 → [모두 압축 풀기]
-  2. 풀린 폴더에서 Install-Windows.bat 을 더블클릭
-     - 보안 경고 창이 뜨면 [실행], "Windows의 PC 보호" 창이면 [추가 정보] → [실행]
-  3. Claude Code·Codex가 없으면 무엇을 설치할지 번호로 고릅니다
+[가장 쉬운 방법 — AI 앱 채팅창에 붙여넣기]
+  1. 쓰는 AI 앱을 내려받아 로그인합니다.
+       Claude   앱  https://claude.com/download   (Code 탭은 유료 요금제)
+       ChatGPT  앱  https://chatgpt.com/download   (Codex 모드)
+  2. 작업 폴더(예: 분필작업)를 하나 만들어 앱에서 엽니다.
+       Claude : 위쪽 [Code] 탭 → [Local] → 폴더 선택
+       ChatGPT: 새 채팅 → [Codex] → 폴더 열기
+  3. {SITE} 맨 위 상자의 '설치 문장'을 복사해 입력창에 붙여넣고 Enter.
+     AI가 명령 실행 허락을 물으면 허용합니다. 5~10분 뒤 새 대화를 시작하면 끝입니다.
+  (일반 대화(Chat) 탭에서는 컴퓨터에 설치할 수 없으니 꼭 Code 탭 / Codex에서 하세요.)
 
-[macOS]
-  터미널에 아래 한 줄을 붙여넣는 방법이 가장 쉽습니다.
-    Claude 쓰는 선생님:  curl -fsSL {SITE}/claude.sh | sh
-    Codex 쓰는 선생님:   curl -fsSL {SITE}/codex.sh | sh
-  또는 Install-Mac.command 를 오른쪽 클릭 → [열기].
-  (막히면 [시스템 설정 → 개인정보 보호 및 보안]에서 [그래도 열기])
+[이 zip으로 설치하기 — 인터넷 없이 분필팩 5종부터]
+  Windows
+    1. 이 zip 파일을 오른쪽 클릭 → [모두 압축 풀기]
+    2. 풀린 폴더에서 Install-Windows.bat 을 더블클릭
+       - 보안 경고 창이 뜨면 [실행], "Windows의 PC 보호" 창이면 [추가 정보] → [실행]
+    3. Claude Code·Codex가 없으면 무엇을 설치할지 번호로 고릅니다
+  macOS
+    Install-Mac.command 를 오른쪽 클릭 → [열기].
+    (막히면 [시스템 설정 → 개인정보 보호 및 보안]에서 [그래도 열기])
 
-[Claude 앱(채팅·Cowork)만 쓰는 경우]
+[명령 없이 Claude 앱 메뉴로만]
   Claude 앱 → 사용자 지정 → 플러그인 → 추가 → 마켓플레이스 추가 → {REPO}
+
+[터미널·명령 프롬프트·VS Code 터미널을 쓰고 싶다면]
+  Windows (cmd·PowerShell 어디서나)
+    powershell -NoProfile -Command "irm {SITE}/claude.ps1 | iex"
+  macOS
+    curl -fsSL {SITE}/claude.sh | sh
+  Codex는 claude 를 codex 로 바꿉니다.
 
 원칙: 결과물은 모두 초안입니다. 학생 이름은 '학생A'처럼 바꿔 쓰세요.
 자세한 안내: {SITE}
@@ -194,11 +235,13 @@ def make_pack_zip(version: str, dt, sh_src: str, ps_src: str) -> Path:
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         def add(name: str, data: bytes, mode: int = 0o644):
             z.writestr(zinfo(f"bunpil-pack/{name}", dt, mode), data)
-        for base in (".claude-plugin", ".agents", "plugins", "catalog"):
+        for base in (".claude-plugin", ".agents", "plugins", "catalog", "studio"):
             for f in sorted((ROOT / base).rglob("*")):
-                if f.is_file() and "__pycache__" not in f.parts:
+                # studio/tests 는 개발용이라 내려받는 묶음에는 넣지 않는다
+                if f.is_file() and "__pycache__" not in f.parts and not (base == "studio" and "tests" in f.relative_to(ROOT / base).parts):
                     rel = f.relative_to(ROOT).as_posix()
-                    add(rel, f.read_bytes(), 0o755 if f.suffix == ".sh" else 0o644)
+                    add(rel, lf(f.read_text(encoding="utf-8")).encode("utf-8") if f.suffix in (".sh", ".py") else f.read_bytes(),
+                        0o755 if f.suffix == ".sh" else 0o644)
         add("VERSION", (version + "\n").encode())
         add("install.sh", sh_src.encode("utf-8"), 0o755)
         add("install.ps1", crlf(ps_src).encode("utf-8-sig"))
@@ -311,20 +354,20 @@ def kind(s: str) -> str:
         k = "필요할 때 설치"
     elif s.startswith("안내"):
         k = "직접 설치 안내"
-    elif s == "날쌤팩":
-        k = "날쌤팩으로 설치"
+    elif s == "스튜디오":
+        k = "스튜디오 묶음으로 설치"
     else:
         k = s
     extra = " (Codex가 있을 때)" if "Codex가 있을 때" in s else ""
     return f'<span class="kind">{esc(k)}</span>{esc(extra)}'
 
 
-PROFILE_TITLES = {"teacher": "teacher · 기본", "creator": "creator", "dev": "dev", "nalssam": "nalssam"}
+PROFILE_TITLES = {"teacher": "teacher · 기본", "creator": "creator", "dev": "dev", "studio": "studio"}
 
 
 def catalog_html(data: dict) -> str:
     out = []
-    for prof in ("teacher", "creator", "dev", "nalssam"):
+    for prof in ("teacher", "creator", "dev", "studio"):
         items = [i for i in data["catalog"] if i["profile"] == prof]
         rows = []
         for i in items:
@@ -360,8 +403,8 @@ def render(template: str, values: dict, data: dict) -> str:
 
 
 def full_document(fragment: str, version: str) -> str:
-    desc = ("교사용 AI 하네스 팩. Claude Code와 ChatGPT Codex에 학습지·지도안·공문·가정통신문 스킬, "
-            "한글(HWPX)·문서 변환·브라우저 자동화 도구를 한 줄로 설치합니다.")
+    desc = ("교사용 AI 하네스 팩. Claude 앱(Code 탭)과 ChatGPT 앱(Codex)의 채팅창에 붙여넣기만 하면 "
+            "학습지·지도안·공문·가정통신문 스킬과 한글(HWPX)·문서 변환·브라우저 자동화 도구가 설치됩니다.")
     head = f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -427,14 +470,22 @@ def main() -> None:
     write(PUBLIC / "version.json", (json.dumps(version_info, ensure_ascii=False, indent=2) + "\n").encode())
 
     template = (SITE_SRC / "template.html").read_text(encoding="utf-8")
+    data = site_data(version)
+    counts = {p: sum(1 for i in data["catalog"] if i["profile"] == p) for p in ("teacher", "creator", "dev", "studio")}
+    studio_sources, studio_plugins = studio_counts()
     values = {
         "VERSION": version, "DATE": now.strftime("%Y. %m. %d.").replace(". 0", ". "), "SITE": SITE,
         "SITE_HOST": SITE_HOST, "REPO": REPO, "ZIP_SIZE": human(pack.stat().st_size),
         "SKILL_COUNT": str(n_skills), "PLUGIN_COUNT": str(len(build.ORDER)),
-        "TOOL_COUNT": str(sum(1 for i in site_data(version)["catalog"] if i["profile"] != "nalssam")), "QR_SVG": qr_svg(SITE + "/"),
-        "PLUGINS_HTML": plugins_html(site_data(version)), "CATALOG_HTML": catalog_html(site_data(version)),
+        "TOOL_COUNT": str(len(data["catalog"])), "QR_SVG": qr_svg(SITE + "/"),
+        "PLUGINS_HTML": plugins_html(data), "CATALOG_HTML": catalog_html(data),
+        "COUNT_TEACHER": str(counts["teacher"]), "COUNT_CREATOR": str(counts["creator"]), "COUNT_DEV": str(counts["dev"]),
+        "STUDIO_SOURCES": str(studio_sources), "STUDIO_PLUGINS": str(studio_plugins),
+        "CHAT_LEAD_STD": esc(chat_lead()), "CHAT_LEAD_UNINSTALL": esc(CHAT_LEAD_UNINSTALL),
+        "CHAT_LEAD_JSON": json_js(CHAT_LEAD), "CHAT_WAIT_JSON": json_js(CHAT_WAIT),
+        "CHAT_WAIT_STUDIO_JSON": json_js(CHAT_WAIT_STUDIO),
     }
-    fragment = render(template, values, site_data(version))
+    fragment = render(template, values, data)
     write(SITE_SRC / "index.html", fragment.encode("utf-8"))
     write(PUBLIC / "index.html", full_document(fragment, version).encode("utf-8"))
     write(ROOT / "vercel.json", (json.dumps(vercel_json(), ensure_ascii=False, indent=2) + "\n").encode())

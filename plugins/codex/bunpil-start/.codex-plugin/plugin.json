@@ -1,6 +1,6 @@
 {
   "name": "bunpil-start",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.",
   "author": {
     "name": "nalssam(날쌤) · 몽당분필",

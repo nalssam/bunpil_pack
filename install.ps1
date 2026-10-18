@@ -1,6 +1,9 @@
 ﻿# ─────────────────────────────────────────────────────────────
 #  nalssam's 분필팩 — 한 줄 설치 (Windows PowerShell 5.1 이상)
 #
+#  가장 쉬운 길: Claude 앱(Code 탭)·ChatGPT 앱(Codex)의 채팅창에 사이트의 '설치 문장'을 붙여넣는다.
+#  그 문장이 아래 명령을 대신 실행한다. PowerShell·명령 프롬프트·VS Code 터미널에서 직접 실행해도 같다.
+#
 #    Claude 쓰는 선생님   irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex
 #    Codex 쓰는 선생님    irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex
 #    직접 고르기          $env:BUNPIL_PROFILE="all"; irm https://nalssam-bunpil.vercel.app/install.ps1 | iex
@@ -10,16 +13,17 @@
 #  하는 일
 #   1) 컴퓨터에 있는 Claude Code, Codex(ChatGPT)를 찾는다 (옵션을 주면 없을 때 설치한다)
 #   2) 분필팩(플러그인 5종)을 내려받아 %USERPROFILE%\.bunpil 에 두고 설치한다 (Git 없어도 됨)
-#   3) 날쌤 추천 스킬·MCP·플러그인 묶음을 함께 설치한다 (catalog/recommended.json)
+#   3) 추천 스킬·MCP·플러그인 묶음을 함께 설치한다 (catalog/recommended.json)
+#        studio(영상·모션·분석 도구)는 macOS·Linux·WSL2 전용 — Windows에서는 WSL2 안내만 한다
 #   4) 이미 설치되어 있으면 최신으로 바꾼다 (다시 실행 = 업데이트)
 #
 #  옵션은 환경변수로 준다 (irm | iex 에는 인자를 넘길 수 없다). 값 "1" = 켜기
-#   BUNPIL_PROFILE  teacher | creator | dev | all (쉼표로 여러 개, 기본 teacher)
+#   BUNPIL_PROFILE  teacher | creator | dev | studio | all (쉼표로 여러 개, 기본 teacher)
 #   BUNPIL_ONLY     claude | codex                 한쪽에만 설치
 #   BUNPIL_INSTALL_CLAUDE · BUNPIL_INSTALL_CODEX   없으면 Claude Code / Codex CLI까지 설치
 #   BUNPIL_WITH_TOOLS  Node.js·uv·Git이 없으면 함께 설치
 #   BUNPIL_RECS="0" 분필팩 5종만 · BUNPIL_HWPX="0" 한글 플러그인 빼기 · BUNPIL_ASK · BUNPIL_UNINSTALL
-#   BUNPIL_NALSSAM  날쌤팩(영상·모션·분석 도구)은 macOS·Linux·WSL2 전용 — Windows에서는 WSL2 안내만 한다
+#   (예전 이름 BUNPIL_NALSSAM · 프로필 nalssam 은 studio 묶음으로 받아들인다)
 #   BUNPIL_SITE · BUNPIL_REPO(owner/repo를 마켓플레이스로) · BUNPIL_HOME(기본 ~\.bunpil) · BUNPIL_KEEP_POLICY
 #  관리자 권한이 필요 없다. (Git for Windows 설치만 Windows가 확인 창을 띄울 수 있다)
 # ─────────────────────────────────────────────────────────────
@@ -60,8 +64,7 @@ try {
   $firecrawlUrl = 'https://mcp.firecrawl.dev/v2/mcp'   # 키 없이 쓰는 무료 구간(수집·검색·읽기 3종)
   $glifUrl = 'https://glif.app/api/mcp'
   $nodeDist = (Opt 'BUNPIL_NODE_DIST' 'NodeDist' 'https://nodejs.org/dist/latest-v24.x').TrimEnd('/')
-  $pptxCommit = 'ae3d919005100472805bf39ddab234bd1cf72577'   # ZZombie04/pptx_maker (날쌤팩 v1.0.1과 같은 커밋)
-  $nalssamVersion = 'v1.0.1'
+  $pptxCommit = 'ae3d919005100472805bf39ddab234bd1cf72577'   # ZZombie04/pptx_maker (스튜디오 엔진과 같은 커밋)
   $bunpilHome = Opt 'BUNPIL_HOME' 'Home' (Join-Path $HOME '.bunpil')
   $packDir = Join-Path $bunpilHome 'bunpil-pack'
   $only = Opt 'BUNPIL_ONLY' 'Only' ''
@@ -75,10 +78,17 @@ try {
   $skipHwpx = ((Opt 'BUNPIL_HWPX' 'Hwpx' '1') -eq '0')
   $uninstall = ((Opt 'BUNPIL_UNINSTALL' 'Uninstall' '0') -eq '1')
   $profiles = Opt 'BUNPIL_PROFILE' 'Profile' 'teacher'
-  $nalssam = ((Opt 'BUNPIL_NALSSAM' 'Nalssam' '0') -eq '1') -or ((',' + $profiles + ',') -match ',nalssam,')
-  if ((',' + $profiles + ',') -match ',all,') { $profiles = 'teacher,creator,dev' }
-  $profileList = @($profiles.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ -and $_ -ne 'nalssam' })
+  # 예전 이름(날쌤팩) 호환: BUNPIL_NALSSAM=1 · 프로필 nalssam 은 모두 studio 묶음을 고른 것으로 본다
+  if ((Opt 'BUNPIL_NALSSAM' 'Nalssam' '0') -eq '1') { $profiles = $profiles + ',studio' }
+  if ((',' + $profiles + ',') -match ',nalssam,') { $profiles = $profiles + ',studio' }
+  if ((',' + $profiles + ',') -match ',all,') { $profiles = 'teacher,creator,dev,studio' }
+  $profileList = @(); $badProfiles = @()
+  foreach ($t in @($profiles.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
+    if (@('teacher', 'creator', 'dev', 'studio') -contains $t) { if ($profileList -notcontains $t) { $profileList += $t } }
+    elseif ($t -ne 'nalssam' -and $t -ne 'all') { $badProfiles += $t }
+  }
   if ($profileList.Count -eq 0) { $profileList = @('teacher') }
+  $studio = ($recs -and ($profileList -contains 'studio'))
 
   $st = @{ errors = 0; pathChanged = $false; hasClaude = $false; hasCodex = $false; hasNpx = $false; hasUvx = $false; hasGit = $false; hwpxDone = $false; pptxDone = $false; mdWarm = $false; pplxSkipped = $false; glifOn = $false }
   $gitSkip = 'Git이 없어 건너뜀 (Git 설치 후 같은 명령을 다시 실행)'
@@ -293,6 +303,7 @@ try {
   Say ' — 선생님의 AI 조수를 한 줄로'
   Say '누구도 소외되지 않는 기술, 혼자 닳지 않는 교사'
   Say ''
+  if ($badProfiles.Count -gt 0) { Warn ('알 수 없는 묶음 이름은 건너뜁니다: ' + ($badProfiles -join ' ') + '  (teacher · creator · dev · studio · all 중에서 고르세요)') }
 
   # ── 지우기 ───────────────────────────────────────────────
   if ($uninstall) {
@@ -418,9 +429,9 @@ try {
   if (-not $st.hasClaude -and -not $st.hasCodex) {
     Fail 'Claude Code도 Codex도 찾지 못했습니다.'
     Say ''
-    Say "  - Claude 쓰는 선생님:  irm $site/claude.ps1 | iex"
-    Say "  - Codex 쓰는 선생님:   irm $site/codex.ps1 | iex"
-    Say "  - 터미널 없이 Claude 앱에서: $site 의 'Claude 앱' 안내를 따르세요"
+    Say "  - Claude 쓰는 선생님:  irm $site/claude.ps1 | iex   (Claude 앱 Code 탭 채팅창에 이 줄을 붙여넣어도 됩니다)"
+    Say "  - Codex 쓰는 선생님:   irm $site/codex.ps1 | iex    (ChatGPT 앱 Codex 채팅창에 붙여넣어도 됩니다)"
+    Say "  - 명령 없이 Claude 앱 메뉴로만: $site 의 'Claude 앱 메뉴' 안내를 따르세요"
     if ($oldOutEnc) { try { [Console]::OutputEncoding = $oldOutEnc } catch { } }
     return
   }
@@ -464,7 +475,7 @@ try {
         Ok "분필팩 폴더 사용 ($packDir)"; return @{ ok = $true; source = $packDir; repo = $false; fallback = $false }
       }
       New-Item -ItemType Directory -Force -Path $newPack | Out-Null
-      foreach ($x in @('.claude-plugin', '.agents', 'plugins', 'catalog', 'VERSION', 'install.sh', 'install.ps1', 'README.md', 'LICENSE', 'NOTICE')) {
+      foreach ($x in @('.claude-plugin', '.agents', 'plugins', 'catalog', 'studio', 'VERSION', 'install.sh', 'install.ps1', 'README.md', 'LICENSE', 'NOTICE')) {
         $s = Join-Path $localSrc $x
         if (Test-Path $s) { Copy-Item $s $newPack -Recurse -Force }
       }
@@ -629,15 +640,16 @@ try {
     if ($done -and (Has 'pptx-maker') -and (Run 'pptx-maker' @('setup', '--yes', '--only', ($targets -join ',')))) { Ok "$label — 설치·MCP·스킬 연결" }
     else { Fail "$label — 설치 실패 (uv tool install `"pptx-maker @ $zsrc`")" }
   }
-  # 날쌤팩은 macOS·Linux·WSL2 전용 설치기라 Windows에서는 안내만 한다
-  function NalssamGuide {
-    Head "[날쌤팩 $nalssamVersion]"
+  # 스튜디오 묶음은 macOS·Linux·WSL2 전용 설치기라 Windows에서는 WSL2 안내만 한다
+  function StudioGuide {
+    Head '[스튜디오]'
     if ($isWin) {
-      Skip '날쌤팩 — Windows에서는 WSL2 Ubuntu 안에서 설치합니다(이 PowerShell의 Claude Code·Codex와는 따로 설치됨)'
+      Skip '스튜디오 — Windows에서는 WSL2 Ubuntu 안에서 설치합니다(Windows의 Claude·ChatGPT 앱 환경과는 따로 설치됩니다)'
       Say '    1) PowerShell(관리자)에서  wsl --install  → 다시 시작 → Ubuntu 열기'
-      Say "    2) Ubuntu 터미널에서  bash -c `"`$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/$nalssamVersion/install.sh)`" -- --claude"
+      Say "    2) Ubuntu 터미널에서  curl -fsSL $site/install.sh | sh -s -- --profile studio"
+      Say '    ※ WSL2 안에 설치한 도구는 Ubuntu 안에서 연 Claude Code·Codex에서 쓰입니다'
     } else {
-      Skip "날쌤팩 — macOS·Linux에서는 터미널 한 줄 설치에 --nalssam 을 붙이세요:  curl -fsSL $site/install.sh | sh -s -- --nalssam"
+      Skip "스튜디오 — macOS·Linux에서는 터미널 한 줄 설치에 --profile studio 를 붙이세요:  curl -fsSL $site/install.sh | sh -s -- --profile studio"
     }
   }
 
@@ -800,29 +812,32 @@ try {
     Say ''
   }
 
-  if ($nalssam) { NalssamGuide; Say '' }
+  if ($studio) { StudioGuide; Say '' }
 
   Head '다음 단계'
-  if ($st.pathChanged) { Write-Host '  ※ 새로 설치한 명령이 잡히도록 지금 PowerShell 창을 닫고 새 창을 여세요.' -ForegroundColor Yellow }
+  if ($st.pathChanged) { Write-Host '  ※ 새로 설치한 명령이 잡히도록 Claude·ChatGPT 앱을 완전히 종료했다가 다시 여세요. PowerShell을 쓰는 중이면 창을 닫고 새 창을 여세요.' -ForegroundColor Yellow }
   if ($st.hasClaude) {
-    Say '  Claude Code'
-    Say '   1. 작업 폴더를 만들고 실행:  mkdir -Force ~\분필작업 > $null; cd ~\분필작업; claude'
-    Say '   2. 처음이면 브라우저에서 로그인 → 대화창에 "설정 시작해줘"'
-    Say '   3. 노션·패들렛·캔바 연결: 대화창에서  /mcp  → 서비스 선택 → 로그인'
-    if ($st.glifOn) { Say '      Glif(이미지·영상 AI)도  /mcp  → glif → 로그인' }
-    Say "   4. 크롬 연결(지금 열어 둔 탭 읽기·클릭): 크롬 웹스토어에서 'Claude' 확장 설치 → claude --chrome"
+    Say '  Claude (Claude 앱의 Code 탭이 기본 · 터미널은 다른 방법)'
+    Say '   1. 새 대화를 시작하세요. 방금 설치한 플러그인은 새 대화부터 보입니다 (Local 세션에서 쓰세요. 클라우드·WSL 세션에서는 플러그인이 안 됩니다)'
+    Say '   2. 작업 폴더(예: 분필작업)를 만들어 Code 탭에서 [Local]로 열고 "설정 시작해줘"'
+    Say '      터미널이면:  mkdir -Force ~\분필작업 > $null; cd ~\분필작업; claude'
+    Say '   3. 노션·패들렛·캔바 연결: Code 탭 입력창 옆 [+] → [Connectors]에서 로그인 (터미널은 대화창에서  /mcp)'
+    if ($st.glifOn) { Say '      Glif(이미지·영상 AI)도 같은 곳에서 glif → 로그인' }
+    Say "   4. 크롬 연결(선택): 크롬 웹스토어에서 'Claude' 확장 설치. Claude Code에서 쓰려면 터미널에서  claude --chrome"
     Say '      늘 켜 두려면 대화창에서  /chrome  → Enabled by default  (유료 요금제 필요)'
   }
   if ($st.hasCodex) {
-    Say '  Codex'
-    Say '   1. 작업 폴더를 만들고 실행:  mkdir -Force ~\분필작업 > $null; cd ~\분필작업; codex'
-    Say '   2. 처음이면 "Sign in with ChatGPT"로 로그인 → /hooks 에서 분필 가드 신뢰(trust)'
-    Say '   3. 대화창에 "설정 시작해줘"  ·  노션 연결:  codex mcp login notion'
+    Say '  Codex (ChatGPT 앱의 Codex가 기본 · 터미널은 다른 방법)'
+    Say '   1. 새 대화를 시작하세요. 방금 연결한 플러그인·MCP는 앱을 껐다 켜면 확실히 잡힙니다 (앱과 터미널은 같은 설정을 씁니다)'
+    Say '   2. 작업 폴더(예: 분필작업)를 만들어 Codex에서 폴더로 열고 "설정 시작해줘"'
+    Say '      터미널이면:  mkdir -Force ~\분필작업 > $null; cd ~\분필작업; codex   (처음이면 "Sign in with ChatGPT")'
+    Say '   3. 분필 가드(훅)를 신뢰하라는 안내가 나오면 허용하세요. 안 보이면 터미널에서 codex 를 열고  /hooks'
+    Say '   4. 노션 연결(터미널):  codex mcp login notion'
     if ($st.glifOn) { Say '      Glif(이미지·영상 AI) 로그인:  codex mcp login glif' }
   }
   if ($st.pplxSkipped) {
-    Say '  Perplexity(최신 검색)는 유료 API 키가 필요합니다. console.perplexity.ai 에서 키를 받은 뒤'
-    Say '   앞에  $env:PERPLEXITY_API_KEY="받은키";  를 붙여 같은 명령을 다시 실행하세요.'
+    Say '  Perplexity(최신 검색)는 유료 API 키가 필요합니다. console.perplexity.ai 에서 키를 받은 뒤, 키는 채팅에 붙여넣지 말고'
+    Say '   PowerShell에서 앞에  $env:PERPLEXITY_API_KEY="받은키";  를 붙여 같은 명령을 다시 실행하세요.'
   }
   if ($recs -and (-not $st.hasNpx -or -not $st.hasUvx)) {
     if ($withTools) { Say '  Node.js·uv를 준비하지 못해 일부 도구를 건너뛰었습니다. 인터넷 연결을 확인하고 같은 명령을 다시 실행하세요.' }

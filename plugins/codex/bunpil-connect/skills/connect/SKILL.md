@@ -26,15 +26,15 @@ description: 노션 연결, 패들렛 연결, 캔바 연결, MCP, 커넥터, 로
 
 ### 1단계. 환경 확인
 
-질문: "지금 어디에서 AI를 쓰고 계신가요? ① Claude Code(터미널·VS Code 등) ② Claude 앱 채팅·Cowork ③ Codex" 모르겠다고 하면 화면 모양을 물어 판별한다(터미널 창 → Claude Code 또는 Codex, 웹·데스크톱 앱의 채팅 → Claude 앱).
+질문: "지금 어디에서 AI를 쓰고 계신가요? ① Claude 앱의 Code 탭, 또는 터미널·VS Code의 Claude Code ② Claude 앱의 Chat·Cowork(웹 포함) ③ Codex(ChatGPT 앱 또는 터미널)" 모르겠다고 하면 화면 모양을 물어 판별한다(앱 위쪽에 Code 탭이 보이고 그 탭이면 ①, Chat·Cowork 탭이면 ②, ChatGPT 앱의 Codex 화면이면 ③, 터미널 창이면 Claude Code 또는 Codex).
 
 ### 2단계. 환경별 연결 방법
 
 먼저 분필 커넥터 팩(`bunpil-connect`)이 설치되어 있어야 한다. 설치가 안 되어 있으면 팩 설치부터 안내한다.
 
-**① Claude Code**
-1. 플러그인을 설치한 뒤 Claude Code를 새로 시작한다.
-2. 입력창에 `/mcp`를 입력하면 연결 목록이 나온다. `notion`, `padlet`, `canva` 중 연결할 서버를 고른다.
+**① Claude Code (앱의 Code 탭, 터미널·VS Code)**
+1. 플러그인을 설치한 뒤 새 대화를 시작한다(터미널이면 Claude Code를 새로 시작한다).
+2. 앱 Code 탭이면 입력창 옆 **+** 버튼 → **Connectors(커넥터)** 목록에서, 터미널이면 입력창에 `/mcp`를 입력해 나오는 연결 목록에서 `notion`, `padlet`, `canva` 중 연결할 서비스를 고른다. 앱에서 찾기 어려우면 입력창에 `/mcp`를 입력해 보거나 왼쪽 사용자 지정(Customize)의 커넥터도 확인한다. 이미 커넥터로 연결한 서비스는 다시 연결하지 않아도 된다.
 3. 상태가 "인증 필요(needs authentication)"이면 **로그인(Authenticate)** 을 고른다. 브라우저 창이 열리면 서비스에 로그인하고 **허용**을 누른다.
 4. 터미널 명령을 선호하면 `claude mcp login <이름>` 같은 방법도 있을 수 있다. 버전에 따라 다르니 [확인 필요] `/mcp` 방식이 기본이다.
 
@@ -44,8 +44,8 @@ description: 노션 연결, 패들렛 연결, 캔바 연결, MCP, 커넥터, 로
 3. 목록에서 노션·패들렛·캔바 중 연결할 항목의 **연결(Connect)** 을 누르고, 열리는 로그인 창에서 직접 로그인·허용한다.
 4. 연결할 서비스는 필요한 것만 켠다. 사용하지 않는 것은 꺼 둔다.
 
-**③ Codex**
-1. 플러그인을 설치한 뒤 터미널에서 `codex mcp login notion`, `codex mcp login padlet`, `codex mcp login canva` 중 필요한 것을 실행한다.
+**③ Codex (ChatGPT 앱, 터미널)**
+1. 플러그인을 설치한 뒤 연결한다. 앱은 버전에 따라 연결 화면 위치가 달라서 보이는 화면을 알려 달라고 하고 그에 맞춰 안내한다. 터미널이면 `codex mcp login notion`, `codex mcp login padlet`, `codex mcp login canva` 중 필요한 것을 실행한다.
 2. 브라우저가 열리면 직접 로그인·허용한다.
 3. 또는 OpenAI가 공식으로 제공하는 큐레이션 플러그인(해당 서비스의 공식 항목)이 있으면 그것을 설치해 써도 된다. 이미 공식 항목을 쓰고 있다면 같은 서비스를 두 번 연결하지 않아도 된다.
 

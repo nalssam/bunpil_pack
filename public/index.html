@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="교사용 AI 하네스 팩. Claude Code와 ChatGPT Codex에 학습지·지도안·공문·가정통신문 스킬, 한글(HWPX)·문서 변환·브라우저 자동화 도구를 한 줄로 설치합니다.">
+<meta name="description" content="교사용 AI 하네스 팩. Claude 앱(Code 탭)과 ChatGPT 앱(Codex)의 채팅창에 붙여넣기만 하면 학습지·지도안·공문·가정통신문 스킬과 한글(HWPX)·문서 변환·브라우저 자동화 도구가 설치됩니다.">
 <meta name="theme-color" content="#27473c">
 <link rel="canonical" href="https://nalssam-bunpil.vercel.app/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="nalssam's 분필팩">
-<meta property="og:title" content="nalssam's 분필팩 v0.5.0">
-<meta property="og:description" content="교사용 AI 하네스 팩. Claude Code와 ChatGPT Codex에 학습지·지도안·공문·가정통신문 스킬, 한글(HWPX)·문서 변환·브라우저 자동화 도구를 한 줄로 설치합니다.">
+<meta property="og:title" content="nalssam's 분필팩 v0.6.0">
+<meta property="og:description" content="교사용 AI 하네스 팩. Claude 앱(Code 탭)과 ChatGPT 앱(Codex)의 채팅창에 붙여넣기만 하면 학습지·지도안·공문·가정통신문 스킬과 한글(HWPX)·문서 변환·브라우저 자동화 도구가 설치됩니다.">
 <meta property="og:url" content="https://nalssam-bunpil.vercel.app/">
 <meta property="og:image" content="https://nalssam-bunpil.vercel.app/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -157,7 +157,14 @@ img, svg { max-width: 100%; }
 .seg button { border: 0; background: transparent; color: var(--chalk-dim); padding: 7px 12px; border-radius: 7px; font-size: .9rem; font-weight: 600; }
 .seg button[aria-pressed="true"] { background: var(--chalk); color: var(--on-chalk); }
 .seg button:not([aria-pressed="true"]):hover { color: var(--chalk); }
-.quick .where { font-size: .92rem; color: var(--chalk-dim); }
+.qsteps { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; counter-reset: q; }
+.qsteps li { counter-increment: q; position: relative; min-width: 0; padding: 12px 14px 12px 48px; border: 1px dashed rgba(242, 240, 230, .32); border-radius: 12px; font-size: .93rem; line-height: 1.5; color: var(--chalk); }
+.qsteps li::before { content: counter(q); position: absolute; left: 13px; top: 12px; width: 25px; height: 25px; border-radius: 50%; display: grid; place-items: center; background: var(--chalk-y); color: var(--on-chalk); font: 400 .95rem/1 var(--font-display); }
+.qsteps li b { color: var(--chalk-y); font-weight: 600; }
+.qsteps li a { color: var(--chalk); }
+.qsteps li small { display: block; margin-top: 3px; font-size: .8rem; color: var(--chalk-dim); }
+.quick .alt { font-size: .88rem; color: var(--chalk-dim); }
+.quick .alt a { color: var(--chalk); }
 .quick .what { font-size: .9rem; color: var(--chalk-dim); }
 .quick .what b { color: var(--chalk); font-weight: 600; }
 
@@ -172,7 +179,7 @@ img, svg { max-width: 100%; }
 /* 명령 상자 */
 .cmd { display: flex; align-items: stretch; background: var(--board-deep); color: var(--chalk); border-radius: 10px; border: 1px solid rgba(0, 0, 0, .25); min-width: 0; overflow: hidden; }
 .cmd .pr { flex: none; padding: 12px 0 12px 14px; color: var(--chalk-y); font: 500 .9rem/1.5 var(--font-mono); user-select: none; }
-.cmd code { flex: 1; min-width: 0; padding: 12px 12px; font: 500 .92rem/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; }
+.cmd code { flex: 1; min-width: 0; padding: 12px 12px; font: 500 .92rem/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: keep-all; }
 .cmd .copy { flex: none; border: 0; border-left: 1px solid rgba(242, 240, 230, .14); background: rgba(242, 240, 230, .07); color: var(--chalk); padding: 0 16px; font-size: .86rem; font-weight: 600; min-width: 74px; }
 .cmd .copy:hover { background: rgba(242, 240, 230, .16); }
 .cmd .copy.done { color: var(--chalk-y); }
@@ -278,16 +285,22 @@ details.prof-more > summary h4::before { content: "+"; font: 500 1rem/1 var(--fo
 details.prof-more[open] > summary h4::before { content: "−"; }
 
 .cat { margin-top: 38px; }
-.nal-cmds { margin-top: 18px; }
-.nal-cmds .cmd { margin: 8px 0 12px; }
-.nal-notes { margin: 18px 0 0; padding-left: 1.2em; color: var(--ink-2); max-width: 80ch; }
-.nal-notes li { margin: 6px 0; }
-table.compare { table-layout: fixed; }
-table.compare th:first-child, table.compare td:first-child { width: 22%; font-weight: 600; }
-@media (max-width: 560px) {
-  table.compare th, table.compare td { padding: 8px 7px; font-size: .82rem; overflow-wrap: anywhere; }
-  table.compare th:first-child, table.compare td:first-child { width: 27%; }
-}
+.bundles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+.bundle { padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.bundle.adv { border-style: dashed; }
+.bundle header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.bundle h3 { font: 400 1.35rem/1.2 var(--font-display); }
+.badge { font: 600 .74rem/1 var(--font-body); padding: 4px 9px; border-radius: 99px; background: var(--paper-2); color: var(--ink-2); border: 1px solid var(--line); }
+.badge.adv { background: var(--paper-2); background: color-mix(in srgb, var(--chalk-y) 28%, var(--sheet)); color: var(--ink); border-color: var(--line); }
+.bundle .sum { font-weight: 600; }
+.bundle ul { padding-left: 1.1em; display: grid; gap: 3px; font-size: .92rem; color: var(--ink-2); }
+.bundle .meta { font-size: .88rem; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 8px; }
+.bundle .meta b { color: var(--ink); }
+.bundle .bpick { margin-top: auto; align-self: flex-start; min-height: 42px; padding: 8px 16px; }
+.bundle .bpick[aria-pressed="true"] { background: var(--action); color: var(--action-ink); border-color: var(--action); }
+.bundle .bpick[aria-pressed="true"]::before { content: "✓"; }
+.bundles-notes { margin: 18px 0 0; padding-left: 1.2em; color: var(--ink-2); max-width: 80ch; font-size: .93rem; }
+.bundles-notes li { margin: 6px 0; }
 .cat h3 { font: 400 1.45rem/1.2 var(--font-display); margin-bottom: 6px; }
 .cat > p { color: var(--ink-2); max-width: 72ch; margin-bottom: 16px; }
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--sheet); }
@@ -312,6 +325,8 @@ td .need { display: block; color: var(--ink-2); font-size: .8rem; margin-top: 2p
 .b-out { padding: 22px; background: var(--paper-2); display: grid; gap: 12px; align-content: start; min-width: 0; border-radius: 0 var(--radius) var(--radius) 0; }
 .b-out-in { position: sticky; top: calc(72px + env(safe-area-inset-top, 0px)); display: grid; gap: 12px; }
 .b-out h3 { font-size: 1rem; }
+.b-out h3:not(:first-child) { margin-top: 6px; }
+.b-out h3 small { font: 500 .78rem/1 var(--font-body); color: var(--ink-2); margin-left: 6px; }
 .opt { display: flex; gap: 10px; align-items: flex-start; font-size: .93rem; }
 .opt input { margin-top: 5px; accent-color: var(--board); width: 16px; height: 16px; flex: none; }
 .b-out ul { padding-left: 1.1em; font-size: .9rem; color: var(--ink-2); display: grid; gap: 3px; }
@@ -381,6 +396,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
 
 @media (max-width: 880px) {
   .board-top { grid-template-columns: minmax(0, 1fr); }
+  .qsteps { grid-template-columns: minmax(0, 1fr); }
   .board-note { display: none; }
   .b-out { border-radius: 0 0 var(--radius) var(--radius); }
   .packs, .manage { grid-template-columns: minmax(0, 1fr); }
@@ -389,6 +405,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
 }
 @media (max-width: 640px) {
   .wrap { padding-inline: 16px; }
+  .bundles { grid-template-columns: minmax(0, 1fr); }
   .nav { display: none; }
   .board { border-width: 6px; padding: 24px 18px 26px; }
   .quick { padding: 16px; }
@@ -419,13 +436,13 @@ body[data-mobile="1"] .mobile-note { display: block; }
     <a class="brand" href="#top" aria-label="nalssam's 분필팩 처음으로">
       <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="28" height="28" rx="6" fill="#2a4a3e"/><rect x="7" y="17" width="15" height="6" rx="2.5" fill="#f2f0e6" transform="rotate(-24 14 20)"/><rect x="18.5" y="9" width="7" height="6" rx="2.5" fill="#f3d35b" transform="rotate(-24 22 12)"/></svg>
       <b>nalssam's 분필팩</b>
-      <span class="chip">v0.5.0</span>
+      <span class="chip">v0.6.0</span>
     </a>
     <nav class="nav" aria-label="바로가기">
       <a href="#install">설치 시간표</a>
       <a href="#contents">설치되는 것</a>
-      <a href="#nalssam">날쌤팩</a>
-      <a href="#builder">명령 만들기</a>
+      <a href="#bundles">묶음 고르기</a>
+      <a href="#builder">문장 만들기</a>
       <a href="#manage">업데이트·지우기</a>
       <a href="#faq">문제 해결</a>
       <a href="#training">연수용</a>
@@ -440,17 +457,17 @@ body[data-mobile="1"] .mobile-note { display: block; }
         <div>
           <p class="eyebrow">날쌤이 고른 교사용 AI 하네스 팩 · 몽당분필</p>
           <h1 class="chalk-title" id="hero-title">nalssam<span class="apos">'</span>s<br>분필팩</h1>
-          <p class="lead">선생님의 AI 조수, <u>한 줄이면</u> 내 교실에 맞춰집니다.</p>
+          <p class="lead">선생님의 AI 조수, <u>채팅창에 붙여넣기만</u> 하면 내 교실에 맞춰집니다.</p>
           <p class="facts" aria-label="구성">
             <span><b>5</b>플러그인</span>
             <span><b>21</b>스킬</span>
-            <span><b>31</b>추천 도구</span>
+            <span><b>37</b>추천 도구</span>
             <span>관리자 권한 없이</span>
           </p>
           <div class="board-actions">
             <a class="btn btn-chalk" href="https://nalssam-bunpil.vercel.app/bunpil-pack.zip" rel="noopener">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>분필팩 내려받기<small>zip · 333KB · 풀고 더블클릭으로 설치</small></span>
+              <span>분필팩 내려받기<small>zip · 431KB · 풀고 더블클릭으로 설치</small></span>
             </a>
             <a class="btn btn-line" href="#install">처음이라면 1교시부터<small>순서대로 따라 하기</small></a>
           </div>
@@ -459,7 +476,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
         <aside class="board-note" aria-label="오늘의 할 일">
           <p>오늘의 할 일</p>
           <ol>
-            <li><span>한 줄 붙여넣기<small>설치는 알아서 끝납니다</small></span></li>
+            <li><span>설치 문장 붙여넣기<small>설치는 AI가 알아서 합니다</small></span></li>
             <li><span>"설정 시작해줘"<small>10가지 질문으로 내 교실 맞춤</small></span></li>
             <li><span>첫 학습지 만들기<small>결과물은 언제나 초안</small></span></li>
           </ol>
@@ -467,7 +484,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
       </div>
       <div class="quick" aria-labelledby="quick-title">
         <div class="quick-head">
-          <h2 id="quick-title">한 줄로 설치하기</h2>
+          <h2 id="quick-title">채팅창에 붙여넣어 설치하기</h2>
           <div class="seg-row">
             <div class="seg" role="group" aria-label="쓰는 AI">
               <button type="button" data-set-host="claude" aria-pressed="true">Claude</button>
@@ -479,9 +496,15 @@ body[data-mobile="1"] .mobile-note { display: block; }
             </div>
           </div>
         </div>
-        <p class="where" data-quick-where>시작 메뉴에서 <b>PowerShell</b>을 열고 붙여넣은 뒤 Enter</p>
-        <div class="cmd big"><span class="pr" data-quick-pr>PS&gt;</span><code data-quick-cmd>irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code><button class="copy" type="button" data-copy-from="[data-quick-cmd]">복사</button></div>
-        <p class="what" data-quick-what><b>Claude Code</b>가 없으면 함께 설치하고, 분필팩 5종과 날쌤 추천 도구까지 한 번에 넣습니다. 약 5~10분.</p>
+        <ol class="qsteps">
+          <li data-quick-step="0"><b>Claude 앱</b>을 <a href="https://claude.com/download" rel="noopener">내려받아</a> 설치하고 로그인 <small>Code 탭은 유료 요금제(Pro 이상)</small></li>
+          <li data-quick-step="1">앱 위쪽 <b>Code</b> 탭 → <b>Local</b> → <b>폴더 선택</b> <small>예: 문서 안에 만든 분필작업 폴더</small></li>
+          <li data-quick-step="2">아래 문장을 입력창에 <b>붙여넣고 Enter</b> <small>실행 허락을 물으면 허용</small></li>
+        </ol>
+        <div class="cmd big"><span class="pr">채팅</span><code data-quick-cmd>분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. 5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘. 끝나면 설치된 것과 실패한 것을 짧게 알려줘.
+powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex"</code><button class="copy" type="button" data-copy-from="[data-quick-cmd]">복사</button></div>
+        <p class="what" data-quick-what><b>5~10분</b> 걸립니다. 분필팩 5종과 teacher 추천 도구까지 한 번에 넣고, 끝나면 <b>새 대화</b>를 시작하세요.</p>
+        <p class="alt">앱 없이 <a href="#install" data-set-route="cli">터미널·명령 프롬프트·VS Code</a>에서 하려면 → 한 줄 명령 보기</p>
       </div>
     </section>
     <div class="tray" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -492,12 +515,12 @@ body[data-mobile="1"] .mobile-note { display: block; }
     <div class="sec-head">
       <p class="tag">따라 하기</p>
       <h2 id="install-title">설치 시간표</h2>
-      <p>쓰는 AI를 고르고 1교시부터 차례로 따라 하세요. 끝낸 교시는 번호를 눌러 동그라미를 쳐 두면, 다음에 이 페이지를 열어도 어디까지 했는지 남아 있습니다.</p>
+      <p>쓰는 AI를 고르고 1교시부터 차례로 따라 하세요. 처음이라면 맨 앞의 <b>앱 채팅창</b> 방법을 그대로 하면 됩니다. 터미널·명령 프롬프트·VS Code는 <b>다른 방법</b>으로 뒤쪽에 있습니다. 끝낸 교시는 번호를 눌러 동그라미를 쳐 두면, 다음에 이 페이지를 열어도 어디까지 했는지 남아 있습니다.</p>
     </div>
 
     <div class="tabs" role="tablist" aria-label="쓰는 AI">
-      <button class="tab" type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true" data-set-host="claude"><b>Claude</b><span>Claude Code · Claude 앱</span></button>
-      <button class="tab" type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" tabindex="-1" data-set-host="codex"><b>ChatGPT Codex</b><span>Codex CLI · Codex 앱</span></button>
+      <button class="tab" type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true" data-set-host="claude"><b>Claude</b><span>Claude 앱 · Claude Code</span></button>
+      <button class="tab" type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" tabindex="-1" data-set-host="codex"><b>ChatGPT Codex</b><span>ChatGPT 앱 · Codex</span></button>
     </div>
 
     <!-- Claude -->
@@ -506,79 +529,85 @@ body[data-mobile="1"] .mobile-note { display: block; }
         <div class="ctl"><span>컴퓨터</span>
           <div class="pick" role="group" aria-label="컴퓨터"><button type="button" data-set-os="win" aria-pressed="true">Windows</button><button type="button" data-set-os="mac" aria-pressed="false">macOS</button></div>
         </div>
-        <div class="ctl"><span>쓰는 곳</span>
-          <div class="pick" role="group" aria-label="Claude를 쓰는 곳"><button type="button" data-set-route="code" aria-pressed="true">Claude Code (터미널)</button><button type="button" data-set-route="app" aria-pressed="false">Claude 앱만 (채팅·Cowork)</button></div>
+        <div class="ctl"><span>하는 방법</span>
+          <div class="pick" role="group" aria-label="Claude 설치 방법"><button type="button" data-set-route="gui" aria-pressed="true">Claude 앱 채팅창 (기본)</button><button type="button" data-set-route="menu" aria-pressed="false">앱 메뉴만 (명령 없이)</button><button type="button" data-set-route="cli" aria-pressed="false">터미널·VS Code</button></div>
         </div>
       </div>
 
-      <div data-route-panel="code">
-        <div class="progress" data-progress="claude-code"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
-        <ol class="steps" data-steps="claude-code">
+      <!-- Claude 앱 채팅창 (Code 탭) -->
+      <div data-route-panel="gui">
+        <div class="progress" data-progress="claude-gui"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+        <ol class="steps" data-steps="claude-gui">
           <li class="step">
             <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
             <div class="step-body">
               <h3>준비물 확인</h3>
               <ul class="check">
-                <li><label><input type="checkbox" id="prep-1"> <span><b>Claude 유료 요금제</b>(Pro·Max·Team·Enterprise). 무료 요금제에서는 Claude Code를 쓸 수 없습니다. 무료로 시작하려면 <a href="#codex" data-set-host="codex">ChatGPT Codex</a>를 고르세요.</span></label></li>
+                <li><label><input type="checkbox" id="prep-1"> <span><b>Claude 유료 요금제</b>(Pro·Max·Team·Enterprise). 앱의 Code 탭은 유료 요금제에서 쓸 수 있습니다. 무료로 시작하려면 <a href="#install" data-set-host="codex">ChatGPT Codex</a>를 고르세요.</span></label></li>
                 <li><label><input type="checkbox" id="prep-2"> <span><b>인터넷망 PC나 개인 노트북.</b> 업무망 PC는 인터넷이 막혀 있거나 프로그램 설치가 제한됩니다.</span></label></li>
-                <li><label><input type="checkbox" id="prep-3"> <span><span class="only-win">Windows 10(1809) 이상</span><span class="only-mac">macOS 13 이상</span>. 관리자 권한은 필요 없습니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-3"> <span><span class="only-win">Windows</span><span class="only-mac">macOS</span> 컴퓨터. 앱 설치에 필요한 사양은 내려받는 페이지의 안내를 따릅니다.</span></label></li>
                 <li><label><input type="checkbox" id="prep-4"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
               </ul>
             </div>
           </li>
           <li class="step">
-            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
             <div class="step-body">
-              <h3>터미널 열기</h3>
-              <p class="only-win">키보드의 <kbd>⊞ Windows</kbd> 키를 누르고 <b>PowerShell</b>을 입력한 뒤 <b>Windows PowerShell</b>을 클릭합니다. 관리자로 실행하지 않아도 됩니다. <code>PS C:\Users\이름&gt;</code> 같은 줄이 보이면 준비 완료입니다.</p>
-              <p class="only-mac"><kbd>⌘ Command</kbd> + <kbd>Space</kbd>를 누르고 <b>터미널</b>을 입력한 뒤 Enter를 누릅니다. <code>이름@Mac ~ %</code> 같은 줄이 보이면 준비 완료입니다.</p>
-              <details class="stuck only-win"><summary>명령 프롬프트(검은 창)를 열었어요</summary><div class="in"><p>명령 프롬프트(<code>C:\&gt;</code>)가 아니라 <b>PowerShell</b>(<code>PS C:\&gt;</code>)이어야 합니다. 앞에 <code>PS</code>가 보이는 창을 여세요.</p></div></details>
-            </div>
-          </li>
-          <li class="step">
-            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
-            <div class="step-body">
-              <h3>한 줄 붙여넣고 Enter</h3>
-              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code><button class="copy" type="button">복사</button></div>
-              <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh</code><button class="copy" type="button">복사</button></div>
-              <p><span class="only-win">복사한 줄을 PowerShell 창에 <kbd>Ctrl</kbd>+<kbd>V</kbd>(또는 마우스 오른쪽 클릭)로 붙여넣고</span><span class="only-mac">복사한 줄을 터미널에 <kbd>⌘</kbd>+<kbd>V</kbd>로 붙여넣고</span> Enter를 누르면 아래 순서로 알아서 설치합니다.</p>
-              <ul>
-                <li>Claude Code(없을 때만, Anthropic 공식 설치 프로그램)</li>
-                <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
-                <li>분필팩 5종과 날쌤 추천 teacher 묶음(한글 HWPX 도구 3종, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 웹 수집, 하네스 팩토리)</li>
-              </ul>
-              <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
-              <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
-              <p>초록색 <code class="only-win">[v]</code><code class="only-mac">✓</code> 줄이 이어지다가 <b>분필팩 설치 완료</b>가 보이면 끝입니다.</p>
-              <details class="stuck"><summary>빨간 줄이 있거나 중간에 멈췄어요</summary><div class="in">
-                <p>같은 줄을 한 번 더 실행하세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
-                <p>학교 인터넷에서 내려받기가 막히면 휴대폰 핫스팟으로 연결해 다시 실행해 보세요.</p>
-                <p class="only-win"><code>'irm'은(는) 내부 또는 외부 명령...</code>이 보이면 명령 프롬프트에 붙여넣은 것입니다. PowerShell을 여세요.</p>
+              <h3>Claude 앱 내려받고 로그인</h3>
+              <p><a href="https://claude.com/download" rel="noopener">claude.com/download</a>에서 내 컴퓨터용 <b>Claude 앱</b>을 내려받아 설치하고, 유료 요금제 계정으로 로그인합니다. 이미 쓰고 있다면 건너뛰어도 됩니다.</p>
+              <p>앱 위쪽에 <b>Chat</b> · <b>Cowork</b> · <b>Code</b> 탭이 보이면 준비 완료입니다. 설치는 <b>Code</b> 탭에서 합니다.</p>
+              <p class="note red">일반 대화(<b>Chat</b>) 탭의 Claude는 내 컴퓨터에 프로그램을 설치할 수 없습니다. 꼭 Code 탭에서 하세요.</p>
+              <details class="stuck"><summary>Code 탭이 안 보이거나 잠겨 있어요</summary><div class="in">
+                <p>앱을 최신 버전으로 업데이트한 뒤 다시 여세요. 무료 요금제에서는 Code 탭을 쓸 수 없으니, 유료 요금제로 바꾸거나 <a href="#install" data-set-host="codex">ChatGPT Codex</a> 방법을 따라 하세요.</p>
+                <p>명령 없이 메뉴로 분필팩 5종만 넣는 방법도 있습니다. 위쪽 '하는 방법'에서 <b>앱 메뉴만</b>을 고르세요.</p>
               </div></details>
             </div>
           </li>
           <li class="step">
-            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 2분</time></div>
             <div class="step-body">
-              <h3>새 창에서 Claude 시작하고 로그인</h3>
-              <p>설치한 명령을 찾을 수 있도록 <b>지금 창을 닫고 새 <span class="only-win">PowerShell</span><span class="only-mac">터미널</span> 창</b>을 엽니다. 그다음 작업 폴더를 만들고 Claude를 실행합니다.</p>
-              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>mkdir -Force ~\분필작업 &gt; $null; cd ~\분필작업; claude</code><button class="copy" type="button">복사</button></div>
-              <div class="cmd only-mac"><span class="pr">%</span><code>mkdir -p ~/분필작업 &amp;&amp; cd ~/분필작업 &amp;&amp; claude</code><button class="copy" type="button">복사</button></div>
+              <h3>작업 폴더 만들고 Code 탭에서 열기</h3>
+              <p><span class="only-win">파일 탐색기에서</span><span class="only-mac">Finder에서</span> 문서 폴더 안에 <code>분필작업</code> 폴더를 하나 만듭니다. 앞으로 선생님 자료와 AI가 만든 파일이 이 폴더에 쌓입니다.</p>
               <ul>
-                <li>처음 실행하면 화면 색을 고르고, 로그인 방법에서 <b>Claude 구독 계정</b>을 고릅니다.</li>
-                <li>브라우저가 열리면 로그인하고 승인한 뒤 터미널로 돌아옵니다.</li>
-                <li>"이 폴더를 믿을까요?"라고 물으면 <b>예</b>를 고릅니다.</li>
+                <li>Claude 앱 위쪽의 <b>Code</b> 탭을 누릅니다.</li>
+                <li>환경에서 <b>Local</b>(내 컴퓨터)을 고르고, <b>폴더 선택</b>으로 <code>분필작업</code>을 엽니다.</li>
+                <li>아래쪽에 입력창이 보이면 준비 끝입니다. 입력창 옆의 권한 선택은 <b>Manual</b>(수동. 예전 이름은 Ask permissions)로 두세요. 실행 전에 물어보는 방식입니다. <b>Auto</b>가 선택되어 있으면 인터넷에서 받은 스크립트 실행을 자동 판단이 막을 수 있습니다.</li>
               </ul>
-              <p class="muted small">앞으로는 <code>분필작업</code> 폴더에 자료를 넣고 그 폴더에서 <code>claude</code>를 실행하면 됩니다.</p>
+              <p class="note">분필팩 같은 플러그인은 <b>Local</b> 환경에서만 쓸 수 있습니다. 클라우드(원격) 환경이나 WSL 세션에서는 보이지 않습니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
+            <div class="step-body">
+              <h3>설치 문장 붙여넣고 Enter</h3>
+              <div class="cmd only-win"><span class="pr">채팅</span><code>분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. 5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘. 끝나면 설치된 것과 실패한 것을 짧게 알려줘.
+powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex"</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">채팅</span><code>분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. 5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘. 끝나면 설치된 것과 실패한 것을 짧게 알려줘.
+curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh</code><button class="copy" type="button">복사</button></div>
+              <p><span class="only-win">복사한 문장을 입력창에 <kbd>Ctrl</kbd>+<kbd>V</kbd>로 붙여넣고</span><span class="only-mac">복사한 문장을 입력창에 <kbd>⌘</kbd>+<kbd>V</kbd>로 붙여넣고</span> Enter를 누릅니다. Claude가 명령 실행 <b>허락</b>을 물으면 내용이 위 명령과 같은지 확인하고 <b>허용</b>하세요. 그다음은 Claude가 알아서 설치하고 결과를 알려 줍니다.</p>
+              <ul>
+                <li>Claude Code 명령(이 컴퓨터에 없을 때만, Anthropic 공식 설치 프로그램)</li>
+                <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
+                <li>분필팩 5종과 teacher 추천 묶음(한글 HWPX 도구 3종, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 웹 수집, 하네스 팩토리)</li>
+              </ul>
+              <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 문장을 다시 붙여넣으면 채워집니다.</p>
+              <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 문장을 한 번 더 붙여넣으세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
+              <p>Claude가 <b>분필팩 설치 완료</b>라고 알려 주면 끝입니다.</p>
+              <details class="stuck"><summary>Claude가 망설이거나, 실패했다고 해요</summary><div class="in">
+                <p>실행하지 못했다고 하거나 아무것도 실행되지 않으면 입력창 옆 권한 선택이 <b>Auto</b>인지 확인하세요. <b>Manual</b>로 바꾸고 같은 문장을 다시 붙여넣은 뒤, 허락을 물으면 <b>허용</b>합니다.</p>
+                <p>Claude가 인터넷에서 받은 스크립트를 바로 실행하기를 망설이면 <b>"먼저 스크립트 내용을 보여 주고, 문제없으면 실행해줘"</b>라고 답하세요. 설치 스크립트의 원문은 GitHub(<a href="https://github.com/nalssam/bunpil_pack/blob/main/install.sh" rel="noopener">install.sh</a> · <a href="https://github.com/nalssam/bunpil_pack/blob/main/install.ps1" rel="noopener">install.ps1</a>)에서도 볼 수 있습니다.</p>
+                <p>빨간 줄이 있거나 10분이 넘도록 끝나지 않으면 같은 문장을 다시 붙여넣으세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
+                <p>학교 인터넷에서 내려받기가 막히면 휴대폰 핫스팟으로 연결해 다시 시도해 보세요.</p>
+              </div></details>
             </div>
           </li>
           <li class="step">
             <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
             <div class="step-body">
-              <h3>설정 마법사로 내 교실 맞추기</h3>
-              <p>대화창에 아래처럼 입력하세요. 학교급, 학년, 과목, 맡은 업무, 문체 등 10가지를 묻고, 답에 맞춰 내 맞춤 지침(<code>CLAUDE.md</code>)을 작업 폴더에 만들어 줍니다.</p>
+              <h3>새 대화에서 설정 마법사로 내 교실 맞추기</h3>
+              <p>방금 설치한 플러그인은 <b>새 대화</b>부터 보입니다. Code 탭에서 새 대화를 시작하고(같은 폴더, Local), 아래처럼 입력하세요. 학교급, 학년, 과목, 맡은 업무, 문체 등 10가지를 묻고, 답에 맞춰 내 맞춤 지침(<code>CLAUDE.md</code>)을 작업 폴더에 만들어 줍니다.</p>
               <div class="prompt-chips"><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
-              <p class="muted small">한 번 만들어 두면 이후 모든 요청이 내 교실 기준으로 맞춰집니다. 바뀐 점이 생기면 다시 실행하면 됩니다.</p>
+              <p class="muted small">새 대화에서도 분필팩이 보이지 않으면 Claude 앱을 완전히 종료했다가 다시 여세요. 한 번 만들어 두면 이후 모든 요청이 내 교실 기준으로 맞춰집니다.</p>
             </div>
           </li>
           <li class="step">
@@ -588,7 +617,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
               <ul>
                 <li><b>점검</b>: "분필 점검해줘"라고 하면 설치된 스킬, 지침 파일, 개인정보 가드, 도구 상태를 표로 보여 줍니다.</li>
                 <li><b>가드 시험</b>: "가드 시험: 연락처 010-0000-0000"을 보내 경고가 뜨면 개인정보 가드가 작동하는 것입니다.</li>
-                <li><b>노션·패들렛·캔바</b>: 대화창에 <code>/mcp</code> → 서비스 선택 → 브라우저에서 로그인합니다.</li>
+                <li><b>노션·패들렛·캔바</b>: 입력창 옆 <b>+</b> 버튼 → <b>Connectors(커넥터)</b>에서 서비스를 골라 로그인합니다. 목록에서 찾기 어려우면 왼쪽 <b>사용자 지정(Customize)</b>의 커넥터도 확인하세요.</li>
               </ul>
               <div class="prompt-chips">
                 <button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button>
@@ -600,9 +629,11 @@ body[data-mobile="1"] .mobile-note { display: block; }
         </ol>
       </div>
 
-      <div data-route-panel="app" hidden>
-        <div class="progress" data-progress="claude-app"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
-        <ol class="steps" data-steps="claude-app">
+      <!-- Claude 앱 메뉴만 (명령 없이) -->
+      <div data-route-panel="menu" hidden>
+        <p class="note">Chat·Cowork만 쓰거나, 학교 PC에서 명령 실행이 막혀 있을 때의 방법입니다. <b>분필팩 5종(스킬)</b>만 들어가고, 추천 도구(한글 편집·문서 변환·브라우저 자동화 같은 MCP)는 들어가지 않습니다.</p>
+        <div class="progress" data-progress="claude-menu"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+        <ol class="steps" data-steps="claude-menu">
           <li class="step">
             <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
             <div class="step-body">
@@ -649,7 +680,99 @@ body[data-mobile="1"] .mobile-note { display: block; }
               <h3>점검하기</h3>
               <p>"분필 점검해줘"라고 하면 무엇이 설치되었는지 보여 줍니다. 채팅에서는 자동 개인정보 점검(훅)과 서브에이전트가 회색으로 보이는데 정상입니다. Cowork와 Claude Code에서는 모두 작동합니다.</p>
               <div class="prompt-chips"><button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button></div>
-              <p class="muted small">한글 HWPX 도구처럼 플러그인으로 된 추천 도구(<code>airmang/hwpx-plugins</code>, <code>chrisryugj/kordoc</code>, <code>revfactory/harness</code> 등)도 같은 방법으로 저장소 주소를 넣어 설치할 수 있습니다.</p>
+              <p class="muted small">한글 HWPX 도구처럼 플러그인으로 된 추천 도구(<code>airmang/hwpx-plugins</code>, <code>chrisryugj/kordoc</code>, <code>revfactory/harness</code> 등)도 같은 방법으로 저장소 주소를 넣어 설치할 수 있습니다. 한 번에 모두 넣으려면 <a href="#install" data-set-route="gui">앱 채팅창 방법</a>을 쓰세요.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Claude 터미널·VS Code -->
+      <div data-route-panel="cli" hidden>
+        <p class="note">앱 대신 <b>터미널</b>(PowerShell · 명령 프롬프트 · macOS 터미널 · VS Code 터미널)에서 하는 방법입니다. 하는 일은 앱 채팅창 방법과 같고, 붙여넣는 곳만 다릅니다.</p>
+        <div class="progress" data-progress="claude-cli"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+        <ol class="steps" data-steps="claude-cli">
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>준비물 확인</h3>
+              <ul class="check">
+                <li><label><input type="checkbox" id="prep-8"> <span><b>Claude 유료 요금제</b>(Pro·Max·Team·Enterprise). 무료 요금제에서는 Claude Code를 쓸 수 없습니다. 무료로 시작하려면 <a href="#install" data-set-host="codex">ChatGPT Codex</a>를 고르세요.</span></label></li>
+                <li><label><input type="checkbox" id="prep-9"> <span><b>인터넷망 PC나 개인 노트북.</b> 업무망 PC는 인터넷이 막혀 있거나 프로그램 설치가 제한됩니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-10"> <span><span class="only-win">Windows 10(1809) 이상</span><span class="only-mac">macOS 13 이상</span>. 관리자 권한은 필요 없습니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-11"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
+              </ul>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>터미널 열기</h3>
+              <p class="only-win">키보드의 <kbd>⊞ Windows</kbd> 키를 누르고 <b>PowerShell</b>을 입력한 뒤 <b>Windows PowerShell</b>을 클릭합니다. 관리자로 실행하지 않아도 됩니다. <code>PS C:\Users\이름&gt;</code> 같은 줄이 보이면 준비 완료입니다. 명령 프롬프트(cmd)나 VS Code의 터미널(메뉴 <b>터미널 → 새 터미널</b>)도 쓸 수 있습니다.</p>
+              <p class="only-mac"><kbd>⌘ Command</kbd> + <kbd>Space</kbd>를 누르고 <b>터미널</b>을 입력한 뒤 Enter를 누릅니다. <code>이름@Mac ~ %</code> 같은 줄이 보이면 준비 완료입니다. VS Code의 터미널(메뉴 <b>터미널 → 새 터미널</b>)도 쓸 수 있습니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
+            <div class="step-body">
+              <h3>한 줄 붙여넣고 Enter</h3>
+              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code><button class="copy" type="button">복사</button></div>
+              <p class="only-win muted small">앞에 <code>PS</code>가 보이는 PowerShell용입니다. 명령 프롬프트(<code>C:\&gt;</code>)나 Git Bash 등 어느 창이든 되는 줄은 아래입니다.</p>
+              <div class="cmd only-win"><span class="pr">&gt;</span><code>powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex"</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh</code><button class="copy" type="button">복사</button></div>
+              <p><span class="only-win">복사한 줄을 창에 <kbd>Ctrl</kbd>+<kbd>V</kbd>(또는 마우스 오른쪽 클릭)로 붙여넣고</span><span class="only-mac">복사한 줄을 터미널에 <kbd>⌘</kbd>+<kbd>V</kbd>로 붙여넣고</span> Enter를 누르면 아래 순서로 알아서 설치합니다.</p>
+              <ul>
+                <li>Claude Code(없을 때만, Anthropic 공식 설치 프로그램)</li>
+                <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
+                <li>분필팩 5종과 teacher 추천 묶음(한글 HWPX 도구 3종, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 웹 수집, 하네스 팩토리)</li>
+              </ul>
+              <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
+              <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
+              <p>초록색 <code class="only-win">[v]</code><code class="only-mac">✓</code> 줄이 이어지다가 <b>분필팩 설치 완료</b>가 보이면 끝입니다.</p>
+              <details class="stuck"><summary>빨간 줄이 있거나 중간에 멈췄어요</summary><div class="in">
+                <p>같은 줄을 한 번 더 실행하세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
+                <p>학교 인터넷에서 내려받기가 막히면 휴대폰 핫스팟으로 연결해 다시 실행해 보세요.</p>
+                <p class="only-win"><code>'irm'은(는) 내부 또는 외부 명령...</code>이 보이면 명령 프롬프트에 붙여넣은 것입니다. 위의 <code>powershell -NoProfile -Command ...</code> 줄을 쓰거나 PowerShell을 여세요.</p>
+              </div></details>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="step-body">
+              <h3>새 창에서 Claude 시작하고 로그인</h3>
+              <p>설치한 명령을 찾을 수 있도록 <b>지금 창을 닫고 새 <span class="only-win">PowerShell</span><span class="only-mac">터미널</span> 창</b>을 엽니다. 그다음 작업 폴더를 만들고 Claude를 실행합니다.</p>
+              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>mkdir -Force ~\분필작업 &gt; $null; cd ~\분필작업; claude</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">%</span><code>mkdir -p ~/분필작업 &amp;&amp; cd ~/분필작업 &amp;&amp; claude</code><button class="copy" type="button">복사</button></div>
+              <ul>
+                <li>처음 실행하면 화면 색을 고르고, 로그인 방법에서 <b>Claude 구독 계정</b>을 고릅니다.</li>
+                <li>브라우저가 열리면 로그인하고 승인한 뒤 터미널로 돌아옵니다.</li>
+                <li>"이 폴더를 믿을까요?"라고 물으면 <b>예</b>를 고릅니다.</li>
+              </ul>
+              <p class="muted small">앞으로는 <code>분필작업</code> 폴더에 자료를 넣고 그 폴더에서 <code>claude</code>를 실행하면 됩니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
+            <div class="step-body">
+              <h3>설정 마법사로 내 교실 맞추기</h3>
+              <p>대화창에 아래처럼 입력하세요. 학교급, 학년, 과목, 맡은 업무, 문체 등 10가지를 묻고, 답에 맞춰 내 맞춤 지침(<code>CLAUDE.md</code>)을 작업 폴더에 만들어 줍니다.</p>
+              <div class="prompt-chips"><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
+              <p class="muted small">한 번 만들어 두면 이후 모든 요청이 내 교실 기준으로 맞춰집니다. 바뀐 점이 생기면 다시 실행하면 됩니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">6교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="step-body">
+              <h3>점검하고 첫 요청 해 보기</h3>
+              <ul>
+                <li><b>점검</b>: "분필 점검해줘"라고 하면 설치된 스킬, 지침 파일, 개인정보 가드, 도구 상태를 표로 보여 줍니다.</li>
+                <li><b>가드 시험</b>: "가드 시험: 연락처 010-0000-0000"을 보내 경고가 뜨면 개인정보 가드가 작동하는 것입니다.</li>
+                <li><b>노션·패들렛·캔바</b>: 대화창에 <code>/mcp</code> → 서비스 선택 → 브라우저에서 로그인합니다.</li>
+              </ul>
+              <div class="prompt-chips">
+                <button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button>
+                <button class="say" type="button" data-copy="4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘">"4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘"</button>
+                <button class="say" type="button" data-copy="받은 공문 정리하고 할 일 뽑아줘">"받은 공문 정리하고 할 일 뽑아줘"</button>
+              </div>
             </div>
           </li>
         </ol>
@@ -662,92 +785,194 @@ body[data-mobile="1"] .mobile-note { display: block; }
         <div class="ctl"><span>컴퓨터</span>
           <div class="pick" role="group" aria-label="컴퓨터"><button type="button" data-set-os="win" aria-pressed="true">Windows</button><button type="button" data-set-os="mac" aria-pressed="false">macOS</button></div>
         </div>
+        <div class="ctl"><span>하는 방법</span>
+          <div class="pick" role="group" aria-label="Codex 설치 방법"><button type="button" data-set-route="gui" aria-pressed="true">ChatGPT 앱 Codex 채팅창 (기본)</button><button type="button" data-set-route="cli" aria-pressed="false">터미널·VS Code</button></div>
+        </div>
       </div>
-      <div class="progress" data-progress="codex"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
-      <ol class="steps" data-steps="codex">
-        <li class="step">
-          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
-          <div class="step-body">
-            <h3>준비물 확인</h3>
-            <ul class="check">
-              <li><label><input type="checkbox" id="prep-8"> <span><b>ChatGPT 계정.</b> Codex는 무료 요금제를 포함한 ChatGPT 요금제에서 쓸 수 있고, 쓸 수 있는 양은 요금제마다 다릅니다.</span></label></li>
-              <li><label><input type="checkbox" id="prep-9"> <span><b>인터넷망 PC나 개인 노트북.</b> 업무망 PC는 인터넷이 막혀 있거나 프로그램 설치가 제한됩니다.</span></label></li>
-              <li><label><input type="checkbox" id="prep-10"> <span>관리자 권한은 필요 없습니다.</span></label></li>
-              <li><label><input type="checkbox" id="prep-11"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
-            </ul>
-          </div>
-        </li>
-        <li class="step">
-          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
-          <div class="step-body">
-            <h3>터미널 열기</h3>
-            <p class="only-win">키보드의 <kbd>⊞ Windows</kbd> 키를 누르고 <b>PowerShell</b>을 입력한 뒤 <b>Windows PowerShell</b>을 클릭합니다. <code>PS C:\Users\이름&gt;</code> 같은 줄이 보이면 준비 완료입니다.</p>
-            <p class="only-mac"><kbd>⌘ Command</kbd> + <kbd>Space</kbd>를 누르고 <b>터미널</b>을 입력한 뒤 Enter를 누릅니다.</p>
-          </div>
-        </li>
-        <li class="step">
-          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
-          <div class="step-body">
-            <h3>한 줄 붙여넣고 Enter</h3>
-            <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex</code><button class="copy" type="button">복사</button></div>
-            <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh</code><button class="copy" type="button">복사</button></div>
-            <p>붙여넣고 Enter를 누르면 아래 순서로 알아서 설치합니다.</p>
-            <ul>
-              <li>Codex CLI(없을 때만, OpenAI 공식 설치 프로그램)</li>
-              <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
-              <li>분필팩 5종과 날쌤 추천 teacher 묶음(한글 HWPX 도구, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 웹 수집, 하네스 팩토리)</li>
-            </ul>
-            <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
-            <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
-            <p><b>분필팩 설치 완료</b>가 보이면 끝입니다.</p>
-            <details class="stuck"><summary>빨간 줄이 있거나 중간에 멈췄어요</summary><div class="in">
-              <p>같은 줄을 한 번 더 실행하세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
-              <p>학교 인터넷에서 막히면 휴대폰 핫스팟으로 연결해 다시 실행해 보세요.</p>
-            </div></details>
-          </div>
-        </li>
-        <li class="step">
-          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
-          <div class="step-body">
-            <h3>새 창에서 Codex 시작하고 로그인</h3>
-            <p><b>지금 창을 닫고 새 <span class="only-win">PowerShell</span><span class="only-mac">터미널</span> 창</b>을 연 뒤 작업 폴더에서 Codex를 실행합니다.</p>
-            <div class="cmd only-win"><span class="pr">PS&gt;</span><code>mkdir -Force ~\분필작업 &gt; $null; cd ~\분필작업; codex</code><button class="copy" type="button">복사</button></div>
-            <div class="cmd only-mac"><span class="pr">%</span><code>mkdir -p ~/분필작업 &amp;&amp; cd ~/분필작업 &amp;&amp; codex</code><button class="copy" type="button">복사</button></div>
-            <ul>
-              <li><b>Sign in with ChatGPT</b>를 고르고 브라우저에서 로그인합니다.</li>
-              <li>폴더를 믿을지 물으면 <b>예</b>를 고릅니다.</li>
-            </ul>
-            <p class="muted small">Codex 앱(데스크톱)을 쓴다면 이 설치를 마친 뒤 앱을 다시 열고 플러그인 목록에 분필팩이 보이는지 확인하세요.</p>
-          </div>
-        </li>
-        <li class="step">
-          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
-          <div class="step-body">
-            <h3>개인정보 가드 켜고 설정 마법사</h3>
-            <p>Codex는 플러그인의 자동 점검(훅)을 처음에 믿지 않습니다. 대화창에 <code>/hooks</code>를 입력하고 <b>분필 가드</b>를 확인한 뒤 <b>신뢰(trust)</b>를 고르세요. 분필팩을 업데이트한 뒤에는 한 번 더 신뢰해야 합니다.</p>
-            <p>그다음 아래처럼 입력하면 10가지 질문으로 내 맞춤 지침(<code>AGENTS.md</code>)을 만들어 줍니다.</p>
-            <div class="prompt-chips"><button class="say" type="button" data-copy="/hooks">/hooks</button><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
-          </div>
-        </li>
-        <li class="step">
-          <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">6교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
-          <div class="step-body">
-            <h3>연결하고 점검하기</h3>
-            <ul>
-              <li><b>노션·패들렛·캔바</b>: 새 터미널에서 아래 명령을 실행하고 브라우저에서 로그인합니다(<code>padlet</code>, <code>canva</code>도 같은 방법).</li>
-            </ul>
-            <div class="cmd"><span class="pr only-win">PS&gt;</span><span class="pr only-mac">%</span><code>codex mcp login notion</code><button class="copy" type="button">복사</button></div>
-            <ul>
-              <li><b>점검</b>: "분필 점검해줘"</li>
-              <li><b>가드 시험</b>: "가드 시험: 연락처 010-0000-0000" → 경고가 뜨면 정상입니다.</li>
-            </ul>
-            <div class="prompt-chips">
-              <button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button>
-              <button class="say" type="button" data-copy="현장체험학습 가정통신문 초안 써줘">"현장체험학습 가정통신문 초안 써줘"</button>
+
+      <!-- ChatGPT 앱 Codex 채팅창 -->
+      <div data-route-panel="gui">
+        <div class="progress" data-progress="codex-gui"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+        <ol class="steps" data-steps="codex-gui">
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>준비물 확인</h3>
+              <ul class="check">
+                <li><label><input type="checkbox" id="prep-12"> <span><b>ChatGPT 계정.</b> Codex는 무료 요금제를 포함한 ChatGPT 요금제에서 쓸 수 있고, 쓸 수 있는 양은 요금제마다 다릅니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-13"> <span><b>인터넷망 PC나 개인 노트북.</b> 업무망 PC는 인터넷이 막혀 있거나 프로그램 설치가 제한됩니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-14"> <span><span class="only-win">Windows</span><span class="only-mac">macOS</span> 컴퓨터. 앱 설치에 필요한 사양은 내려받는 페이지의 안내를 따릅니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-15"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
+              </ul>
             </div>
-          </div>
-        </li>
-      </ol>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
+            <div class="step-body">
+              <h3>ChatGPT 앱 내려받고 로그인</h3>
+              <p><a href="https://chatgpt.com/download" rel="noopener">chatgpt.com/download</a>에서 내 컴퓨터용 <b>ChatGPT 앱</b>을 내려받아 설치하고 ChatGPT 계정으로 로그인합니다. <span class="only-win">Windows는 Microsoft Store 설치 화면으로 이어질 수 있습니다.</span> 이미 쓰고 있다면 건너뛰어도 됩니다.</p>
+              <p>앱에서 새 채팅을 열고 위쪽의 <b>ChatGPT</b> 이름을 눌러 <b>Codex</b>를 고르면 코드 작업 화면이 나옵니다. 앱 버전에 따라 위치가 조금 다를 수 있습니다.</p>
+              <details class="stuck"><summary>Codex가 안 보여요</summary><div class="in">
+                <p>앱을 최신 버전으로 업데이트한 뒤 다시 여세요. 그래도 없으면 <a href="https://chatgpt.com/download" rel="noopener">내려받는 페이지</a>의 안내에서 Codex 앱을 확인하세요.</p>
+                <p>터미널로 하는 방법은 위쪽 '하는 방법'의 <b>터미널·VS Code</b>입니다.</p>
+              </div></details>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 2분</time></div>
+            <div class="step-body">
+              <h3>작업 폴더 만들고 Codex에서 열기</h3>
+              <p><span class="only-win">파일 탐색기에서</span><span class="only-mac">Finder에서</span> 문서 폴더 안에 <code>분필작업</code> 폴더를 하나 만듭니다. 앞으로 선생님 자료와 AI가 만든 파일이 이 폴더에 쌓입니다.</p>
+              <ul>
+                <li>Codex 화면에서 <b>폴더 열기</b>(프로젝트 추가)로 <code>분필작업</code>을 엽니다.</li>
+                <li>권한은 <b>승인 요청(Ask for approval)</b>을 권장합니다. 명령을 실행하기 전에 물어봅니다.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
+            <div class="step-body">
+              <h3>설치 문장 붙여넣고 Enter</h3>
+              <div class="cmd only-win"><span class="pr">채팅</span><code>분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. 5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘. 끝나면 설치된 것과 실패한 것을 짧게 알려줘.
+powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex"</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">채팅</span><code>분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. 5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘. 끝나면 설치된 것과 실패한 것을 짧게 알려줘.
+curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh</code><button class="copy" type="button">복사</button></div>
+              <p><span class="only-win">복사한 문장을 입력창에 <kbd>Ctrl</kbd>+<kbd>V</kbd>로 붙여넣고</span><span class="only-mac">복사한 문장을 입력창에 <kbd>⌘</kbd>+<kbd>V</kbd>로 붙여넣고</span> Enter를 누릅니다. Codex가 <b>승인</b>을 요청하면 내용이 위 명령과 같은지 확인하고 승인하세요. 그다음은 Codex가 알아서 설치하고 결과를 알려 줍니다.</p>
+              <ul>
+                <li>Codex 명령(이 컴퓨터에 없을 때만, OpenAI 공식 설치 프로그램)</li>
+                <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
+                <li>분필팩 5종과 teacher 추천 묶음(한글 HWPX 도구, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 웹 수집, 하네스 팩토리)</li>
+              </ul>
+              <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 문장을 다시 붙여넣으면 채워집니다.</p>
+              <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 문장을 한 번 더 붙여넣으세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
+              <p>Codex가 <b>분필팩 설치 완료</b>라고 알려 주면 끝입니다.</p>
+              <details class="stuck"><summary>Codex가 망설이거나, 실패했다고 해요</summary><div class="in">
+                <p>인터넷에서 받은 스크립트를 바로 실행하기를 망설이면 <b>"먼저 스크립트 내용을 보여 주고, 문제없으면 실행해줘"</b>라고 답하세요. 설치 스크립트의 원문은 GitHub(<a href="https://github.com/nalssam/bunpil_pack/blob/main/install.sh" rel="noopener">install.sh</a> · <a href="https://github.com/nalssam/bunpil_pack/blob/main/install.ps1" rel="noopener">install.ps1</a>)에서도 볼 수 있습니다.</p>
+                <p>빨간 줄이 있거나 10분이 넘도록 끝나지 않으면 같은 문장을 다시 붙여넣으세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
+                <p>인터넷 접근이나 폴더 쓰기를 막아서 실패했다면, 승인 요청에 허용했는지 확인하세요.</p>
+              </div></details>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
+            <div class="step-body">
+              <h3>새 대화에서 개인정보 가드 켜고 설정 마법사</h3>
+              <p>방금 설치한 플러그인은 <b>새 대화</b>부터 쓰이고, 앱을 한 번 껐다 켜면 가장 확실합니다. 앱과 터미널은 같은 설정 파일을 씁니다.</p>
+              <p>Codex는 플러그인의 자동 점검(훅)을 처음에 믿지 않습니다. 훅을 신뢰할지 묻는 안내가 나오면 <b>분필 가드</b>를 확인하고 <b>신뢰(trust)</b>를 고르세요. 안내가 보이지 않으면 터미널에서 <code>codex</code>를 열고 <code>/hooks</code>로 확인할 수 있습니다. 분필팩을 업데이트한 뒤에는 한 번 더 신뢰해야 합니다.</p>
+              <p>그다음 아래처럼 입력하면 10가지 질문으로 내 맞춤 지침(<code>AGENTS.md</code>)을 만들어 줍니다.</p>
+              <div class="prompt-chips"><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">6교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="step-body">
+              <h3>연결하고 점검하기</h3>
+              <ul>
+                <li><b>점검</b>: "분필 점검해줘"</li>
+                <li><b>가드 시험</b>: "가드 시험: 연락처 010-0000-0000" → 경고가 뜨면 정상입니다.</li>
+                <li><b>노션·패들렛·캔바</b>: 연결 위치는 앱 버전에 따라 달라서, 채팅창에 "노션 연결하는 방법 알려줘"라고 물으면 지금 화면에 맞춰 안내합니다. 터미널을 쓴다면 <code>codex mcp login notion</code>(<code>padlet</code>, <code>canva</code>도 같은 방법)을 실행하고 브라우저에서 로그인합니다.</li>
+              </ul>
+              <div class="prompt-chips">
+                <button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button>
+                <button class="say" type="button" data-copy="현장체험학습 가정통신문 초안 써줘">"현장체험학습 가정통신문 초안 써줘"</button>
+                <button class="say" type="button" data-copy="노션 연결하는 방법 알려줘">"노션 연결하는 방법 알려줘"</button>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Codex 터미널·VS Code -->
+      <div data-route-panel="cli" hidden>
+        <p class="note">앱 대신 <b>터미널</b>(PowerShell · 명령 프롬프트 · macOS 터미널 · VS Code 터미널)에서 하는 방법입니다. 하는 일은 앱 채팅창 방법과 같고, 붙여넣는 곳만 다릅니다.</p>
+        <div class="progress" data-progress="codex-cli"><span class="dots" aria-hidden="true"></span><span class="txt" aria-live="polite"></span><button class="reset" type="button">처음부터 다시</button><div class="stamp" aria-hidden="true">참<br>잘했어요<small>BUNPIL</small></div></div>
+        <ol class="steps" data-steps="codex-cli">
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">1교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>준비물 확인</h3>
+              <ul class="check">
+                <li><label><input type="checkbox" id="prep-16"> <span><b>ChatGPT 계정.</b> Codex는 무료 요금제를 포함한 ChatGPT 요금제에서 쓸 수 있고, 쓸 수 있는 양은 요금제마다 다릅니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-17"> <span><b>인터넷망 PC나 개인 노트북.</b> 업무망 PC는 인터넷이 막혀 있거나 프로그램 설치가 제한됩니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-18"> <span>관리자 권한은 필요 없습니다.</span></label></li>
+                <li><label><input type="checkbox" id="prep-19"> <span>학생 실명·연락처는 넣지 않고 '학생A'처럼 바꿔 쓰기로 약속합니다.</span></label></li>
+              </ul>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">2교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 1분</time></div>
+            <div class="step-body">
+              <h3>터미널 열기</h3>
+              <p class="only-win">키보드의 <kbd>⊞ Windows</kbd> 키를 누르고 <b>PowerShell</b>을 입력한 뒤 <b>Windows PowerShell</b>을 클릭합니다. <code>PS C:\Users\이름&gt;</code> 같은 줄이 보이면 준비 완료입니다. 명령 프롬프트(cmd)나 VS Code의 터미널(메뉴 <b>터미널 → 새 터미널</b>)도 쓸 수 있습니다.</p>
+              <p class="only-mac"><kbd>⌘ Command</kbd> + <kbd>Space</kbd>를 누르고 <b>터미널</b>을 입력한 뒤 Enter를 누릅니다. VS Code의 터미널(메뉴 <b>터미널 → 새 터미널</b>)도 쓸 수 있습니다.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">3교시</span><span class="hint">눌러서 완료 표시</span></button><time>5~10분</time></div>
+            <div class="step-body">
+              <h3>한 줄 붙여넣고 Enter</h3>
+              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex</code><button class="copy" type="button">복사</button></div>
+              <p class="only-win muted small">앞에 <code>PS</code>가 보이는 PowerShell용입니다. 명령 프롬프트(<code>C:\&gt;</code>)나 Git Bash 등 어느 창이든 되는 줄은 아래입니다.</p>
+              <div class="cmd only-win"><span class="pr">&gt;</span><code>powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex"</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh</code><button class="copy" type="button">복사</button></div>
+              <p>붙여넣고 Enter를 누르면 아래 순서로 알아서 설치합니다.</p>
+              <ul>
+                <li>Codex CLI(없을 때만, OpenAI 공식 설치 프로그램)</li>
+                <li>Node.js·uv·Git: 한글 문서·파일 변환·브라우저 자동화 도구와 추천 도구 내려받기에 쓰는 준비물(없을 때만)</li>
+                <li>분필팩 5종과 teacher 추천 묶음(한글 HWPX 도구, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 웹 수집, 하네스 팩토리)</li>
+              </ul>
+              <p class="note only-win">Git을 설치할 때 <b>"이 앱이 디바이스를 변경할 수 있도록 허용하시겠어요?"</b> 창이 뜨면 <b>예</b>를 누르세요. 거절하면 Git이 필요한 일부 추천 도구(한글 편집 엔진, 하네스 팩토리 등)만 건너뛰고, 나중에 같은 줄을 다시 실행하면 채워집니다.</p>
+              <p class="note only-mac">Git이 없는 맥이면 <b>"명령어 개발자 도구를 설치하겠습니까?"</b> 창이 뜹니다. <b>설치</b>를 누르고, 설치가 끝나면 같은 줄을 한 번 더 실행하세요. 그사이 Git이 필요 없는 항목은 먼저 설치됩니다.</p>
+              <p><b>분필팩 설치 완료</b>가 보이면 끝입니다.</p>
+              <details class="stuck"><summary>빨간 줄이 있거나 중간에 멈췄어요</summary><div class="in">
+                <p>같은 줄을 한 번 더 실행하세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다.</p>
+                <p>학교 인터넷에서 막히면 휴대폰 핫스팟으로 연결해 다시 실행해 보세요.</p>
+              </div></details>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">4교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="step-body">
+              <h3>새 창에서 Codex 시작하고 로그인</h3>
+              <p><b>지금 창을 닫고 새 <span class="only-win">PowerShell</span><span class="only-mac">터미널</span> 창</b>을 연 뒤 작업 폴더에서 Codex를 실행합니다.</p>
+              <div class="cmd only-win"><span class="pr">PS&gt;</span><code>mkdir -Force ~\분필작업 &gt; $null; cd ~\분필작업; codex</code><button class="copy" type="button">복사</button></div>
+              <div class="cmd only-mac"><span class="pr">%</span><code>mkdir -p ~/분필작업 &amp;&amp; cd ~/분필작업 &amp;&amp; codex</code><button class="copy" type="button">복사</button></div>
+              <ul>
+                <li><b>Sign in with ChatGPT</b>를 고르고 브라우저에서 로그인합니다.</li>
+                <li>폴더를 믿을지 물으면 <b>예</b>를 고릅니다.</li>
+              </ul>
+              <p class="muted small">Codex 앱(데스크톱)도 쓴다면 이 설치를 마친 뒤 앱을 다시 열고 플러그인 목록에 분필팩이 보이는지 확인하세요.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">5교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 5분</time></div>
+            <div class="step-body">
+              <h3>개인정보 가드 켜고 설정 마법사</h3>
+              <p>Codex는 플러그인의 자동 점검(훅)을 처음에 믿지 않습니다. 대화창에 <code>/hooks</code>를 입력하고 <b>분필 가드</b>를 확인한 뒤 <b>신뢰(trust)</b>를 고르세요. 분필팩을 업데이트한 뒤에는 한 번 더 신뢰해야 합니다.</p>
+              <p>그다음 아래처럼 입력하면 10가지 질문으로 내 맞춤 지침(<code>AGENTS.md</code>)을 만들어 줍니다.</p>
+              <div class="prompt-chips"><button class="say" type="button" data-copy="/hooks">/hooks</button><button class="say" type="button" data-copy="설정 시작해줘">"설정 시작해줘"</button></div>
+            </div>
+          </li>
+          <li class="step">
+            <div class="period"><button class="mark" type="button" aria-pressed="false"><span class="pnum">6교시</span><span class="hint">눌러서 완료 표시</span></button><time>약 3분</time></div>
+            <div class="step-body">
+              <h3>연결하고 점검하기</h3>
+              <ul>
+                <li><b>노션·패들렛·캔바</b>: 새 터미널에서 아래 명령을 실행하고 브라우저에서 로그인합니다(<code>padlet</code>, <code>canva</code>도 같은 방법).</li>
+              </ul>
+              <div class="cmd"><span class="pr only-win">PS&gt;</span><span class="pr only-mac">%</span><code>codex mcp login notion</code><button class="copy" type="button">복사</button></div>
+              <ul>
+                <li><b>점검</b>: "분필 점검해줘"</li>
+                <li><b>가드 시험</b>: "가드 시험: 연락처 010-0000-0000" → 경고가 뜨면 정상입니다.</li>
+              </ul>
+              <div class="prompt-chips">
+                <button class="say" type="button" data-copy="분필 점검해줘">"분필 점검해줘"</button>
+                <button class="say" type="button" data-copy="현장체험학습 가정통신문 초안 써줘">"현장체험학습 가정통신문 초안 써줘"</button>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
     </div>
   </section>
 
@@ -763,91 +988,114 @@ body[data-mobile="1"] .mobile-note { display: block; }
     </div>
 
     <div class="cat">
-      <h3>날쌤 추천 도구</h3>
-      <p>분필팩은 아래 도구를 복사하지 않고 각 원 저장소에서 바로 설치합니다. 기본은 <b>teacher</b> 묶음이고, <a href="#builder">명령 만들기</a>에서 creator·dev 묶음을 더할 수 있습니다. 업데이트와 라이선스는 원 저장소를 따릅니다.</p>
+      <h3>추천 도구</h3>
+      <p>분필팩은 아래 도구를 복사하지 않고 각 원 저장소에서 바로 설치합니다. 기본은 <b>teacher</b> 묶음이고, <a href="#bundles">묶음 고르기</a>에서 creator·dev·studio 묶음을 더할 수 있습니다. 업데이트와 라이선스는 원 저장소를 따릅니다.</p>
 <div class="prof"><h4><code>teacher</code> 기본. 한글·문서·업무 자동화(RPA)·웹 수집·하네스 <span class="muted small">11개</span></h4></div><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/airmang/hwpx-plugins" rel="noopener">airmang/hwpx-plugins</a></td><td>한글(HWPX) 편집 엔진</td><td><span class="kind">플러그인</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/chrisryugj/kordoc" rel="noopener">chrisryugj/kordoc</a></td><td>HWP·HWPX·PDF·DOCX·XLSX 읽기·비교·공문 프리셋 생성(MCP 17개 도구)<span class="need">필요: Node.js</span></td><td><span class="kind">플러그인 + MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/ZZombie04/hwpx_new" rel="noopener">ZZombie04/hwpx_new</a></td><td>한글 양식 기반 보고서·계획서 생성(MCP)<span class="need">필요: uv(또는 pipx)·Python 3.9+</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/microsoft/markitdown" rel="noopener">microsoft/markitdown</a></td><td>PDF·PPT·워드·엑셀 → 텍스트 변환(MCP)<span class="need">필요: uv</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/ZZombie04/pptx_maker" rel="noopener">ZZombie04/pptx_maker</a></td><td>한국어 발표 자료(PPTX) 엔진 — 초등·중등 수업, 교사 연수, 학부모 설명회 덱 생성·자동 점검(MCP 16개 도구)<span class="need">필요: uv·Python 3.9+</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/microsoft/playwright" rel="noopener">microsoft/playwright</a></td><td>브라우저 자동화(RPA) — 웹 양식 입력·자료 수집(MCP)<span class="need">필요: Node.js</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/firecrawl/firecrawl-mcp-server" rel="noopener">firecrawl/firecrawl-mcp-server</a></td><td>웹사이트 내용 통째로 수집·검색·읽기(MCP, 키 없이 쓰는 무료 구간)</td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://github.com/perplexityai/modelcontextprotocol" rel="noopener">perplexityai/modelcontextprotocol</a></td><td>최신 뉴스·문서를 찾아보고 답변(MCP) — 유료 API 키가 있을 때만 연결<span class="need">필요: Node.js, Perplexity API 키(유료)</span></td><td><span class="kind">MCP</span></td><td><span class="kind">MCP</span></td></tr><tr><td class="repo"><a href="https://code.claude.com/docs/en/chrome" rel="noopener">Claude in Chrome</a></td><td>크롬 연결 — 지금 열어 둔 탭 읽기·클릭(Claude in Chrome 확장)<span class="need">필요: 크롬 확장 설치, Claude 유료 요금제</span></td><td><span class="kind">직접 설치 안내</span></td><td><span class="kind none">—</span></td></tr><tr><td class="repo"><a href="https://github.com/revfactory/harness" rel="noopener">revfactory/harness</a></td><td>한 문장으로 에이전트 팀·스킬 만들기(하네스 팩토리)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/revfactory/harness-100" rel="noopener">revfactory/harness-100</a></td><td>하네스 예시 100종(한국어) — 분필팩 harness-gallery 스킬로 필요한 것만 가져오기<span class="need">필요: git</span></td><td><span class="kind">골라 가져오기</span></td><td><span class="kind">골라 가져오기</span></td></tr></tbody></table></div>
-<details class="prof-more"><summary class="prof"><h4><code>creator</code> 웹·디자인·영상(모션그래픽)·인스타그램 자료 만들기 <span class="muted small">11개</span></h4></summary><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" rel="noopener">nextlevelbuilder/ui-ux-pro-max-skill</a></td><td>UI·UX 디자인 지식(웹페이지·에듀테크 화면)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/Leonxlnx/taste-skill" rel="noopener">Leonxlnx/taste-skill</a></td><td>세련된 프런트엔드 디자인 감각<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/pbakaus/impeccable" rel="noopener">pbakaus/impeccable</a></td><td>디자인 다듬기·점검(/impeccable polish·audit)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/bradautomates/claude-video" rel="noopener">bradautomates/claude-video</a></td><td>영상 보고 요약(유튜브·파일 → 장면·자막)<span class="need">필요: Python 3.10+, ffmpeg, yt-dlp(실행 시)</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/aldegad/sprite-gen" rel="noopener">aldegad/sprite-gen</a></td><td>게임·애니메이션용 스프라이트 이미지 만들기<span class="need">필요: Node.js(설치), Python(실행)</span></td><td><span class="kind">스킬</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/Jakeschincariol/instagram-agent-skill" rel="noopener">Jakeschincariol/instagram-agent-skill</a></td><td>인스타그램 스킬 13종 — 아이디어 한 줄로 훅·릴스 대본·화면 자막·캡션(올리기는 직접)<span class="need">필요: Python 3(점검 도구)</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/glifxyz/glif-mcp-server" rel="noopener">glifxyz/glif-mcp-server</a></td><td>이미지·영상·음성 AI 수백 개 연결(Glif)<span class="need">필요: Glif 계정 로그인(크레딧)</span></td><td><span class="kind">플러그인 + MCP</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/Leonxlnx/cinetic" rel="noopener">Leonxlnx/cinetic</a></td><td>문장 한두 줄로 소개·출시 영상(소리 포함) 제작 스킬 — 날쌤팩에도 있는 도구라, 날쌤팩을 같이 설치하면 그쪽 것을 씀<span class="need">필요: bash, Node 22+, ffmpeg 6+, Python 3.11+, Chromium</span></td><td><span class="kind">스킬</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://prompt-motion.com" rel="noopener">Prompt Motion</a></td><td>클로드로 만든 모션 영상 234개와 프롬프트 원문 모음(로그인 없음, 2026-10-14 기준) — 영상·프롬프트는 각 원작자 것</td><td><span class="kind">참고 사이트</span></td><td><span class="kind">참고 사이트</span></td></tr><tr><td class="repo"><a href="https://github.com/ManimCommunity/manim" rel="noopener">ManimCommunity/manim</a></td><td>수학·과학 개념 설명 애니메이션(수업 영상 스킬이 필요할 때 파이썬 환경에 설치)<span class="need">필요: Python, ffmpeg, Linux는 cairo·pango</span></td><td><span class="kind">필요할 때 설치</span></td><td><span class="kind">필요할 때 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/rany2/edge-tts" rel="noopener">rany2/edge-tts</a></td><td>한국어 음성 합성(대본을 인터넷 음성 서비스로 보냄 — 학생 정보 금지)<span class="need">필요: Python, 인터넷</span></td><td><span class="kind">필요할 때 설치</span></td><td><span class="kind">필요할 때 설치</span></td></tr></tbody></table></div></details>
+<details class="prof-more"><summary class="prof"><h4><code>creator</code> 웹·디자인·영상(모션그래픽)·인스타그램 자료 만들기 <span class="muted small">11개</span></h4></summary><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" rel="noopener">nextlevelbuilder/ui-ux-pro-max-skill</a></td><td>UI·UX 디자인 지식(웹페이지·에듀테크 화면)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/Leonxlnx/taste-skill" rel="noopener">Leonxlnx/taste-skill</a></td><td>세련된 프런트엔드 디자인 감각<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/pbakaus/impeccable" rel="noopener">pbakaus/impeccable</a></td><td>디자인 다듬기·점검(/impeccable polish·audit)<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/bradautomates/claude-video" rel="noopener">bradautomates/claude-video</a></td><td>영상 보고 요약(유튜브·파일 → 장면·자막)<span class="need">필요: Python 3.10+, ffmpeg, yt-dlp(실행 시)</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/aldegad/sprite-gen" rel="noopener">aldegad/sprite-gen</a></td><td>게임·애니메이션용 스프라이트 이미지 만들기<span class="need">필요: Node.js(설치), Python(실행)</span></td><td><span class="kind">스킬</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/Jakeschincariol/instagram-agent-skill" rel="noopener">Jakeschincariol/instagram-agent-skill</a></td><td>인스타그램 스킬 13종 — 아이디어 한 줄로 훅·릴스 대본·화면 자막·캡션(올리기는 직접)<span class="need">필요: Python 3(점검 도구)</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/glifxyz/glif-mcp-server" rel="noopener">glifxyz/glif-mcp-server</a></td><td>이미지·영상·음성 AI 수백 개 연결(Glif)<span class="need">필요: Glif 계정 로그인(크레딧)</span></td><td><span class="kind">플러그인 + MCP</span></td><td><span class="kind">플러그인</span></td></tr><tr><td class="repo"><a href="https://github.com/Leonxlnx/cinetic" rel="noopener">Leonxlnx/cinetic</a></td><td>문장 한두 줄로 소개·출시 영상(소리 포함) 제작 스킬 — studio 묶음에도 있는 도구라, 함께 고르면 studio의 고정 버전을 씀<span class="need">필요: bash, Node 22+, ffmpeg 6+, Python 3.11+, Chromium</span></td><td><span class="kind">스킬</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://prompt-motion.com" rel="noopener">Prompt Motion</a></td><td>클로드로 만든 모션 영상 234개와 프롬프트 원문 모음(로그인 없음, 2026-10-14 기준) — 영상·프롬프트는 각 원작자 것</td><td><span class="kind">참고 사이트</span></td><td><span class="kind">참고 사이트</span></td></tr><tr><td class="repo"><a href="https://github.com/ManimCommunity/manim" rel="noopener">ManimCommunity/manim</a></td><td>수학·과학 개념 설명 애니메이션(수업 영상 스킬이 필요할 때 파이썬 환경에 설치)<span class="need">필요: Python, ffmpeg, Linux는 cairo·pango</span></td><td><span class="kind">필요할 때 설치</span></td><td><span class="kind">필요할 때 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/rany2/edge-tts" rel="noopener">rany2/edge-tts</a></td><td>한국어 음성 합성(대본을 인터넷 음성 서비스로 보냄 — 학생 정보 금지)<span class="need">필요: Python, 인터넷</span></td><td><span class="kind">필요할 때 설치</span></td><td><span class="kind">필요할 때 설치</span></td></tr></tbody></table></div></details>
 <details class="prof-more"><summary class="prof"><h4><code>dev</code> 고급·개발자용. 큰 모음은 마켓플레이스만 등록 <span class="muted small">9개</span></h4></summary><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/obra/superpowers-marketplace" rel="noopener">obra/superpowers-marketplace</a></td><td>계획→구현→검증 개발 습관 스킬 모음<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/multica-ai/andrej-karpathy-skills" rel="noopener">multica-ai/andrej-karpathy-skills</a></td><td>카파시식 코딩 지침<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/JuliusBrussee/caveman" rel="noopener">JuliusBrussee/caveman</a></td><td>응답 압축으로 토큰 절약<span class="need">필요: Codex: Node.js</span></td><td><span class="kind">플러그인</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/openai/codex-plugin-cc" rel="noopener">openai/codex-plugin-cc</a></td><td>Claude Code에서 Codex에게 검토·작업 맡기기<span class="need">필요: Codex 설치·로그인</span></td><td><span class="kind">플러그인</span> (Codex가 있을 때)</td><td><span class="kind none">—</span></td></tr><tr><td class="repo"><a href="https://github.com/Panniantong/Agent-Reach" rel="noopener">Panniantong/Agent-Reach</a></td><td>에이전트가 웹·SNS를 읽게 하는 도구(설치는 에이전트가 안내)<span class="need">필요: Node.js, 이후 Python</span></td><td><span class="kind">스킬</span></td><td><span class="kind">스킬</span></td></tr><tr><td class="repo"><a href="https://github.com/affaan-m/ECC" rel="noopener">affaan-m/ECC</a></td><td>Everything Claude Code — 스킬 1,000여 개(마켓플레이스만 등록, 골라 설치)</td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr><tr><td class="repo"><a href="https://github.com/wshobson/agents" rel="noopener">wshobson/agents</a></td><td>개발 워크플로 플러그인 90여 종(마켓플레이스만 등록)</td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr><tr><td class="repo"><a href="https://github.com/google/skills" rel="noopener">google/skills</a></td><td>Google Cloud 스킬 17종(마켓플레이스만 등록)</td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr><tr><td class="repo"><a href="https://github.com/thedotmack/claude-mem" rel="noopener">thedotmack/claude-mem</a></td><td>세션 기억 플러그인(백그라운드 작업자 실행 — 마켓플레이스만 등록)<span class="need">필요: Node.js 20+</span></td><td><span class="kind">목록만 등록</span></td><td><span class="kind">목록만 등록</span></td></tr></tbody></table></div></details>
-<details class="prof-more"><summary class="prof"><h4><code>nalssam</code> 날쌤팩 전체(고급) — 영상·모션·발표·분석 도구를 고정 버전으로 함께 설치. macOS·Linux·WSL2, 수 GB <span class="muted small">6개</span></h4></summary><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/ZZombie04/motion" rel="noopener">ZZombie04/motion</a></td><td>Motion Director — 말 한마디로 모션그래픽 연출·렌더(스킬 + MCP 22개 도구)<span class="need">필요: Chromium, ffmpeg</span></td><td><span class="kind">날쌤팩으로 설치</span></td><td><span class="kind">날쌤팩으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/revfactory/showreel" rel="noopener">revfactory/showreel</a></td><td>한국어 모션그래픽 영상 제작(기획→대본→나레이션→렌더→검수)<span class="need">필요: ffmpeg, 나레이션은 ElevenLabs 키</span></td><td><span class="kind">날쌤팩으로 설치</span></td><td><span class="kind">날쌤팩으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/Barty-Bart/motion-graphics" rel="noopener">Barty-Bart/motion-graphics</a></td><td>영상 편집 스킬 모음(자막에 맞춘 모션그래픽 B-roll 등)<span class="need">필요: ffmpeg</span></td><td><span class="kind">날쌤팩으로 설치</span></td><td><span class="kind">날쌤팩으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/nalssam/rea" rel="noopener">nalssam/rea</a></td><td>REA — 앱·바이너리 동작 분석(MCP 207개 도구)<span class="need">필요: 정밀 분석은 Ghidra 등 별도 엔진</span></td><td><span class="kind">날쌤팩으로 설치</span></td><td><span class="kind">날쌤팩으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/nalssam/aftereffects-mcp" rel="noopener">nalssam/aftereffects-mcp</a></td><td>After Effects를 AI가 직접 조작(MCP)<span class="need">필요: Adobe After Effects 2022+(macOS·Windows)</span></td><td><span class="kind">날쌤팩으로 설치</span></td><td><span class="kind">날쌤팩으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/nalssam/nalssam-pack" rel="noopener">nalssam/nalssam-pack</a></td><td>Claude Code 네이티브 플러그인 122개(개발 워크플로·Google Cloud 포함, --claude 옵션)<span class="need">필요: Claude Code, Google Cloud 플러그인은 계정 설정</span></td><td><span class="kind">날쌤팩으로 설치</span></td><td><span class="kind none">—</span></td></tr></tbody></table></div></details>
+<details class="prof-more"><summary class="prof"><h4><code>studio</code> 고급 · 영상·모션·발표·분석 도구를 고정 버전으로 한꺼번에(수 GB, 10~30분). macOS·Linux·WSL2 <span class="muted small">6개</span></h4></summary><div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody><tr><td class="repo"><a href="https://github.com/ZZombie04/motion" rel="noopener">ZZombie04/motion</a></td><td>Motion Director — 말 한마디로 모션그래픽 연출·렌더(스킬 + MCP 22개 도구)<span class="need">필요: Chromium, ffmpeg</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/revfactory/showreel" rel="noopener">revfactory/showreel</a></td><td>한국어 모션그래픽 영상 제작(기획→대본→나레이션→렌더→검수)<span class="need">필요: ffmpeg, 나레이션은 ElevenLabs 키</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/Barty-Bart/motion-graphics" rel="noopener">Barty-Bart/motion-graphics</a></td><td>영상 편집 스킬 모음(자막에 맞춘 모션그래픽 B-roll 등)<span class="need">필요: ffmpeg</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/nalssam/rea" rel="noopener">nalssam/rea</a></td><td>REA — 앱·바이너리 동작 분석(MCP 207개 도구)<span class="need">필요: 정밀 분석은 Ghidra 등 별도 엔진</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/nalssam/aftereffects-mcp" rel="noopener">nalssam/aftereffects-mcp</a></td><td>After Effects를 AI가 직접 조작(MCP)<span class="need">필요: Adobe After Effects 2022+(macOS·Windows)</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td></tr><tr><td class="repo"><a href="https://github.com/nalssam/bunpil_pack/tree/main/studio" rel="noopener">studio/ (설치 엔진)</a></td><td>스튜디오 설치 엔진 — Claude Code 네이티브 플러그인 122개(개발 워크플로·Google Cloud 포함)와 스킬·MCP를 고정 커밋으로 설치<span class="need">필요: Claude Code, Google Cloud 플러그인은 계정 설정</span></td><td><span class="kind">스튜디오 묶음으로 설치</span></td><td><span class="kind none">—</span></td></tr></tbody></table></div></details>
 <p class="muted small" style="margin-top:14px">함께 보면 좋은 곳: <a href="https://github.com/hesreallyhim/awesome-claude-code" rel="noopener">hesreallyhim/awesome-claude-code</a> (추천 목록, 링크로만 안내)</p>
     </div>
   </section>
 
-  <!-- 날쌤팩 -->
-  <section id="nalssam" class="wrap" aria-labelledby="nalssam-title">
+  <!-- 묶음 고르기 -->
+  <section id="bundles" class="wrap" aria-labelledby="bundles-title">
     <div class="sec-head">
-      <p class="tag">더 큰 작업실 · 고급</p>
-      <h2 id="nalssam-title">날쌤팩</h2>
-      <p>날쌤이 실제로 쓰는 전체 작업 환경입니다. 분필팩이 교사 업무에 필요한 도구를 가볍게 담았다면, 날쌤팩은 영상·모션그래픽·발표 자료·앱 분석·개발 도구까지 원본 저장소 29개를 고정 버전으로 설치합니다. 교사 업무만 한다면 분필팩으로 충분합니다.</p>
+      <p class="tag">한 곳에 다 모았습니다</p>
+      <h2 id="bundles-title">묶음 고르기</h2>
+      <p>분필팩 하나에 모든 도구가 들어 있습니다. 처음에는 기본인 <b>teacher</b>만으로 충분하고, 필요한 묶음만 더하세요. 아래에서 고르면 <a href="#builder">설치 문장 만들기</a>의 문장이 바뀝니다. 예전에 따로 있던 <b>날쌤팩</b>은 이 안의 <b>studio</b> 묶음으로 합쳤습니다.</p>
     </div>
-    <div class="table-wrap">
-      <table class="env compare">
-        <thead><tr><th scope="col">구분</th><th scope="col">분필팩</th><th scope="col">날쌤팩</th></tr></thead>
-        <tbody>
-          <tr><td>누구에게</td><td>모든 선생님</td><td>영상·발표·개발까지 하는 선생님</td></tr>
-          <tr><td>컴퓨터</td><td>Windows · macOS · Linux</td><td>macOS · Linux, Windows는 WSL2 Ubuntu</td></tr>
-          <tr><td>크기·시간</td><td>수백 MB · 5~10분</td><td>수 GB · 10~30분</td></tr>
-          <tr><td>Claude Code</td><td>분필팩 5종 + 추천 도구</td><td>스킬 + 네이티브 플러그인 122개(개발·Google Cloud 포함)</td></tr>
-          <tr><td>Codex</td><td>분필팩 5종 + 추천 도구</td><td>스킬 수백 개 + MCP 6종 자동 연결</td></tr>
-          <tr><td>버전</td><td>각 원 저장소의 최신판</td><td>커밋 고정(같은 버전을 다시 설치)</td></tr>
-        </tbody>
-      </table>
+    <div class="bundles">
+      <article class="bundle sheet" data-bundle="teacher">
+        <header><h3>teacher</h3><span class="badge">기본 · 모든 선생님</span></header>
+        <p class="sum">교사 업무에 바로 쓰는 도구</p>
+        <ul>
+          <li>한글(HWPX) 편집, 공문·PDF·워드·엑셀 읽기와 변환</li>
+          <li>발표 자료(PPTX) 엔진 — 수업 슬라이드·연수 자료</li>
+          <li>브라우저 자동화, 웹사이트 내용 수집, 최신 검색</li>
+          <li>하네스 팩토리와 예시 100종 가져오기</li>
+        </ul>
+        <p class="meta"><b>11</b>개 도구 · 5~10분<br>Windows · macOS · Linux</p>
+        <button class="btn btn-ghost bpick" type="button" data-pick-bundle="teacher" aria-pressed="true">설치 문장에 넣음</button>
+      </article>
+      <article class="bundle sheet" data-bundle="creator">
+        <header><h3>creator</h3><span class="badge">더하기</span></header>
+        <p class="sum">웹·디자인·영상·인스타 자료 만들기</p>
+        <ul>
+          <li>웹페이지·에듀테크 화면 디자인 스킬 3종</li>
+          <li>인스타그램 스킬 13종(훅·릴스 대본·자막·캡션)</li>
+          <li>영상 요약, 이미지·영상 AI(Glif), 소개·출시 영상(Cinetic)</li>
+          <li>모션 영상 사례 사이트 안내</li>
+        </ul>
+        <p class="meta"><b>11</b>개 도구 · 몇 분 더<br>Cinetic은 macOS · Linux · WSL2</p>
+        <button class="btn btn-ghost bpick" type="button" data-pick-bundle="creator" aria-pressed="false">설치 문장에 넣기</button>
+      </article>
+      <article class="bundle sheet" data-bundle="dev">
+        <header><h3>dev</h3><span class="badge">고급</span></header>
+        <p class="sum">개발자용</p>
+        <ul>
+          <li>계획→구현→검증 개발 습관, 코딩 지침 스킬</li>
+          <li>Claude Code에서 Codex에게 검토 맡기기</li>
+          <li>큰 모음(스킬 1,000여 개, 개발 워크플로 90여 종, Google Cloud 스킬)은 목록만 등록하고 골라 설치</li>
+        </ul>
+        <p class="meta"><b>9</b>개 도구 · 몇 분 더<br>Windows · macOS · Linux</p>
+        <button class="btn btn-ghost bpick" type="button" data-pick-bundle="dev" aria-pressed="false">설치 문장에 넣기</button>
+      </article>
+      <article class="bundle sheet adv" data-bundle="studio">
+        <header><h3>studio</h3><span class="badge adv">고급 · 예전 날쌤팩</span></header>
+        <p class="sum">영상·모션그래픽·발표 자료·앱 분석·개발까지 쓰는 전체 작업실</p>
+        <ul>
+          <li>원본 저장소 <b>29개</b>를 커밋으로 고정한 버전으로 설치(다시 설치해도 같은 버전)</li>
+          <li>Claude에는 개발·Google Cloud 포함 네이티브 플러그인 <b>122개</b>까지</li>
+          <li>Codex에는 스킬 수백 개와 MCP 6종 자동 연결</li>
+        </ul>
+        <p class="meta"><b>수 GB · 10~30분</b><br>macOS · Linux, Windows는 WSL2 Ubuntu</p>
+        <p class="muted small">계정이 따로 필요한 것: 나레이션(ElevenLabs), 영상 음성 인식(Gemini 등), Google Cloud 데이터 플러그인, Adobe After Effects. 설치가 끝난 것과 계정이 연결된 것은 다릅니다.</p>
+        <button class="btn btn-ghost bpick" type="button" data-pick-bundle="studio" aria-pressed="false">설치 문장에 넣기</button>
+      </article>
     </div>
-    <div class="manage nal-cmds">
-      <div class="sheet">
-        <h3>분필팩과 함께 설치</h3>
-        <p>분필팩을 설치하면서 날쌤팩도 넣습니다. Claude Code가 있으면 날쌤팩을 <code>--claude</code>로 설치하고, 겹치는 도구는 날쌤팩의 고정 버전을 씁니다.</p>
-        <div class="cmd"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --nalssam</code><button class="copy" type="button">복사</button></div>
-        <p class="muted small">macOS·Linux 터미널에서 실행합니다. Windows는 WSL2 Ubuntu 터미널에서 실행하며, 이때는 WSL 안의 Claude Code·Codex에 설치됩니다.</p>
-      </div>
-      <div class="sheet">
-        <h3>날쌤팩만 설치</h3>
-        <p>Claude Code용 — 스킬과 네이티브 플러그인까지</p>
-        <div class="cmd"><span class="pr">%</span><code>bash -c "$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/v1.0.1/install.sh)" -- --claude</code><button class="copy" type="button">복사</button></div>
-        <p>Codex용</p>
-        <div class="cmd"><span class="pr">%</span><code>bash -c "$(curl -fsSL https://raw.githubusercontent.com/nalssam/nalssam-pack/v1.0.1/install.sh)"</code><button class="copy" type="button">복사</button></div>
-      </div>
-    </div>
-    <ul class="nal-notes">
-      <li>설치가 끝나면 새 터미널에서 <code>nalssam-pack doctor --verify-mcp</code>로 실제 연결을 점검합니다.</li>
-      <li>계정이 따로 필요한 것: 나레이션(ElevenLabs), 영상 음성 인식(Gemini 등), Google Cloud 데이터 플러그인, Adobe After Effects. 설치가 끝난 것과 계정이 연결된 것은 다릅니다.</li>
-      <li><code>--claude</code>는 개발용 플러그인(개발 워크플로 90여 종, Google Cloud 데이터 도구 등)까지 켭니다. 필요 없는 플러그인은 Claude Code에서 <code>/plugin</code>으로 끌 수 있습니다.</li>
-      <li>날쌤팩에만 있는 도구는 <a href="#contents">설치되는 것</a>의 <b>nalssam</b> 묶음에서 볼 수 있습니다. 자세한 안내: <a href="https://github.com/nalssam/nalssam-pack" rel="noopener">GitHub nalssam/nalssam-pack</a></li>
+    <ul class="bundles-notes">
+      <li>묶음에 든 도구는 <a href="#contents">설치되는 것</a>의 표에서 하나씩 볼 수 있습니다.</li>
+      <li>studio를 설치한 뒤에는 채팅창에서 <b>"스튜디오 설치 점검해줘"</b>라고 하면 실제 연결을 점검합니다. 터미널에서는 <code>nalssam-pack doctor --verify-mcp</code>입니다.</li>
+      <li>Claude에서 studio는 개발용 플러그인까지 켭니다. 필요 없는 플러그인은 Code 탭의 입력창 옆 <b>+</b> → <b>Plugins</b> → <b>Manage plugins</b>(터미널은 <code>/plugin</code>)에서 끌 수 있습니다.</li>
+      <li>이미 날쌤팩을 설치했다면 그대로 이어집니다. 명령 이름(<code>nalssam-pack</code>)과 설치 기록 폴더(<code>~/.local/share/nalssam-pack</code>)를 바꾸지 않았으므로, studio를 다시 설치하면 빠진 것만 채웁니다. 설치 엔진: <a href="https://github.com/nalssam/bunpil_pack/tree/main/studio" rel="noopener">GitHub nalssam/bunpil_pack/studio</a></li>
     </ul>
   </section>
 
-  <!-- 명령 만들기 -->
+  <!-- 설치 문장 만들기 -->
   <section id="builder" class="wrap" aria-labelledby="builder-title">
     <div class="sec-head">
       <p class="tag">골라서 설치</p>
-      <h2 id="builder-title">명령 직접 만들기</h2>
-      <p>추천 묶음을 더하거나 한쪽에만 설치하고 싶을 때 씁니다. 고르는 대로 아래 명령이 바뀝니다.</p>
+      <h2 id="builder-title">설치 문장 직접 만들기</h2>
+      <p>묶음을 더하거나 한쪽에만 설치하고 싶을 때 씁니다. 고르는 대로 <b>① 채팅창에 붙여넣을 문장</b>과 <b>② 터미널 명령</b>이 바뀝니다. 앱을 쓴다면 ①을 복사해 Claude 앱의 Code 탭이나 ChatGPT 앱의 Codex 입력창에 붙여넣으세요.</p>
     </div>
     <div class="builder sheet">
       <form class="b-form" id="b-form">
         <fieldset><legend>어디에 설치할까요</legend>
-          <label class="opt"><input type="radio" name="b-host" id="b-host-claude" value="claude" checked> Claude Code</label>
-          <label class="opt"><input type="radio" name="b-host" id="b-host-codex" value="codex"> Codex</label>
+          <label class="opt"><input type="radio" name="b-host" id="b-host-claude" value="claude" checked> Claude <span class="muted small">(Claude 앱 · Claude Code)</span></label>
+          <label class="opt"><input type="radio" name="b-host" id="b-host-codex" value="codex"> ChatGPT Codex <span class="muted small">(ChatGPT 앱 · Codex)</span></label>
           <label class="opt"><input type="radio" name="b-host" id="b-host-both" value="both"> 컴퓨터에 있는 것 모두</label>
         </fieldset>
         <fieldset><legend>컴퓨터</legend>
-          <label class="opt"><input type="radio" name="b-os" id="b-os-win" value="win" checked> Windows (PowerShell)</label>
-          <label class="opt"><input type="radio" name="b-os" id="b-os-mac" value="mac"> macOS·Linux (터미널)</label>
+          <label class="opt"><input type="radio" name="b-os" id="b-os-win" value="win" checked> Windows</label>
+          <label class="opt"><input type="radio" name="b-os" id="b-os-mac" value="mac"> macOS · Linux</label>
         </fieldset>
-        <fieldset><legend>추천 묶음</legend>
+        <fieldset><legend>묶음 <a class="small" href="#bundles">무엇이 들었나요?</a></legend>
           <label class="opt"><input type="checkbox" id="b-p-teacher" value="teacher" checked> <span><b>teacher</b> 한글·문서·업무 자동화·웹 수집·하네스</span></label>
           <label class="opt"><input type="checkbox" id="b-p-creator" value="creator"> <span><b>creator</b> 웹·디자인·영상·인스타 자료</span></label>
           <label class="opt"><input type="checkbox" id="b-p-dev" value="dev"> <span><b>dev</b> 개발자용(큰 모음은 목록만 등록)</span></label>
+          <label class="opt"><input type="checkbox" id="b-p-studio" value="studio"> <span><b>studio</b> 영상·모션·발표·분석·개발 도구 전체(예전 날쌤팩, 수 GB)</span></label>
         </fieldset>
         <fieldset><legend>옵션</legend>
-          <label class="opt"><input type="checkbox" id="b-install" checked> <span>Claude Code·Codex가 없으면 함께 설치</span></label>
+          <label class="opt"><input type="checkbox" id="b-install" checked> <span>설치에 쓰는 Claude Code·Codex 명령이 없으면 함께 설치 <span class="muted small">(앱만 쓴다면 켜 두세요)</span></span></label>
           <label class="opt"><input type="checkbox" id="b-tools" checked> <span>Node.js·uv·Git이 없으면 함께 설치</span></label>
           <label class="opt"><input type="checkbox" id="b-nohwpx"> <span>한글(HWPX) 플러그인 빼기</span></label>
-          <label class="opt"><input type="checkbox" id="b-nalssam"> <span><b>날쌤팩</b>도 함께 설치(macOS·Linux·WSL2, 수 GB)</span></label>
         </fieldset>
       </form>
       <div class="b-out"><div class="b-out-in">
-        <h3>만들어진 명령</h3>
+        <h3>① 채팅창에 붙여넣을 문장 <small>앱 · 기본</small></h3>
+        <div class="cmd"><span class="pr">채팅</span><code id="b-chat"></code><button class="copy" type="button">복사</button></div>
+        <h3>② 터미널에서 직접 실행할 명령 <small>다른 방법</small></h3>
         <div class="cmd"><span class="pr" id="b-pr">PS&gt;</span><code id="b-cmd"></code><button class="copy" type="button">복사</button></div>
         <ul id="b-notes"></ul>
       </div></div>
@@ -863,16 +1111,17 @@ body[data-mobile="1"] .mobile-note { display: block; }
     </div>
     <div class="table-wrap">
       <table class="env">
-        <thead><tr><th scope="col">기능</th><th scope="col">Claude 웹 채팅</th><th scope="col">Cowork</th><th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead>
+        <thead><tr><th scope="col">기능</th><th scope="col">Claude Chat(웹·앱)</th><th scope="col">Cowork</th><th scope="col">Claude Code(앱 Code 탭·터미널)</th><th scope="col">Codex(ChatGPT 앱·터미널)</th></tr></thead>
         <tbody>
           <tr><td>분필팩 스킬 21종</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
-          <tr><td>개인정보 자동 점검(훅)</td><td class="no">× 지침으로 대신</td><td class="yes">○</td><td class="yes">○</td><td><span class="yes">○</span> <span class="small muted">/hooks 신뢰 후</span></td></tr>
+          <tr><td>개인정보 자동 점검(훅)</td><td class="no">× 지침으로 대신</td><td class="yes">○</td><td class="yes">○</td><td><span class="yes">○</span> <span class="small muted">훅 신뢰 후</span></td></tr>
           <tr><td>공문 처리 서브에이전트</td><td class="no">× 순서대로 처리</td><td class="yes">○</td><td class="yes">○</td><td class="no">× 순서대로 처리</td></tr>
-          <tr><td>노션·패들렛·캔바</td><td>커넥터 연결 후</td><td>커넥터 연결 후</td><td><code>/mcp</code> 로그인 후</td><td><code>codex mcp login</code> 후</td></tr>
+          <tr><td>노션·패들렛·캔바</td><td>커넥터 연결 후</td><td>커넥터 연결 후</td><td>입력창 옆 <b>+</b> → Connectors · <code>/mcp</code> 로그인 후</td><td><code>codex mcp login</code> 후</td></tr>
           <tr><td>추천 MCP(한글·발표 자료·문서 변환·브라우저 자동화)</td><td class="no">×</td><td>컴퓨터에서 실행할 때</td><td class="yes">○</td><td class="yes">○</td></tr>
         </tbody>
       </table>
     </div>
+    <p class="note" style="margin-top:14px">일반 대화(<b>Chat</b>)나 웹 claude.ai의 Claude는 내 컴퓨터에 프로그램을 설치할 수 없습니다. 분필팩 5종 스킬만 넣으려면 <a href="#install" data-set-route="menu">앱 메뉴만 쓰는 방법</a>을 따르세요. 추천 도구(한글·발표 자료·문서 변환·브라우저 자동화 같은 MCP)까지 넣으려면 Claude 앱의 <b>Code 탭</b>이나 ChatGPT 앱의 <b>Codex</b>를 쓰세요.</p>
   </section>
 
   <!-- 업데이트·지우기 -->
@@ -884,14 +1133,21 @@ body[data-mobile="1"] .mobile-note { display: block; }
     <div class="manage">
       <div class="sheet">
         <h3>업데이트</h3>
-        <p>설치할 때 쓴 한 줄을 <b>그대로 다시 실행</b>하면 됩니다. 빠진 것은 채우고, 설치된 것은 최신으로 바꿉니다. Codex는 업데이트 뒤 <code>/hooks</code>에서 분필 가드를 다시 신뢰하세요.</p>
-        <p class="muted small">지금 버전: v0.5.0 (2026. 10. 18.) · <a href="https://nalssam-bunpil.vercel.app/version.json" rel="noopener">version.json</a></p>
+        <p>설치할 때 쓴 <b>문장을 그대로 다시 붙여넣으면</b> 됩니다(터미널이면 같은 명령을 다시 실행). 빠진 것은 채우고, 설치된 것은 최신으로 바꿉니다. Codex는 업데이트 뒤 분필 가드를 다시 신뢰해야 합니다(앱의 안내, 또는 터미널의 <code>/hooks</code>).</p>
+        <p class="muted small">지금 버전: v0.6.0 (2026. 10. 18.) · <a href="https://nalssam-bunpil.vercel.app/version.json" rel="noopener">version.json</a></p>
       </div>
       <div class="sheet">
         <h3>지우기</h3>
+        <p><b>채팅창에 붙여넣어 지우기</b> <span class="muted small">(앱 기본)</span></p>
+        <div class="cmd only-win"><span class="pr">채팅</span><code>분필팩을 지워줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행하고, 지운 것과 그대로 둔 것을 짧게 알려줘.
+powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/uninstall.ps1 | iex"</code><button class="copy" type="button">복사</button></div>
+        <div class="cmd only-mac"><span class="pr">채팅</span><code>분필팩을 지워줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행하고, 지운 것과 그대로 둔 것을 짧게 알려줘.
+curl -fsSL https://nalssam-bunpil.vercel.app/uninstall.sh | sh</code><button class="copy" type="button">복사</button></div>
+        <p><b>터미널에서 직접 지우기</b> <span class="muted small">(다른 방법)</span></p>
         <div class="cmd only-win"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/uninstall.ps1 | iex</code><button class="copy" type="button">복사</button></div>
         <div class="cmd only-mac"><span class="pr">%</span><code>curl -fsSL https://nalssam-bunpil.vercel.app/uninstall.sh | sh</code><button class="copy" type="button">복사</button></div>
         <p class="muted small">분필팩 5종과 내려받은 분필팩 폴더를 지웁니다. 다른 곳에서도 쓰는 추천 도구, 설치한 Node.js·uv·Git과 PATH 설정, 선생님 작업 폴더의 파일(CLAUDE.md·AGENTS.md 등)은 그대로 두고, 직접 지우는 방법을 화면에 알려 줍니다.</p>
+        <p class="muted small">studio 묶음을 설치했다면 따로 지웁니다. 채팅창에 <b>"스튜디오를 지워줘"</b>라고 하거나 터미널에서 <code>nalssam-pack uninstall</code>을 실행하세요. 스튜디오가 만든 연결만 해제하고 내려받은 소스와 캐시는 남깁니다.</p>
       </div>
     </div>
   </section>
@@ -904,35 +1160,44 @@ body[data-mobile="1"] .mobile-note { display: block; }
     </div>
     <div class="faq-tools">
       <label class="sr" for="faq-q">질문 찾기</label>
-      <input id="faq-q" type="search" placeholder="예: 스크립트, 회색, 업무망, 맥" autocomplete="off">
+      <input id="faq-q" type="search" placeholder="예: 허락, 멈춤, 회색, 업무망, Code 탭" autocomplete="off">
       <span class="muted small" id="faq-count" aria-live="polite"></span>
     </div>
     <div class="faq" id="faq-list">
-      <details><summary>'irm'은(는) 내부 또는 외부 명령이 아니라고 나와요</summary><div class="a"><p>명령 프롬프트(cmd)에 붙여넣은 경우입니다. 시작 메뉴에서 <b>PowerShell</b>을 열고 다시 붙여넣으세요. 창 맨 앞에 <code>PS</code>가 보여야 합니다.</p></div></details>
+      <details><summary>일반 대화(Chat) 탭에 붙여넣었는데 설치가 안 돼요</summary><div class="a"><p>일반 대화(Chat)나 웹(claude.ai)의 Claude는 내 컴퓨터에서 명령을 실행할 수 없습니다. Claude 앱 위쪽의 <b>Code</b> 탭을 열고 <b>Local</b>과 폴더를 고른 뒤 붙여넣으세요.</p><p>Code 탭을 쓸 수 없다면 분필팩 5종만 넣는 <a href="#install" data-set-route="menu">앱 메뉴만 쓰는 방법</a>이나 <a href="#install" data-set-host="codex">ChatGPT Codex</a>를 쓰세요.</p></div></details>
+      <details><summary>Claude 앱에 Code 탭이 없거나 잠겨 있어요</summary><div class="a"><p>앱을 최신 버전으로 업데이트한 뒤 다시 여세요. Code 탭은 유료 요금제(Pro·Max·Team·Enterprise)에서 쓸 수 있고, 무료 요금제에서는 쓸 수 없습니다. 학교·기관 계정이라면 관리자 설정 때문에 보이지 않을 수도 있습니다.</p><p>무료로 시작하려면 <a href="#install" data-set-host="codex">ChatGPT Codex</a>를 따라 하세요.</p></div></details>
+      <details><summary>"이 명령을 실행할까요?" 하고 허락을 물어요</summary><div class="a"><p>Claude와 Codex는 컴퓨터에서 명령을 실행하기 전에 허락(승인)을 묻는 것이 기본입니다. 묻는 명령이 사이트의 설치 문장에 있는 명령(<code>irm …</code>, <code>curl …</code>, <code>powershell …</code>)과 같은지 확인하고 허용하세요.</p><p>처음 설정(실행 전에 물어봄) 그대로 두기를 권합니다. 모든 허락을 건너뛰는 방식은 쓰지 마세요. 설치 도중 파일 쓰기나 인터넷 접근을 여러 번 물을 수 있고, 버튼 이름은 앱 버전에 따라 조금 다릅니다.</p></div></details>
+      <details><summary>AI가 "인터넷에서 받은 스크립트를 바로 실행하기는 어렵다"며 망설여요</summary><div class="a"><p>조심하는 것은 좋은 습관입니다. <b>"먼저 스크립트를 내려받아 내용을 보여 주고, 문제가 없으면 실행해줘"</b>라고 답하세요. 설치 스크립트의 원문은 GitHub의 <a href="https://github.com/nalssam/bunpil_pack/blob/main/install.sh" rel="noopener">install.sh</a>·<a href="https://github.com/nalssam/bunpil_pack/blob/main/install.ps1" rel="noopener">install.ps1</a>에서도 읽을 수 있습니다.</p><p>관리자 권한 없이 내 계정 폴더에만 설치하며, 바뀌는 것은 아래 '설치하면 컴퓨터에 무엇이 바뀌나요?'에 모두 적혀 있습니다. 그래도 내키지 않으면 터미널 방법(설치 시간표의 '터미널·VS Code')을 쓰세요.</p></div></details>
+      <details><summary>설치가 오래 걸려요 / 중간에 멈췄거나 시간 초과라고 해요</summary><div class="a"><p>기본 설치는 5~10분, studio는 10~30분 걸립니다. 앱의 AI는 오래 걸리는 명령을 중간에 끊는 일이 있어서, 설치 문장에 "백그라운드로 실행하고 끝날 때까지 기다려줘"를 넣어 두었습니다.</p><p>그래도 끊겼다면 같은 문장을 다시 붙여넣으세요. 이미 설치된 것은 건너뛰고 빠진 것만 채웁니다. 학교 인터넷이 느리면 휴대폰 핫스팟에 연결해 보세요.</p></div></details>
+      <details><summary>설치가 끝났다는데 분필팩이 안 보여요</summary><div class="a"><p>차례로 확인하세요.</p><ul><li><b>새 대화</b>를 시작합니다. 설치 전에 열어 둔 대화에는 보이지 않습니다.</li><li>앱을 완전히 종료했다가 다시 엽니다.</li><li>Claude는 Code 탭에서 <b>Local</b>로 연 대화인지 확인합니다. 클라우드(원격) 환경과 WSL 세션에서는 플러그인이 보이지 않습니다.</li></ul><p>그다음 "분필 점검해줘"라고 해 보세요.</p></div></details>
+      <details><summary>Windows에서는 어느 창(셸)에 붙여넣어야 하나요?</summary><div class="a"><p>채팅창에 붙여넣는 문장은 앱의 AI가 알아서 실행하므로 창을 고를 필요가 없습니다. 문장 속 <code>powershell -NoProfile -Command "…"</code> 형태는 PowerShell, 명령 프롬프트(cmd), Git Bash 어디서 실행돼도 같게 동작합니다.</p><p>터미널에 직접 붙여넣을 때만 구분하세요. <code>irm … | iex</code>는 앞에 <code>PS</code>가 보이는 PowerShell용이고, <code>powershell -NoProfile -Command …</code>는 어느 창에서나 됩니다.</p></div></details>
+      <details><summary>'irm'은(는) 내부 또는 외부 명령이 아니라고 나와요</summary><div class="a"><p>명령 프롬프트(cmd)에 PowerShell용 줄을 붙여넣은 경우입니다. PowerShell을 열어 다시 붙여넣거나, 어느 창에서나 되는 아래 줄을 쓰세요.</p><div class="cmd"><span class="pr">Claude</span><code>powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex"</code><button class="copy" type="button">복사</button></div><div class="cmd"><span class="pr">Codex</span><code>powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex"</code><button class="copy" type="button">복사</button></div></div></details>
       <details><summary>"이 시스템에서 스크립트를 실행할 수 없으므로…"가 나와요</summary><div class="a"><p>한 줄 설치(<code>irm … | iex</code>)는 파일을 저장하지 않아 대부분 그대로 됩니다. 이 메시지가 <code>codex</code>나 <code>npm</code>을 실행할 때 나온다면 PowerShell에서 아래를 한 번 실행하세요.</p><div class="cmd"><span class="pr">PS&gt;</span><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code><button class="copy" type="button">복사</button></div><p class="muted small">학교에서 관리하는 PC라 바뀌지 않으면 정보 담당 선생님께 문의하세요.</p></div></details>
-      <details><summary>claude 또는 codex 명령을 찾을 수 없다고 나와요</summary><div class="a"><p>설치 직후에는 터미널 창을 <b>닫고 새로 열어야</b> 새 명령을 찾습니다. 새 창에서도 안 되면 설치 한 줄을 다시 실행하세요.</p></div></details>
-      <details><summary>빨간 [x] 또는 ✗ 줄이 보여요</summary><div class="a"><p>같은 한 줄을 다시 실행하세요. 설치된 것은 건너뛰고 실패한 것만 다시 시도합니다. 계속 실패하면 그 줄을 캡처해 문의해 주세요.</p></div></details>
+      <details><summary>claude 또는 codex 명령을 찾을 수 없다고 나와요</summary><div class="a"><p>설치 직후에는 앱을 완전히 종료했다가 다시 열어야 새 명령을 찾습니다. 터미널이라면 창을 <b>닫고 새로 열어야</b> 합니다. 그래도 안 되면 설치 문장(터미널은 설치 한 줄)을 다시 실행하세요.</p></div></details>
+      <details><summary>빨간 [x] 또는 ✗ 줄이 보여요 / AI가 "실패한 것이 있다"고 해요</summary><div class="a"><p>같은 문장(터미널은 같은 한 줄)을 다시 실행하세요. 설치된 것은 건너뛰고 실패한 것만 다시 시도합니다. 계속 실패하면 그 줄을 캡처해 문의해 주세요.</p></div></details>
       <details><summary>학교 인터넷에서 내려받기가 안 돼요</summary><div class="a"><p>학교 방화벽이 막는 경우가 많습니다. 휴대폰 핫스팟에 연결해 다시 실행하거나, 집에서 <a href="https://nalssam-bunpil.vercel.app/bunpil-pack.zip" rel="noopener">분필팩 zip</a>을 받아 USB로 옮긴 뒤 압축을 풀고 더블클릭으로 설치하세요. 분필팩 5종은 인터넷 없이도 설치되고, 추천 도구는 인터넷이 필요합니다.</p></div></details>
       <details><summary>업무망 PC에 설치해도 되나요?</summary><div class="a"><p>업무망 PC는 인터넷이 막혀 있고 프로그램 설치가 제한되며, 학교마다 규정이 있습니다. 인터넷망 PC나 개인 기기에 설치하세요. 업무망 자료를 옮길 때는 학교 규정을 따릅니다.</p></div></details>
-      <details><summary>Windows에서 "Windows의 PC 보호" 창이 떠요 (zip 더블클릭 설치)</summary><div class="a"><p>인터넷에서 받은 파일이라 뜨는 확인 창입니다. <b>추가 정보</b> → <b>실행</b>을 누르세요. 걱정되면 zip 대신 PowerShell 한 줄 설치를 쓰면 됩니다.</p></div></details>
-      <details><summary>맥에서 Install-Mac.command가 열리지 않아요</summary><div class="a"><p>파일을 오른쪽 클릭해 <b>열기</b>를 누르세요. 그래도 막히면 <b>시스템 설정 → 개인정보 보호 및 보안</b>에서 <b>그래도 열기</b>를 누릅니다. 가장 쉬운 방법은 터미널 한 줄 설치입니다.</p></div></details>
-      <details><summary>Claude 앱에 플러그인 메뉴가 없어요</summary><div class="a"><p>플러그인은 Claude 유료 요금제(Pro·Max·Team·Enterprise)에서 쓸 수 있습니다. 무료로 시작하려면 ChatGPT Codex 탭을 따라 하세요.</p></div></details>
-      <details><summary>일부 기능이 회색으로 보여요</summary><div class="a"><p>웹 채팅은 자동 점검(훅)과 서브에이전트를 쓰지 않아 회색으로 보입니다. 정상입니다. Cowork나 Claude Code에서는 모든 기능이 작동합니다.</p></div></details>
-      <details><summary>Codex에서 개인정보 가드가 작동하지 않아요</summary><div class="a"><p>Codex 대화창에서 <code>/hooks</code>를 입력하고 분필 가드를 <b>신뢰(trust)</b>하세요. 분필팩을 업데이트하면 다시 신뢰해야 합니다.</p></div></details>
+      <details><summary>Windows에서 "Windows의 PC 보호" 창이 떠요 (zip 더블클릭 설치)</summary><div class="a"><p>인터넷에서 받은 파일이라 뜨는 확인 창입니다. <b>추가 정보</b> → <b>실행</b>을 누르세요. 걱정되면 zip 대신 앱 채팅창 설치 문장을 쓰면 됩니다.</p></div></details>
+      <details><summary>맥에서 Install-Mac.command가 열리지 않아요</summary><div class="a"><p>파일을 오른쪽 클릭해 <b>열기</b>를 누르세요. 그래도 막히면 <b>시스템 설정 → 개인정보 보호 및 보안</b>에서 <b>그래도 열기</b>를 누릅니다. 가장 쉬운 방법은 앱 채팅창에 설치 문장을 붙여넣는 것입니다.</p></div></details>
+      <details><summary>Claude 앱에 플러그인 메뉴가 없어요</summary><div class="a"><p>플러그인은 Claude 유료 요금제(Pro·Max·Team·Enterprise)에서 쓸 수 있습니다. 무료로 시작하려면 <a href="#install" data-set-host="codex">ChatGPT Codex</a>를 따라 하세요.</p></div></details>
+      <details><summary>일부 기능이 회색으로 보여요</summary><div class="a"><p>웹 채팅은 자동 점검(훅)과 서브에이전트를 쓰지 않아 회색으로 보입니다. 정상입니다. Cowork나 Claude Code(앱의 Code 탭 포함)에서는 모든 기능이 작동합니다.</p></div></details>
+      <details><summary>Codex에서 개인정보 가드가 작동하지 않아요</summary><div class="a"><p>새 대화에서 분필 가드(훅)를 믿을지 묻는 안내가 나오면 <b>신뢰(trust)</b>를 고르세요. 안내가 보이지 않으면 터미널에서 <code>codex</code>를 열고 <code>/hooks</code>를 입력해 분필 가드를 신뢰하세요. 앱과 터미널은 같은 설정 파일을 쓰며, 설정을 바꾼 뒤에는 앱을 껐다 켜면 반영됩니다. 분필팩을 업데이트하면 다시 신뢰해야 합니다.</p></div></details>
       <details><summary>가짜 번호에도 경고가 떠요</summary><div class="a"><p>가드는 번호의 형식만 보고 판단합니다. 실제 개인정보가 아니면 그대로 진행해도 됩니다. 주민등록번호 형식(000000-0000000)은 입력 자체를 막습니다.</p></div></details>
-      <details><summary>가드를 잠시 끄고 싶어요 (수업 예시 작업 등)</summary><div class="a"><p>환경변수 <code>BUNPIL_GUARD=off</code>를 주고 실행하거나, 잠시 분필 시작 팩을 비활성화하세요. 작업이 끝나면 다시 켜 두세요.</p></div></details>
+      <details><summary>가드를 잠시 끄고 싶어요 (수업 예시 작업 등)</summary><div class="a"><p>앱의 플러그인 목록(Claude 앱 Code 탭은 입력창 옆 <b>+</b> → <b>Plugins</b> → <b>Manage plugins</b>, Chat·Cowork는 <b>사용자 지정</b>, 터미널은 <code>/plugin</code>)에서 분필 시작 팩을 잠시 끄세요. 터미널에서 실행한다면 환경변수 <code>BUNPIL_GUARD=off</code>를 줘도 됩니다. 작업이 끝나면 다시 켜 두세요.</p></div></details>
       <details><summary>브라우저 자동화 첫 실행이 느려요</summary><div class="a"><p>처음 한 번 브라우저 구성 요소를 내려받기 때문입니다. 한 번만 기다리면 이후에는 빠릅니다.</p></div></details>
       <details><summary>설치하면 컴퓨터에 무엇이 바뀌나요?</summary><div class="a"><ul>
+        <li>채팅창에 붙여넣어도 하는 일은 같습니다. 앱의 AI가 문장 속 명령을 대신 실행할 뿐이고, 그 명령은 사이트의 설치 스크립트입니다.</li>
         <li>홈 폴더의 <code>.bunpil</code> 폴더에 분필팩을 둡니다. Node.js를 관리자 권한 없이 설치할 때도 이 폴더(<code>.bunpil/node</code>)를 씁니다.</li>
         <li>Claude Code·Codex에 분필팩과 추천 도구의 플러그인·MCP 연결을 등록하고, 추천 스킬은 각 프로그램의 사용자 스킬 폴더에 복사합니다.</li>
         <li>없을 때만 Claude Code·Codex·Node.js·uv·Git을 공식 설치 프로그램으로 설치합니다. Windows에서 Git·Node.js를 winget으로 설치할 때는 확인 창이 뜹니다.</li>
         <li>새 창에서도 명령을 찾도록 PATH를 남깁니다. <span class="only-mac">맥·리눅스는 <code>~/.bunpil/env</code> 파일을 만들고 셸 설정 파일(<code>~/.zshrc</code>, <code>~/.bashrc</code>, <code>~/.bash_profile</code>, <code>~/.profile</code> 중 있는 것, 맥은 <code>~/.zshrc</code>가 없으면 새로 만듦)에 <code># bunpil-path</code> 표시가 붙은 한 줄을 더합니다.</span><span class="only-win">Windows는 사용자 PATH에 폴더를 더합니다(기존 항목은 그대로 둠).</span></li>
         <li class="only-win">Codex를 npm으로 설치한 경우에만, PowerShell에서 <code>codex</code> 명령이 실행되도록 현재 사용자의 실행 정책을 RemoteSigned로 바꿉니다. 되돌리기: <code>Set-ExecutionPolicy -Scope CurrentUser Undefined</code></li>
+        <li>studio 묶음을 고르면 <code>~/.local/share/nalssam-pack</code>에 수 GB를 받고, 스킬 폴더(<code>~/.agents/skills</code>, Claude를 쓰면 <code>~/.claude/skills</code>)에 스킬을 두며, 셸 설정 파일에 <code># 날쌤팩</code> 표시가 붙은 한 줄을 더합니다. 지우기: <code>nalssam-pack uninstall</code></li>
       </ul><p>지우기 명령은 분필팩 5종과 <code>.bunpil/bunpil-pack</code> 폴더를 지우고, 나머지는 그대로 둔 채 직접 지우는 방법을 알려 줍니다.</p></div></details>
-      <details><summary>분필팩과 날쌤팩은 무엇이 다른가요?</summary><div class="a"><p>분필팩은 모든 선생님이 Windows·맥에서 바로 쓰는 교사 업무 도구 모음이고, 날쌤팩은 날쌤의 전체 작업 환경(영상·모션·발표·분석·개발 도구, 고정 버전)입니다. 날쌤팩은 macOS·Linux·WSL2에서만 설치되고 수 GB가 필요합니다. <a href="#nalssam">날쌤팩 안내</a>를 보세요.</p></div></details>
+      <details><summary>날쌤팩은 어디로 갔나요? (studio 묶음)</summary><div class="a"><p>예전에 따로 있던 날쌤팩(영상·모션·발표·분석·개발 도구를 고정 버전으로 설치하는 전체 작업 환경)은 분필팩의 <b>studio</b> 묶음으로 합쳤습니다. 저장소도, 설치 문장도, 사이트도 이제 하나입니다. <a href="#bundles">묶음 고르기</a>에서 studio를 고르세요. macOS·Linux·WSL2에서 설치되고 수 GB가 필요합니다.</p><p>이미 날쌤팩을 설치했다면 그대로 이어집니다. 명령 이름(<code>nalssam-pack</code>)과 설치 기록 폴더를 바꾸지 않았고, 옛 옵션 <code>--nalssam</code>도 studio로 받아들입니다. 앞으로의 변경은 <a href="https://github.com/nalssam/bunpil_pack" rel="noopener">GitHub nalssam/bunpil_pack</a>에서 합니다.</p></div></details>
       <details><summary>수업 슬라이드는 어떤 도구로 만드나요?</summary><div class="a"><p>teacher 묶음의 발표 자료 엔진(pptx-maker)이 연결돼 있으면 "수업 슬라이드 만들어줘"라고 할 때 그 엔진으로 .pptx를 만들고 디자인 점검·채점까지 합니다. 발표할 PC에 테마 글꼴이 없으면 <code>pptx-maker fonts install</code>로 무료 글꼴을 설치하세요.</p></div></details>
       <details><summary>크롬(지금 열어 둔 탭)과 연결하려면?</summary><div class="a"><p>Claude Code에서만 됩니다. 크롬 웹스토어에서 <a href="https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn" rel="noopener">Claude 확장 프로그램</a>을 설치하고 같은 계정으로 로그인한 뒤, 터미널에서 <code>claude --chrome</code>으로 시작하세요. 늘 켜 두려면 대화창에서 <code>/chrome</code> → <b>Enabled by default</b>를 고릅니다. 유료 요금제(Pro 이상)가 필요하고 WSL에서는 되지 않습니다. 확장 설치는 명령으로 대신할 수 없어 설치 스크립트는 안내만 합니다. Codex에서는 teacher 묶음의 브라우저 자동화(Playwright)를 쓰세요. <a href="https://code.claude.com/docs/en/chrome" rel="noopener">공식 안내</a></p></div></details>
-      <details><summary>Firecrawl·Perplexity·Glif는 계정이나 돈이 드나요?</summary><div class="a"><p><b>Firecrawl</b>(웹사이트 내용 수집)은 키 없이 쓰는 무료 구간으로 연결합니다. 수집·검색·읽기 3가지가 되고 사용량 제한이 있습니다. <b>Perplexity</b>(최신 뉴스·문서 검색)는 유료 API 키가 있어야 해서, 키가 있을 때만 연결합니다. <a href="https://console.perplexity.ai" rel="noopener">console.perplexity.ai</a>에서 키를 받아 <span class="only-mac"><code>curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | PERPLEXITY_API_KEY=받은키 sh</code></span><span class="only-win"><code>$env:PERPLEXITY_API_KEY="받은키"; irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code></span>처럼 다시 실행하세요(키는 Claude Code·Codex 설정 파일에 저장됩니다). <b>Glif</b>(이미지·영상 AI, creator 묶음)는 Glif 계정으로 로그인해야 하고 만들 때 크레딧을 씁니다. Claude Code는 <code>/mcp</code> → glif, Codex는 <code>codex mcp login glif</code>로 로그인합니다.</p></div></details>
+      <details><summary>Firecrawl·Perplexity·Glif는 계정이나 돈이 드나요?</summary><div class="a"><p><b>Firecrawl</b>(웹사이트 내용 수집)은 키 없이 쓰는 무료 구간으로 연결합니다. 수집·검색·읽기 3가지가 되고 사용량 제한이 있습니다. <b>Perplexity</b>(최신 뉴스·문서 검색)는 유료 API 키가 있어야 해서, 키가 있을 때만 연결합니다. <a href="https://console.perplexity.ai" rel="noopener">console.perplexity.ai</a>에서 키를 받아 <span class="only-mac"><code>curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | PERPLEXITY_API_KEY=받은키 sh</code></span><span class="only-win"><code>$env:PERPLEXITY_API_KEY="받은키"; irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code></span>처럼 <b>터미널에서</b> 다시 실행하세요(키는 Claude Code·Codex 설정 파일에 저장됩니다). <b>키는 채팅창에 붙여넣지 마세요.</b> <b>Glif</b>(이미지·영상 AI, creator 묶음)는 Glif 계정으로 로그인해야 하고 만들 때 크레딧을 씁니다. Claude는 앱의 <b>사용자 지정</b> 커넥터(터미널은 <code>/mcp</code>)에서 glif, Codex는 <code>codex mcp login glif</code>로 로그인합니다.</p></div></details>
       <details><summary>인스타그램 스킬은 어떻게 쓰나요?</summary><div class="a"><p>creator 묶음에 들어 있는 instagram-agent-skill(무료, MIT)입니다. 아이디어 한 줄을 주면 훅 3개와 릴스 대본, 화면 자막, 캡션까지 써 줍니다. Claude Code에서 <code>/ig-reel</code>처럼 부르거나 "릴스 대본 써줘"라고 하세요. 인스타 계정을 연결하지 않으며 올리기는 직접 합니다. 학생 얼굴·이름이 나오는 게시물은 학교 지침을 먼저 확인하세요.</p></div></details>
       <details><summary>영상 만들기(Cinetic·Prompt Motion·수업 영상)는 어떻게 쓰나요?</summary><div class="a"><p><b>수업 설명 영상</b>은 분필 수업자료 팩의 <b>수업 영상</b> 스킬에 "분수의 덧셈을 설명하는 1분 영상 만들어줘"처럼 말하면 됩니다. 스토리보드(장면별 화면과 대본)를 먼저 보여 드리고, 승인하면 수학·과학 개념 애니메이션(Manim)과 한국어 음성(edge-tts)으로 만듭니다. 이 두 도구는 영상을 처음 만들 때 필요한 만큼만 설치를 물어보고 설치합니다.</p><p><b>소개·출시 영상</b>은 creator 묶음의 <b>Cinetic</b> 스킬이 문장 한두 줄로 소리 포함 영상을 만듭니다. bash 스크립트라 macOS·Linux·WSL2에서만 되고, Windows 기본 터미널에서는 설치를 건너뜁니다. 영상을 만들 때 ffmpeg 6 이상, Node 22 이상, Python 3.11 이상이 필요합니다. 맥에서는 <code>brew install ffmpeg node python</code>, Windows에서는 PowerShell에서 <code>winget install Gyan.FFmpeg</code>처럼 설치합니다.</p><p><b>Prompt Motion</b>(<a href="https://prompt-motion.com" rel="noopener">prompt-motion.com</a>)은 클로드로 만든 모션 영상 234개와 프롬프트 원문을 모아 둔 사이트입니다. 설치할 것은 없고, 마음에 드는 영상의 프롬프트를 Copy해서 붙여넣으세요. 영상과 프롬프트는 각 원작자의 것이니 그대로 다시 올리지 마세요.</p><p class="muted small">edge-tts는 대본 글자를 인터넷 음성 서비스로 보냅니다. 학생 이름·사진 등 개인정보가 든 글은 넣지 마세요. 만든 영상에는 AI로 만들었다는 표시를 권합니다.</p></div></details>
       <details><summary>학생도 쓸 수 있나요? 생활기록부 문구도 써 주나요?</summary><div class="a"><p>분필팩은 교사의 수업 준비와 행정 업무용입니다. 학생이 직접 쓰는 도구가 아닙니다. 생활기록부 서술형 문구는 만들지 않습니다(2026 기재요령).</p></div></details>
@@ -957,9 +1222,9 @@ body[data-mobile="1"] .mobile-note { display: block; }
           <button class="btn btn-ghost" type="button" id="share-copy">안내 문구 복사</button>
         </div>
         <ul>
-          <li>연수 전에 참여 선생님께 요금제를 확인해 달라고 안내하세요(Claude Pro 이상 또는 ChatGPT 계정).</li>
+          <li>연수 전에 참여 선생님께 <b>Claude 앱이나 ChatGPT 앱을 미리 내려받아 로그인</b>해 두라고 안내하세요(Claude는 Pro 이상, Codex는 ChatGPT 계정). 연수 시간에 앱 설치부터 하면 오래 걸립니다.</li>
           <li>실습실이 업무망이면 설치가 막힙니다. 인터넷망 실습실이나 개인 노트북을 준비해 주세요.</li>
-          <li>함께 1교시부터 진행하면 20~30분이면 모두 첫 요청까지 마칠 수 있습니다.</li>
+          <li>함께 1교시부터 진행하면 20~30분이면 모두 첫 요청까지 마칠 수 있습니다. 앱 채팅창에 붙여넣는 방법이 기본이라 터미널을 몰라도 됩니다.</li>
         </ul>
       </div>
     </div>
@@ -983,7 +1248,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
 <footer>
   <div class="wrap">
     <div class="cols">
-      <span>nalssam's 분필팩 v0.5.0 · 2026. 10. 18.</span>
+      <span>nalssam's 분필팩 v0.6.0 · 2026. 10. 18.</span>
       <span>만든 사람: 날쌤(nalssam) · 몽당분필</span>
       <a href="https://github.com/nalssam/bunpil_pack" rel="noopener">GitHub nalssam/bunpil_pack</a>
       <span>코드 MIT · 문서 CC BY 4.0</span>
@@ -992,6 +1257,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
     <details>
       <summary>변경 기록</summary>
       <div class="log">
+        <p><b>0.6.0 (2026-10-18)</b> 날쌤팩을 분필팩 안의 studio 묶음으로 합쳐 저장소·설치 문장·사이트를 하나로 모음(옛 <code>--nalssam</code>·<code>nalssam</code> 프로필은 studio로 호환). 설치 안내를 Claude 앱 Code 탭·ChatGPT 앱 Codex 채팅창에 붙여넣는 방식으로 바꾸고 터미널·명령 프롬프트·VS Code는 다른 방법으로 옮김. 설치 문장 만들기, 문제 해결, 연수 화면도 같은 기준으로 고침.</p>
         <p><b>0.5.0 (2026-10-18)</b> teacher 묶음에 웹사이트 내용 수집(Firecrawl, 키 없이)과 최신 검색(Perplexity, 키가 있을 때) 연결, creator 묶음에 인스타그램 스킬 13종(instagram-agent-skill)과 이미지·영상 AI(Glif) 추가, 크롬 연결(Claude in Chrome) 안내. 모션그래픽: creator 묶음에 소개·출시 영상 스킬 Cinetic(macOS·Linux·WSL2)과 모션 사례 사이트 Prompt Motion 안내, 분필 수업자료 팩에 수업 영상 스킬(Manim 애니메이션 + 한국어 음성) 추가. 이미 있는 Playwright·codex-plugin-cc는 중복으로 빼고 그대로 두었고, 날쌤 묶음의 Cinetic은 creator 한 줄로 합침.</p>
         <p><b>0.4.0 (2026-10-16)</b> 발표 자료(PPTX) 엔진 pptx-maker를 teacher 묶음에 추가(수업 슬라이드 스킬이 먼저 사용), 날쌤팩 연동(<code>--nalssam</code>)과 안내 단락, 추천 도구 표에 nalssam 묶음.</p>
         <p><b>0.3.0 (2026-10-15)</b> 웹사이트와 한 줄 설치 주소 공개. Claude·Codex별 설치 스크립트(claude/codex.sh·ps1), 더블클릭 설치 파일, Claude Code·Codex·Node.js·uv 자동 설치, Windows에서 Git Bash 없이 작동하는 개인정보 가드.</p>
@@ -1010,10 +1276,12 @@ body[data-mobile="1"] .mobile-note { display: block; }
       <h2 id="present-title">nalssam's 분필팩</h2>
       <p class="big-url">nalssam-bunpil.vercel.app</p>
       <div class="lines">
-        <p>Claude 쓰는 선생님 · PowerShell</p>
-        <div class="cmd big"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex</code></div>
-        <p>Codex 쓰는 선생님 · PowerShell</p>
-        <div class="cmd big"><span class="pr">PS&gt;</span><code>irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex</code></div>
+        <p>Claude 앱 <b>Code</b> 탭 · ChatGPT 앱 <b>Codex</b> 입력창에 붙여넣고 Enter</p>
+        <div class="cmd big"><span class="pr">문장</span><code>분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. 5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘. 끝나면 설치된 것과 실패한 것을 짧게 알려줘.</code></div>
+        <p>Claude 쓰는 선생님 · Windows</p>
+        <div class="cmd big"><span class="pr">명령</span><code>powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/claude.ps1 | iex"</code></div>
+        <p>Codex 쓰는 선생님 · Windows</p>
+        <div class="cmd big"><span class="pr">명령</span><code>powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/codex.ps1 | iex"</code></div>
         <p>맥은 사이트에서 macOS를 고르세요</p>
       </div>
     </div>
@@ -1024,8 +1292,11 @@ body[data-mobile="1"] .mobile-note { display: block; }
 <script>
 (function () {
   "use strict";
-  var DATA = {"version":"0.5.0","plugins":[{"id":"bunpil-start","name":"분필 시작 팩","short":"설정 마법사와 개인정보 가드","desc":"교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.","skills":[{"id":"setup","label":"내 맞춤 지침 만들기","prompt":"설정 시작해줘"},{"id":"privacy-guard","label":"학생 개인정보 가드","prompt":"이 파일에 개인정보 있는지 점검해줘"},{"id":"checkup","label":"설치 점검","prompt":"분필 점검해줘"}]},{"id":"bunpil-class","name":"분필 수업자료 팩","short":"학습지·지도안·수업 PPT·수업 영상·도안","desc":"학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 수업 설명·소개 영상(초안), 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.","skills":[{"id":"worksheet","label":"수준별 학습지","prompt":"4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘"},{"id":"lesson-plan","label":"수업 지도안","prompt":"5학년 사회 '조선의 건국' 40분 지도안 써줘"},{"id":"class-slides","label":"수업 슬라이드","prompt":"이 지도안으로 수업 슬라이드 만들어줘"},{"id":"class-video","label":"수업 영상","prompt":"분수의 덧셈을 설명하는 1분 영상 만들어줘"},{"id":"papercraft","label":"페이퍼크래프트 도안","prompt":"태양계 행성 페이퍼크래프트 도안 만들어줘"},{"id":"coloring","label":"컬러링 도안","prompt":"가을 주제 컬러링 도안 만들어줘"},{"id":"rubric","label":"평가 루브릭","prompt":"모둠 발표 평가 루브릭을 3단계로 만들어줘"}]},{"id":"bunpil-school","name":"분필 학교업무 팩","short":"공문·가정통신문·품의·설문","desc":"공문 처리 하네스(할 일·교직원 안내·초안·검토), 가정통신문, 물품 품의 산출내역, 학부모 설문 분석, 한글(HWPX) 문서 안내.","skills":[{"id":"gongmun","label":"공문 처리 하네스","prompt":"받은 공문 정리하고 할 일 뽑아줘"},{"id":"newsletter","label":"가정통신문","prompt":"현장체험학습 가정통신문 초안 써줘"},{"id":"pumui","label":"품의 산출내역","prompt":"과학실 물품 품의 산출내역 만들어줘"},{"id":"parent-survey","label":"학부모 설문 분석","prompt":"학부모 설문 결과 분석해줘"},{"id":"hwpx-doc","label":"한글 문서·기안문","prompt":"내부 기안문 본문 써줘"}]},{"id":"bunpil-builder","name":"분필 하네스빌더 팩","short":"나만의 스킬 만들고 고치기","desc":"반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.","skills":[{"id":"skill-maker","label":"나만의 스킬 만들기","prompt":"매주 쓰는 주간학습안내를 스킬로 만들어줘"},{"id":"harness-fix","label":"실수를 규칙으로","prompt":"방금 틀린 부분을 규칙으로 남겨줘"},{"id":"eval-run","label":"스킬 시험","prompt":"내 스킬 시험해줘"},{"id":"share-skill","label":"동료와 나누기","prompt":"이 스킬을 동료에게 나눌 수 있게 묶어줘"},{"id":"harness-gallery","label":"하네스 예시 100종","prompt":"하네스 예시 중에 학교에 맞는 걸 골라줘"}]},{"id":"bunpil-connect","name":"분필 커넥터 팩","short":"노션·패들렛·캔바 연결","desc":"노션·패들렛·캔바 원격 MCP 커넥터를 등록하고 하네스별 로그인 방법을 안내합니다.","skills":[{"id":"connect","label":"노션·패들렛·캔바 연결","prompt":"노션 연결해줘"}]}],"catalog":[{"id":"hwpx-plugin","profile":"teacher","repo":"airmang/hwpx-plugins","license":"Apache-2.0","label":"한글(HWPX) 편집 엔진","claude":"plugin hwpx-plugin@hwpx","codex":"plugin hwpx-plugin@hwpx","needs":"-"},{"id":"kordoc","profile":"teacher","repo":"chrisryugj/kordoc","license":"MIT","label":"HWP·HWPX·PDF·DOCX·XLSX 읽기·비교·공문 프리셋 생성(MCP 17개 도구)","claude":"plugin kordoc@kordoc + mcp kordoc (npx -y kordoc mcp)","codex":"mcp kordoc (npx -y kordoc mcp)","needs":"Node.js"},{"id":"hwpx-new","profile":"teacher","repo":"ZZombie04/hwpx_new","license":"MIT","label":"한글 양식 기반 보고서·계획서 생성(MCP)","claude":"uv tool install → hwpx-new setup","codex":"uv tool install → hwpx-new setup","needs":"uv(또는 pipx)·Python 3.9+"},{"id":"markitdown","profile":"teacher","repo":"microsoft/markitdown","license":"MIT","label":"PDF·PPT·워드·엑셀 → 텍스트 변환(MCP)","claude":"mcp markitdown (uvx markitdown-mcp)","codex":"mcp markitdown (uvx markitdown-mcp)","needs":"uv"},{"id":"pptx-maker","profile":"teacher","repo":"ZZombie04/pptx_maker","license":"MIT","label":"한국어 발표 자료(PPTX) 엔진 — 초등·중등 수업, 교사 연수, 학부모 설명회 덱 생성·자동 점검(MCP 16개 도구)","claude":"uv tool install → pptx-maker setup","codex":"uv tool install → pptx-maker setup","needs":"uv·Python 3.9+"},{"id":"playwright","profile":"teacher","repo":"microsoft/playwright","license":"Apache-2.0","label":"브라우저 자동화(RPA) — 웹 양식 입력·자료 수집(MCP)","claude":"mcp playwright (npx -y @playwright/mcp@latest)","codex":"mcp playwright (npx -y @playwright/mcp@latest)","needs":"Node.js"},{"id":"firecrawl","profile":"teacher","repo":"firecrawl/firecrawl-mcp-server","license":"MIT","label":"웹사이트 내용 통째로 수집·검색·읽기(MCP, 키 없이 쓰는 무료 구간)","claude":"mcp firecrawl (https://mcp.firecrawl.dev/v2/mcp)","codex":"mcp firecrawl (https://mcp.firecrawl.dev/v2/mcp)","needs":"-"},{"id":"perplexity","profile":"teacher","repo":"perplexityai/modelcontextprotocol","license":"MIT","label":"최신 뉴스·문서를 찾아보고 답변(MCP) — 유료 API 키가 있을 때만 연결","claude":"mcp perplexity (npx -y @perplexity-ai/mcp-server, PERPLEXITY_API_KEY 있을 때)","codex":"mcp perplexity (npx -y @perplexity-ai/mcp-server, PERPLEXITY_API_KEY 있을 때)","needs":"Node.js, Perplexity API 키(유료)"},{"id":"claude-in-chrome","profile":"teacher","repo":"anthropics/claude-code","license":"-","label":"크롬 연결 — 지금 열어 둔 탭 읽기·클릭(Claude in Chrome 확장)","claude":"안내 claude --chrome","codex":"-","needs":"크롬 확장 설치, Claude 유료 요금제","name":"Claude in Chrome","url":"https://code.claude.com/docs/en/chrome"},{"id":"harness","profile":"teacher","repo":"revfactory/harness","license":"Apache-2.0","label":"한 문장으로 에이전트 팀·스킬 만들기(하네스 팩토리)","claude":"plugin harness@harness-marketplace","codex":"skills add","needs":"Codex: Node.js"},{"id":"harness-100","profile":"teacher","repo":"revfactory/harness-100","license":"Apache-2.0","label":"하네스 예시 100종(한국어) — 분필팩 harness-gallery 스킬로 필요한 것만 가져오기","claude":"가져오기 스킬","codex":"가져오기 스킬","needs":"git"},{"id":"ui-ux-pro-max","profile":"creator","repo":"nextlevelbuilder/ui-ux-pro-max-skill","license":"MIT","label":"UI·UX 디자인 지식(웹페이지·에듀테크 화면)","claude":"plugin ui-ux-pro-max@ui-ux-pro-max-skill","codex":"skills add","needs":"Codex: Node.js"},{"id":"taste-skill","profile":"creator","repo":"Leonxlnx/taste-skill","license":"MIT","label":"세련된 프런트엔드 디자인 감각","claude":"plugin taste-skill@taste-skill","codex":"skills add","needs":"Codex: Node.js"},{"id":"impeccable","profile":"creator","repo":"pbakaus/impeccable","license":"Apache-2.0","label":"디자인 다듬기·점검(/impeccable polish·audit)","claude":"plugin impeccable@impeccable","codex":"skills add","needs":"Codex: Node.js"},{"id":"watch","profile":"creator","repo":"bradautomates/claude-video","license":"MIT","label":"영상 보고 요약(유튜브·파일 → 장면·자막)","claude":"plugin watch@claude-video","codex":"plugin watch@claude-video","needs":"Python 3.10+, ffmpeg, yt-dlp(실행 시)"},{"id":"sprite-gen","profile":"creator","repo":"aldegad/sprite-gen","license":"Apache-2.0","label":"게임·애니메이션용 스프라이트 이미지 만들기","claude":"skills add","codex":"skills add","needs":"Node.js(설치), Python(실행)"},{"id":"instagram-agent","profile":"creator","repo":"Jakeschincariol/instagram-agent-skill","license":"MIT","label":"인스타그램 스킬 13종 — 아이디어 한 줄로 훅·릴스 대본·화면 자막·캡션(올리기는 직접)","claude":"plugin instagram-agent@instagram-agent-skill","codex":"plugin instagram-agent@instagram-agent-skill","needs":"Python 3(점검 도구)"},{"id":"glif","profile":"creator","repo":"glifxyz/glif-mcp-server","license":"MIT","label":"이미지·영상·음성 AI 수백 개 연결(Glif)","claude":"plugin glif@glif + mcp glif (https://glif.app/api/mcp)","codex":"plugin glif@glif","needs":"Glif 계정 로그인(크레딧)"},{"id":"cinetic","profile":"creator","repo":"Leonxlnx/cinetic","license":"MIT","label":"문장 한두 줄로 소개·출시 영상(소리 포함) 제작 스킬 — 날쌤팩에도 있는 도구라, 날쌤팩을 같이 설치하면 그쪽 것을 씀","claude":"skills add Leonxlnx/cinetic (macOS·Linux·WSL2)","codex":"skills add Leonxlnx/cinetic (macOS·Linux·WSL2)","needs":"bash, Node 22+, ffmpeg 6+, Python 3.11+, Chromium"},{"id":"prompt-motion","profile":"creator","repo":"prompt-motion.com","name":"Prompt Motion","url":"https://prompt-motion.com","license":"-","label":"클로드로 만든 모션 영상 234개와 프롬프트 원문 모음(로그인 없음, 2026-10-14 기준) — 영상·프롬프트는 각 원작자 것","claude":"링크 사이트에서 Copy","codex":"링크 사이트에서 Copy","needs":"-"},{"id":"manim","profile":"creator","repo":"ManimCommunity/manim","license":"MIT","label":"수학·과학 개념 설명 애니메이션(수업 영상 스킬이 필요할 때 파이썬 환경에 설치)","claude":"필요할 때 설치 (pip install manim)","codex":"필요할 때 설치 (pip install manim)","needs":"Python, ffmpeg, Linux는 cairo·pango"},{"id":"edge-tts","profile":"creator","repo":"rany2/edge-tts","license":"LGPL-3.0","label":"한국어 음성 합성(대본을 인터넷 음성 서비스로 보냄 — 학생 정보 금지)","claude":"필요할 때 설치 (pip install edge-tts)","codex":"필요할 때 설치 (pip install edge-tts)","needs":"Python, 인터넷"},{"id":"superpowers","profile":"dev","repo":"obra/superpowers-marketplace","license":"MIT","label":"계획→구현→검증 개발 습관 스킬 모음","claude":"plugin superpowers@superpowers-marketplace","codex":"skills add obra/superpowers","needs":"Codex: Node.js"},{"id":"karpathy-skills","profile":"dev","repo":"multica-ai/andrej-karpathy-skills","license":"확인 필요(라이선스 파일 없음)","label":"카파시식 코딩 지침","claude":"plugin andrej-karpathy-skills@karpathy-skills","codex":"skills add","needs":"Codex: Node.js"},{"id":"caveman","profile":"dev","repo":"JuliusBrussee/caveman","license":"Apache-2.0/MIT","label":"응답 압축으로 토큰 절약","claude":"plugin caveman@caveman","codex":"skills add","needs":"Codex: Node.js"},{"id":"codex-plugin-cc","profile":"dev","repo":"openai/codex-plugin-cc","license":"Apache-2.0","label":"Claude Code에서 Codex에게 검토·작업 맡기기","claude":"plugin codex@openai-codex (Codex가 있을 때만)","codex":"-","needs":"Codex 설치·로그인"},{"id":"agent-reach","profile":"dev","repo":"Panniantong/Agent-Reach","license":"MIT","label":"에이전트가 웹·SNS를 읽게 하는 도구(설치는 에이전트가 안내)","claude":"skills add","codex":"skills add","needs":"Node.js, 이후 Python"},{"id":"ecc","profile":"dev","repo":"affaan-m/ECC","license":"MIT","label":"Everything Claude Code — 스킬 1,000여 개(마켓플레이스만 등록, 골라 설치)","claude":"marketplace ecc","codex":"marketplace ecc","needs":"-"},{"id":"wshobson-agents","profile":"dev","repo":"wshobson/agents","license":"MIT","label":"개발 워크플로 플러그인 90여 종(마켓플레이스만 등록)","claude":"marketplace claude-code-workflows","codex":"marketplace claude-code-workflows","needs":"-"},{"id":"google-skills","profile":"dev","repo":"google/skills","license":"Apache-2.0","label":"Google Cloud 스킬 17종(마켓플레이스만 등록)","claude":"marketplace google-plugins","codex":"marketplace google-plugins","needs":"-"},{"id":"claude-mem","profile":"dev","repo":"thedotmack/claude-mem","license":"Apache-2.0","label":"세션 기억 플러그인(백그라운드 작업자 실행 — 마켓플레이스만 등록)","claude":"marketplace thedotmack","codex":"marketplace claude-mem-local","needs":"Node.js 20+"},{"id":"motion","profile":"nalssam","repo":"ZZombie04/motion","license":"MIT","label":"Motion Director — 말 한마디로 모션그래픽 연출·렌더(스킬 + MCP 22개 도구)","claude":"날쌤팩","codex":"날쌤팩","needs":"Chromium, ffmpeg"},{"id":"showreel","profile":"nalssam","repo":"revfactory/showreel","license":"MIT","label":"한국어 모션그래픽 영상 제작(기획→대본→나레이션→렌더→검수)","claude":"날쌤팩","codex":"날쌤팩","needs":"ffmpeg, 나레이션은 ElevenLabs 키"},{"id":"motion-graphics","profile":"nalssam","repo":"Barty-Bart/motion-graphics","license":"MIT","label":"영상 편집 스킬 모음(자막에 맞춘 모션그래픽 B-roll 등)","claude":"날쌤팩","codex":"날쌤팩","needs":"ffmpeg"},{"id":"rea","profile":"nalssam","repo":"nalssam/rea","license":"MIT","label":"REA — 앱·바이너리 동작 분석(MCP 207개 도구)","claude":"날쌤팩","codex":"날쌤팩","needs":"정밀 분석은 Ghidra 등 별도 엔진"},{"id":"aftereffects-mcp","profile":"nalssam","repo":"nalssam/aftereffects-mcp","license":"MIT","label":"After Effects를 AI가 직접 조작(MCP)","claude":"날쌤팩","codex":"날쌤팩","needs":"Adobe After Effects 2022+(macOS·Windows)"},{"id":"claude-native-122","profile":"nalssam","repo":"nalssam/nalssam-pack","license":"MIT","label":"Claude Code 네이티브 플러그인 122개(개발 워크플로·Google Cloud 포함, --claude 옵션)","claude":"날쌤팩","codex":"-","needs":"Claude Code, Google Cloud 플러그인은 계정 설정"}],"linksOnly":[{"repo":"hesreallyhim/awesome-claude-code","license":"CC BY-NC-ND 4.0","why":"설치물이 아닌 추천 목록. 링크로만 안내한다."},{"repo":"lifeofpi-ux/ppt-automation","license":"확인 불가","why":"2026-10-13 기준 공개 저장소로 접근되지 않음(비공개 또는 이동). 공개되면 creator 묶음에 추가한다."}],"profiles":{"teacher":"기본. 한글·문서·업무 자동화(RPA)·웹 수집·하네스","creator":"웹·디자인·영상(모션그래픽)·인스타그램 자료 만들기","dev":"고급·개발자용. 큰 모음은 마켓플레이스만 등록","all":"teacher + creator + dev","nalssam":"날쌤팩 전체(고급) — 영상·모션·발표·분석 도구를 고정 버전으로 함께 설치. macOS·Linux·WSL2, 수 GB"}};
+  var DATA = {"version":"0.6.0","plugins":[{"id":"bunpil-start","name":"분필 시작 팩","short":"설정 마법사와 개인정보 가드","desc":"교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.","skills":[{"id":"setup","label":"내 맞춤 지침 만들기","prompt":"설정 시작해줘"},{"id":"privacy-guard","label":"학생 개인정보 가드","prompt":"이 파일에 개인정보 있는지 점검해줘"},{"id":"checkup","label":"설치 점검","prompt":"분필 점검해줘"}]},{"id":"bunpil-class","name":"분필 수업자료 팩","short":"학습지·지도안·수업 PPT·수업 영상·도안","desc":"학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 수업 설명·소개 영상(초안), 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.","skills":[{"id":"worksheet","label":"수준별 학습지","prompt":"4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘"},{"id":"lesson-plan","label":"수업 지도안","prompt":"5학년 사회 '조선의 건국' 40분 지도안 써줘"},{"id":"class-slides","label":"수업 슬라이드","prompt":"이 지도안으로 수업 슬라이드 만들어줘"},{"id":"class-video","label":"수업 영상","prompt":"분수의 덧셈을 설명하는 1분 영상 만들어줘"},{"id":"papercraft","label":"페이퍼크래프트 도안","prompt":"태양계 행성 페이퍼크래프트 도안 만들어줘"},{"id":"coloring","label":"컬러링 도안","prompt":"가을 주제 컬러링 도안 만들어줘"},{"id":"rubric","label":"평가 루브릭","prompt":"모둠 발표 평가 루브릭을 3단계로 만들어줘"}]},{"id":"bunpil-school","name":"분필 학교업무 팩","short":"공문·가정통신문·품의·설문","desc":"공문 처리 하네스(할 일·교직원 안내·초안·검토), 가정통신문, 물품 품의 산출내역, 학부모 설문 분석, 한글(HWPX) 문서 안내.","skills":[{"id":"gongmun","label":"공문 처리 하네스","prompt":"받은 공문 정리하고 할 일 뽑아줘"},{"id":"newsletter","label":"가정통신문","prompt":"현장체험학습 가정통신문 초안 써줘"},{"id":"pumui","label":"품의 산출내역","prompt":"과학실 물품 품의 산출내역 만들어줘"},{"id":"parent-survey","label":"학부모 설문 분석","prompt":"학부모 설문 결과 분석해줘"},{"id":"hwpx-doc","label":"한글 문서·기안문","prompt":"내부 기안문 본문 써줘"}]},{"id":"bunpil-builder","name":"분필 하네스빌더 팩","short":"나만의 스킬 만들고 고치기","desc":"반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.","skills":[{"id":"skill-maker","label":"나만의 스킬 만들기","prompt":"매주 쓰는 주간학습안내를 스킬로 만들어줘"},{"id":"harness-fix","label":"실수를 규칙으로","prompt":"방금 틀린 부분을 규칙으로 남겨줘"},{"id":"eval-run","label":"스킬 시험","prompt":"내 스킬 시험해줘"},{"id":"share-skill","label":"동료와 나누기","prompt":"이 스킬을 동료에게 나눌 수 있게 묶어줘"},{"id":"harness-gallery","label":"하네스 예시 100종","prompt":"하네스 예시 중에 학교에 맞는 걸 골라줘"}]},{"id":"bunpil-connect","name":"분필 커넥터 팩","short":"노션·패들렛·캔바 연결","desc":"노션·패들렛·캔바 원격 MCP 커넥터를 등록하고 하네스별 로그인 방법을 안내합니다.","skills":[{"id":"connect","label":"노션·패들렛·캔바 연결","prompt":"노션 연결해줘"}]}],"catalog":[{"id":"hwpx-plugin","profile":"teacher","repo":"airmang/hwpx-plugins","license":"Apache-2.0","label":"한글(HWPX) 편집 엔진","claude":"plugin hwpx-plugin@hwpx","codex":"plugin hwpx-plugin@hwpx","needs":"-"},{"id":"kordoc","profile":"teacher","repo":"chrisryugj/kordoc","license":"MIT","label":"HWP·HWPX·PDF·DOCX·XLSX 읽기·비교·공문 프리셋 생성(MCP 17개 도구)","claude":"plugin kordoc@kordoc + mcp kordoc (npx -y kordoc mcp)","codex":"mcp kordoc (npx -y kordoc mcp)","needs":"Node.js"},{"id":"hwpx-new","profile":"teacher","repo":"ZZombie04/hwpx_new","license":"MIT","label":"한글 양식 기반 보고서·계획서 생성(MCP)","claude":"uv tool install → hwpx-new setup","codex":"uv tool install → hwpx-new setup","needs":"uv(또는 pipx)·Python 3.9+"},{"id":"markitdown","profile":"teacher","repo":"microsoft/markitdown","license":"MIT","label":"PDF·PPT·워드·엑셀 → 텍스트 변환(MCP)","claude":"mcp markitdown (uvx markitdown-mcp)","codex":"mcp markitdown (uvx markitdown-mcp)","needs":"uv"},{"id":"pptx-maker","profile":"teacher","repo":"ZZombie04/pptx_maker","license":"MIT","label":"한국어 발표 자료(PPTX) 엔진 — 초등·중등 수업, 교사 연수, 학부모 설명회 덱 생성·자동 점검(MCP 16개 도구)","claude":"uv tool install → pptx-maker setup","codex":"uv tool install → pptx-maker setup","needs":"uv·Python 3.9+"},{"id":"playwright","profile":"teacher","repo":"microsoft/playwright","license":"Apache-2.0","label":"브라우저 자동화(RPA) — 웹 양식 입력·자료 수집(MCP)","claude":"mcp playwright (npx -y @playwright/mcp@latest)","codex":"mcp playwright (npx -y @playwright/mcp@latest)","needs":"Node.js"},{"id":"firecrawl","profile":"teacher","repo":"firecrawl/firecrawl-mcp-server","license":"MIT","label":"웹사이트 내용 통째로 수집·검색·읽기(MCP, 키 없이 쓰는 무료 구간)","claude":"mcp firecrawl (https://mcp.firecrawl.dev/v2/mcp)","codex":"mcp firecrawl (https://mcp.firecrawl.dev/v2/mcp)","needs":"-"},{"id":"perplexity","profile":"teacher","repo":"perplexityai/modelcontextprotocol","license":"MIT","label":"최신 뉴스·문서를 찾아보고 답변(MCP) — 유료 API 키가 있을 때만 연결","claude":"mcp perplexity (npx -y @perplexity-ai/mcp-server, PERPLEXITY_API_KEY 있을 때)","codex":"mcp perplexity (npx -y @perplexity-ai/mcp-server, PERPLEXITY_API_KEY 있을 때)","needs":"Node.js, Perplexity API 키(유료)"},{"id":"claude-in-chrome","profile":"teacher","repo":"anthropics/claude-code","name":"Claude in Chrome","url":"https://code.claude.com/docs/en/chrome","license":"-","label":"크롬 연결 — 지금 열어 둔 탭 읽기·클릭(Claude in Chrome 확장)","claude":"안내 claude --chrome","codex":"-","needs":"크롬 확장 설치, Claude 유료 요금제"},{"id":"harness","profile":"teacher","repo":"revfactory/harness","license":"Apache-2.0","label":"한 문장으로 에이전트 팀·스킬 만들기(하네스 팩토리)","claude":"plugin harness@harness-marketplace","codex":"skills add","needs":"Codex: Node.js"},{"id":"harness-100","profile":"teacher","repo":"revfactory/harness-100","license":"Apache-2.0","label":"하네스 예시 100종(한국어) — 분필팩 harness-gallery 스킬로 필요한 것만 가져오기","claude":"가져오기 스킬","codex":"가져오기 스킬","needs":"git"},{"id":"ui-ux-pro-max","profile":"creator","repo":"nextlevelbuilder/ui-ux-pro-max-skill","license":"MIT","label":"UI·UX 디자인 지식(웹페이지·에듀테크 화면)","claude":"plugin ui-ux-pro-max@ui-ux-pro-max-skill","codex":"skills add","needs":"Codex: Node.js"},{"id":"taste-skill","profile":"creator","repo":"Leonxlnx/taste-skill","license":"MIT","label":"세련된 프런트엔드 디자인 감각","claude":"plugin taste-skill@taste-skill","codex":"skills add","needs":"Codex: Node.js"},{"id":"impeccable","profile":"creator","repo":"pbakaus/impeccable","license":"Apache-2.0","label":"디자인 다듬기·점검(/impeccable polish·audit)","claude":"plugin impeccable@impeccable","codex":"skills add","needs":"Codex: Node.js"},{"id":"watch","profile":"creator","repo":"bradautomates/claude-video","license":"MIT","label":"영상 보고 요약(유튜브·파일 → 장면·자막)","claude":"plugin watch@claude-video","codex":"plugin watch@claude-video","needs":"Python 3.10+, ffmpeg, yt-dlp(실행 시)"},{"id":"sprite-gen","profile":"creator","repo":"aldegad/sprite-gen","license":"Apache-2.0","label":"게임·애니메이션용 스프라이트 이미지 만들기","claude":"skills add","codex":"skills add","needs":"Node.js(설치), Python(실행)"},{"id":"instagram-agent","profile":"creator","repo":"Jakeschincariol/instagram-agent-skill","license":"MIT","label":"인스타그램 스킬 13종 — 아이디어 한 줄로 훅·릴스 대본·화면 자막·캡션(올리기는 직접)","claude":"plugin instagram-agent@instagram-agent-skill","codex":"plugin instagram-agent@instagram-agent-skill","needs":"Python 3(점검 도구)"},{"id":"glif","profile":"creator","repo":"glifxyz/glif-mcp-server","license":"MIT","label":"이미지·영상·음성 AI 수백 개 연결(Glif)","claude":"plugin glif@glif + mcp glif (https://glif.app/api/mcp)","codex":"plugin glif@glif","needs":"Glif 계정 로그인(크레딧)"},{"id":"cinetic","profile":"creator","repo":"Leonxlnx/cinetic","license":"MIT","label":"문장 한두 줄로 소개·출시 영상(소리 포함) 제작 스킬 — studio 묶음에도 있는 도구라, 함께 고르면 studio의 고정 버전을 씀","claude":"skills add Leonxlnx/cinetic (macOS·Linux·WSL2)","codex":"skills add Leonxlnx/cinetic (macOS·Linux·WSL2)","needs":"bash, Node 22+, ffmpeg 6+, Python 3.11+, Chromium"},{"id":"prompt-motion","profile":"creator","repo":"prompt-motion.com","name":"Prompt Motion","url":"https://prompt-motion.com","license":"-","label":"클로드로 만든 모션 영상 234개와 프롬프트 원문 모음(로그인 없음, 2026-10-14 기준) — 영상·프롬프트는 각 원작자 것","claude":"링크 사이트에서 Copy","codex":"링크 사이트에서 Copy","needs":"-"},{"id":"manim","profile":"creator","repo":"ManimCommunity/manim","license":"MIT","label":"수학·과학 개념 설명 애니메이션(수업 영상 스킬이 필요할 때 파이썬 환경에 설치)","claude":"필요할 때 설치 (pip install manim)","codex":"필요할 때 설치 (pip install manim)","needs":"Python, ffmpeg, Linux는 cairo·pango"},{"id":"edge-tts","profile":"creator","repo":"rany2/edge-tts","license":"LGPL-3.0","label":"한국어 음성 합성(대본을 인터넷 음성 서비스로 보냄 — 학생 정보 금지)","claude":"필요할 때 설치 (pip install edge-tts)","codex":"필요할 때 설치 (pip install edge-tts)","needs":"Python, 인터넷"},{"id":"superpowers","profile":"dev","repo":"obra/superpowers-marketplace","license":"MIT","label":"계획→구현→검증 개발 습관 스킬 모음","claude":"plugin superpowers@superpowers-marketplace","codex":"skills add obra/superpowers","needs":"Codex: Node.js"},{"id":"karpathy-skills","profile":"dev","repo":"multica-ai/andrej-karpathy-skills","license":"확인 필요(라이선스 파일 없음)","label":"카파시식 코딩 지침","claude":"plugin andrej-karpathy-skills@karpathy-skills","codex":"skills add","needs":"Codex: Node.js"},{"id":"caveman","profile":"dev","repo":"JuliusBrussee/caveman","license":"Apache-2.0/MIT","label":"응답 압축으로 토큰 절약","claude":"plugin caveman@caveman","codex":"skills add","needs":"Codex: Node.js"},{"id":"codex-plugin-cc","profile":"dev","repo":"openai/codex-plugin-cc","license":"Apache-2.0","label":"Claude Code에서 Codex에게 검토·작업 맡기기","claude":"plugin codex@openai-codex (Codex가 있을 때만)","codex":"-","needs":"Codex 설치·로그인"},{"id":"agent-reach","profile":"dev","repo":"Panniantong/Agent-Reach","license":"MIT","label":"에이전트가 웹·SNS를 읽게 하는 도구(설치는 에이전트가 안내)","claude":"skills add","codex":"skills add","needs":"Node.js, 이후 Python"},{"id":"ecc","profile":"dev","repo":"affaan-m/ECC","license":"MIT","label":"Everything Claude Code — 스킬 1,000여 개(마켓플레이스만 등록, 골라 설치)","claude":"marketplace ecc","codex":"marketplace ecc","needs":"-"},{"id":"wshobson-agents","profile":"dev","repo":"wshobson/agents","license":"MIT","label":"개발 워크플로 플러그인 90여 종(마켓플레이스만 등록)","claude":"marketplace claude-code-workflows","codex":"marketplace claude-code-workflows","needs":"-"},{"id":"google-skills","profile":"dev","repo":"google/skills","license":"Apache-2.0","label":"Google Cloud 스킬 17종(마켓플레이스만 등록)","claude":"marketplace google-plugins","codex":"marketplace google-plugins","needs":"-"},{"id":"claude-mem","profile":"dev","repo":"thedotmack/claude-mem","license":"Apache-2.0","label":"세션 기억 플러그인(백그라운드 작업자 실행 — 마켓플레이스만 등록)","claude":"marketplace thedotmack","codex":"marketplace claude-mem-local","needs":"Node.js 20+"},{"id":"motion","profile":"studio","repo":"ZZombie04/motion","license":"MIT","label":"Motion Director — 말 한마디로 모션그래픽 연출·렌더(스킬 + MCP 22개 도구)","claude":"스튜디오","codex":"스튜디오","needs":"Chromium, ffmpeg"},{"id":"showreel","profile":"studio","repo":"revfactory/showreel","license":"MIT","label":"한국어 모션그래픽 영상 제작(기획→대본→나레이션→렌더→검수)","claude":"스튜디오","codex":"스튜디오","needs":"ffmpeg, 나레이션은 ElevenLabs 키"},{"id":"motion-graphics","profile":"studio","repo":"Barty-Bart/motion-graphics","license":"MIT","label":"영상 편집 스킬 모음(자막에 맞춘 모션그래픽 B-roll 등)","claude":"스튜디오","codex":"스튜디오","needs":"ffmpeg"},{"id":"rea","profile":"studio","repo":"nalssam/rea","license":"MIT","label":"REA — 앱·바이너리 동작 분석(MCP 207개 도구)","claude":"스튜디오","codex":"스튜디오","needs":"정밀 분석은 Ghidra 등 별도 엔진"},{"id":"aftereffects-mcp","profile":"studio","repo":"nalssam/aftereffects-mcp","license":"MIT","label":"After Effects를 AI가 직접 조작(MCP)","claude":"스튜디오","codex":"스튜디오","needs":"Adobe After Effects 2022+(macOS·Windows)"},{"id":"claude-native-122","profile":"studio","repo":"nalssam/bunpil_pack","name":"studio/ (설치 엔진)","url":"https://github.com/nalssam/bunpil_pack/tree/main/studio","license":"MIT","label":"스튜디오 설치 엔진 — Claude Code 네이티브 플러그인 122개(개발 워크플로·Google Cloud 포함)와 스킬·MCP를 고정 커밋으로 설치","claude":"스튜디오","codex":"-","needs":"Claude Code, Google Cloud 플러그인은 계정 설정"}],"linksOnly":[{"repo":"hesreallyhim/awesome-claude-code","license":"CC BY-NC-ND 4.0","why":"설치물이 아닌 추천 목록. 링크로만 안내한다."},{"repo":"lifeofpi-ux/ppt-automation","license":"확인 불가","why":"2026-10-13 기준 공개 저장소로 접근되지 않음(비공개 또는 이동). 공개되면 creator 묶음에 추가한다."}],"profiles":{"teacher":"기본. 한글·문서·업무 자동화(RPA)·웹 수집·하네스","creator":"웹·디자인·영상(모션그래픽)·인스타그램 자료 만들기","dev":"고급·개발자용. 큰 모음은 마켓플레이스만 등록","studio":"고급 · 영상·모션·발표·분석 도구를 고정 버전으로 한꺼번에(수 GB, 10~30분). macOS·Linux·WSL2","all":"teacher + creator + dev + studio"}};
   var SITE = "https://nalssam-bunpil.vercel.app";
+  var LEAD = "분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. {wait} 끝나면 설치된 것과 실패한 것을 짧게 알려줘.";
+  var WAIT = "5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘.";
+  var WAIT_STUDIO = "수 GB를 받아 10~30분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘.";
   var body = document.body;
 
   var store = {
@@ -1044,29 +1315,46 @@ body[data-mobile="1"] .mobile-note { display: block; }
   var env = detect();
   if (env.mobile) body.setAttribute("data-mobile", "1");
 
+  /* 쓰는 AI마다 설치 방법: gui = 앱 채팅창(기본), menu = 앱 메뉴만(Claude), cli = 터미널·VS Code */
+  var ROUTES = { claude: ["gui", "menu", "cli"], codex: ["gui", "cli"] };
   var state = {
     host: store.get("host", "claude"),
     os: store.get("os", env.os),
-    route: store.get("route", "code")
+    routes: store.get("route2", null)
   };
+  if (!ROUTES[state.host]) state.host = "claude";
+  if (state.os !== "win" && state.os !== "mac") state.os = env.os;
+  if (!state.routes || typeof state.routes !== "object") state.routes = {};
+  Object.keys(ROUTES).forEach(function (h) { if (ROUTES[h].indexOf(state.routes[h]) < 0) state.routes[h] = "gui"; });
   var hash = (location.hash || "").replace("#", "");
   if (hash === "claude" || hash === "codex") state.host = hash;
 
   var toastEl = document.getElementById("toast"), toastTimer = 0;
   function toast(msg) {
     toastEl.textContent = msg; toastEl.classList.add("on");
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove("on"); }, 1800);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove("on"); }, 2200);
   }
 
-  /* 설치 명령 */
-  function cmdFor(host, os) { return os === "win" ? "irm " + SITE + "/" + host + ".ps1 | iex" : "curl -fsSL " + SITE + "/" + host + ".sh | sh"; }
-  var WHERE = {
-    win: "시작 메뉴에서 <b>PowerShell</b>을 열고 붙여넣은 뒤 Enter",
-    mac: "<b>터미널</b>(⌘+Space → 터미널)을 열고 붙여넣은 뒤 Enter"
+  /* 채팅창에 붙여넣을 설치 문장 = 안내 한 문단 + 명령 한 줄. Windows 명령은 powershell -Command 로 감싸 PowerShell·cmd·Git Bash 어디서 실행돼도 같다 */
+  function lead(studio) { return LEAD.replace("{wait}", studio ? WAIT_STUDIO : WAIT); }
+  function chatCmd(host, os) {
+    return os === "win" ? 'powershell -NoProfile -Command "irm ' + SITE + "/" + host + '.ps1 | iex"' : "curl -fsSL " + SITE + "/" + host + ".sh | sh";
+  }
+  var QUICK = {
+    claude: [
+      '<b>Claude 앱</b>을 <a href="https://claude.com/download" rel="noopener">내려받아</a> 설치하고 로그인 <small>Code 탭은 유료 요금제(Pro 이상)</small>',
+      '앱 위쪽 <b>Code</b> 탭 → <b>Local</b> → <b>폴더 선택</b> <small>예: 문서 안에 만든 분필작업 폴더</small>',
+      '아래 문장을 입력창에 <b>붙여넣고 Enter</b> <small>실행 허락을 물으면 명령을 확인하고 허용</small>'
+    ],
+    codex: [
+      '<b>ChatGPT 앱</b>을 <a href="https://chatgpt.com/download" rel="noopener">내려받아</a> 설치하고 로그인 <small>무료 요금제도 가능(사용량은 요금제별)</small>',
+      '새 채팅에서 <b>Codex</b>를 고르고 <b>폴더 열기</b> <small>예: 문서 안에 만든 분필작업 폴더</small>',
+      '아래 문장을 입력창에 <b>붙여넣고 Enter</b> <small>승인을 물으면 명령을 확인하고 승인</small>'
+    ]
   };
   var WHAT = {
-    claude: "<b>Claude Code</b>가 없으면 함께 설치하고, 분필팩 5종과 날쌤 추천 도구까지 한 번에 넣습니다. 약 5~10분.",
-    codex: "<b>Codex CLI</b>가 없으면 함께 설치하고, 분필팩 5종과 날쌤 추천 도구까지 한 번에 넣습니다. 약 5~10분."
+    claude: "<b>5~10분</b> 걸립니다. 분필팩 5종과 teacher 추천 도구까지 한 번에 넣고, 끝나면 <b>새 대화</b>를 시작하세요.",
+    codex: "<b>5~10분</b> 걸립니다. 분필팩 5종과 teacher 추천 도구까지 한 번에 넣고, 끝나면 앱을 다시 열어 <b>새 대화</b>를 시작하세요."
   };
 
   function setPressed(sel, attr, val) {
@@ -1075,18 +1363,21 @@ body[data-mobile="1"] .mobile-note { display: block; }
   function apply() {
     body.setAttribute("data-os", state.os);
     body.setAttribute("data-host", state.host);
+    body.setAttribute("data-route", state.routes[state.host]);
     setPressed("[data-set-os]", "data-set-os", state.os);
     setPressed(".seg [data-set-host]", "data-set-host", state.host);
-    setPressed("[data-set-route]", "data-set-route", state.route);
     document.querySelectorAll(".tab").forEach(function (t) {
       var on = t.getAttribute("data-set-host") === state.host;
       t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1;
     });
-    document.querySelectorAll("[data-host-panel]").forEach(function (p) { p.hidden = p.getAttribute("data-host-panel") !== state.host; });
-    document.querySelectorAll("[data-route-panel]").forEach(function (p) { p.hidden = p.getAttribute("data-route-panel") !== state.route; });
-    document.querySelector("[data-quick-cmd]").textContent = cmdFor(state.host, state.os);
-    document.querySelector("[data-quick-pr]").textContent = state.os === "win" ? "PS>" : "%";
-    document.querySelector("[data-quick-where]").innerHTML = WHERE[state.os];
+    document.querySelectorAll("[data-host-panel]").forEach(function (panel) {
+      var h = panel.getAttribute("data-host-panel"), r = state.routes[h];
+      panel.hidden = h !== state.host;
+      panel.querySelectorAll("[data-set-route]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-set-route") === r)); });
+      panel.querySelectorAll("[data-route-panel]").forEach(function (p) { p.hidden = p.getAttribute("data-route-panel") !== r; });
+    });
+    document.querySelector("[data-quick-cmd]").textContent = lead(false) + "\n" + chatCmd(state.host, state.os);
+    document.querySelectorAll("[data-quick-step]").forEach(function (li) { li.innerHTML = QUICK[state.host][Number(li.getAttribute("data-quick-step"))]; });
     document.querySelector("[data-quick-what]").innerHTML = WHAT[state.host];
     var bo = document.getElementById(state.os === "win" ? "b-os-win" : "b-os-mac");
     if (bo && !bo.dataset.touched) { bo.checked = true; }
@@ -1098,13 +1389,17 @@ body[data-mobile="1"] .mobile-note { display: block; }
   document.addEventListener("click", function (e) {
     var t = e.target.closest("[data-set-host],[data-set-os],[data-set-route]");
     if (!t) return;
-    if (t.hasAttribute("data-set-host")) {
-      state.host = t.getAttribute("data-set-host"); store.set("host", state.host);
-      if (t.tagName === "A") { e.preventDefault(); document.getElementById("install").scrollIntoView(); }
-    }
+    if (t.hasAttribute("data-set-host")) { state.host = t.getAttribute("data-set-host"); store.set("host", state.host); }
     if (t.hasAttribute("data-set-os")) { state.os = t.getAttribute("data-set-os"); store.set("os", state.os); }
-    if (t.hasAttribute("data-set-route")) { state.route = t.getAttribute("data-set-route"); store.set("route", state.route); }
+    if (t.hasAttribute("data-set-route")) {
+      var r = t.getAttribute("data-set-route"), panel = t.closest("[data-host-panel]");
+      var h = panel ? panel.getAttribute("data-host-panel") : state.host;
+      if (ROUTES[h].indexOf(r) < 0) h = "claude";   /* 앱 메뉴만(menu)은 Claude에만 있다 */
+      state.host = h; state.routes[h] = r;
+      store.set("host", state.host); store.set("route2", state.routes);
+    }
     apply();
+    if (t.tagName === "A") { e.preventDefault(); document.getElementById("install").scrollIntoView(); }
   });
 
   /* 탭 키보드 */
@@ -1177,47 +1472,78 @@ body[data-mobile="1"] .mobile-note { display: block; }
   }
   document.querySelectorAll("[data-steps]").forEach(setupSteps);
 
-  /* 명령 만들기 */
+  /* 설치 문장 만들기 */
+  var PROFILES = ["teacher", "creator", "dev", "studio"];
   function val(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ""; }
+  function checked(id) { var el = document.getElementById(id); return !!(el && el.checked); }
+  function syncBundles() {
+    document.querySelectorAll("[data-pick-bundle]").forEach(function (b) {
+      var on = checked("b-p-" + b.getAttribute("data-pick-bundle"));
+      b.setAttribute("aria-pressed", String(on));
+      b.textContent = on ? "설치 문장에 넣음" : "설치 문장에 넣기";
+    });
+  }
   function build() {
+    syncBundles();
     var host = val("b-host"), os = val("b-os");
-    var profiles = ["teacher", "creator", "dev"].filter(function (p) { return document.getElementById("b-p-" + p).checked; });
-    var inst = document.getElementById("b-install").checked, tools = document.getElementById("b-tools").checked, nohwpx = document.getElementById("b-nohwpx").checked;
-    var nal = document.getElementById("b-nalssam").checked;
-    var notes = [], cmd;
+    var profiles = PROFILES.filter(function (p) { return checked("b-p-" + p); });
+    var inst = checked("b-install"), tools = checked("b-tools"), nohwpx = checked("b-nohwpx");
+    var studio = profiles.indexOf("studio") >= 0;
+    /* teacher 묶음만, 기본 옵션이면 사이트의 짧은 설치 주소(claude·codex)와 같다 */
+    var preset = (host === "claude" || host === "codex") && profiles.join(",") === "teacher" && inst && tools && !nohwpx;
+    var notes = [], term, chat;
     if (os === "mac") {
-      var f = [];
-      if (host === "claude") f.push("--claude"); if (host === "codex") f.push("--codex");
-      if (!profiles.length) f.push("--bunpil-only"); else if (profiles.join(",") !== "teacher") f.push("--profile " + profiles.join(","));
-      if (inst) { if (host !== "codex") f.push("--install-claude"); if (host !== "claude") f.push("--install-codex"); }
-      if (tools) f.push("--with-tools");
-      if (nohwpx) f.push("--no-hwpx");
-      if (nal) f.push("--nalssam");
-      cmd = "curl -fsSL " + SITE + "/install.sh | sh" + (f.length ? " -s -- " + f.join(" ") : "");
+      if (preset) {
+        term = "curl -fsSL " + SITE + "/" + host + ".sh | sh";
+      } else {
+        var f = [];
+        if (host === "claude") f.push("--claude"); if (host === "codex") f.push("--codex");
+        if (!profiles.length) f.push("--bunpil-only"); else if (profiles.join(",") !== "teacher") f.push("--profile " + profiles.join(","));
+        if (inst) { if (host !== "codex") f.push("--install-claude"); if (host !== "claude") f.push("--install-codex"); }
+        if (tools) f.push("--with-tools");
+        if (nohwpx) f.push("--no-hwpx");
+        term = "curl -fsSL " + SITE + "/install.sh | sh" + (f.length ? " -s -- " + f.join(" ") : "");
+      }
+      chat = term;
+    } else if (preset) {
+      term = "irm " + SITE + "/" + host + ".ps1 | iex";
+      chat = chatCmd(host, "win");
     } else {
       var v = [];
-      if (host === "claude" || host === "codex") v.push('$env:BUNPIL_ONLY="' + host + '"');
-      if (!profiles.length) v.push('$env:BUNPIL_RECS="0"'); else if (profiles.join(",") !== "teacher") v.push('$env:BUNPIL_PROFILE="' + profiles.join(",") + '"');
-      if (inst) { if (host !== "codex") v.push('$env:BUNPIL_INSTALL_CLAUDE="1"'); if (host !== "claude") v.push('$env:BUNPIL_INSTALL_CODEX="1"'); }
-      if (tools) v.push('$env:BUNPIL_WITH_TOOLS="1"');
-      if (nohwpx) v.push('$env:BUNPIL_HWPX="0"');
-      cmd = (v.length ? v.join("; ") + "; " : "") + "irm " + SITE + "/install.ps1 | iex" + (v.length ? "; Remove-Item Env:BUNPIL_* -ErrorAction SilentlyContinue" : "");
+      if (host === "claude" || host === "codex") v.push(["BUNPIL_ONLY", host]);
+      if (!profiles.length) v.push(["BUNPIL_RECS", "0"]); else if (profiles.join(",") !== "teacher") v.push(["BUNPIL_PROFILE", profiles.join(",")]);
+      if (inst) { if (host !== "codex") v.push(["BUNPIL_INSTALL_CLAUDE", "1"]); if (host !== "claude") v.push(["BUNPIL_INSTALL_CODEX", "1"]); }
+      if (tools) v.push(["BUNPIL_WITH_TOOLS", "1"]);
+      if (nohwpx) v.push(["BUNPIL_HWPX", "0"]);
+      var ps = v.map(function (p) { return "$env:" + p[0] + '="' + p[1] + '"'; }).join("; ");
+      var any = v.map(function (p) { return "[Environment]::SetEnvironmentVariable('" + p[0] + "','" + p[1] + "')"; }).join("; ");
+      term = (v.length ? ps + "; " : "") + "irm " + SITE + "/install.ps1 | iex" + (v.length ? "; Remove-Item Env:BUNPIL_* -ErrorAction SilentlyContinue" : "");
+      chat = 'powershell -NoProfile -Command "' + (v.length ? any + "; " : "") + "irm " + SITE + '/install.ps1 | iex"';
     }
     document.getElementById("b-pr").textContent = os === "win" ? "PS>" : "%";
-    document.getElementById("b-cmd").textContent = cmd;
+    document.getElementById("b-cmd").textContent = term;
+    document.getElementById("b-chat").textContent = lead(studio && os === "mac") + "\n" + chat;
     if (!profiles.length) notes.push("추천 도구 없이 분필팩 5종만 설치합니다.");
-    else notes.push("추천 묶음: " + profiles.join(" + ") + (profiles.indexOf("dev") >= 0 ? " (dev의 큰 모음은 목록만 등록하고 골라 설치)" : ""));
+    else notes.push("묶음: " + profiles.join(" + ") + (profiles.indexOf("dev") >= 0 ? " (dev의 큰 모음은 목록만 등록하고 골라 설치)" : ""));
     if (host === "both") notes.push(inst ? "Claude Code와 Codex 모두에 설치하고, 없는 쪽은 새로 설치합니다." : "컴퓨터에서 찾은 Claude Code·Codex에만 설치합니다.");
     if (!tools) notes.push("Node.js·uv·Git이 없으면 일부 추천 도구는 건너뜁니다.");
-    if (nal && os === "mac") notes.push("날쌤팩(수 GB, 10~30분)도 설치합니다. Claude Code가 있으면 --claude로 설치하고, 겹치는 도구는 날쌤팩 것을 씁니다.");
-    if (nal && os === "win") notes.push("날쌤팩은 Windows PowerShell에서 설치되지 않습니다. WSL2 Ubuntu 터미널에서 '날쌤팩' 단락의 명령을 실행하세요.");
-    if (os === "win") notes.push("PowerShell에 붙여넣으세요. 끝에 붙은 Remove-Item은 이 창에 남은 설정값을 지웁니다.");
+    if (studio && os === "mac") notes.push("studio(수 GB, 10~30분)도 설치합니다. Claude Code가 있으면 네이티브 플러그인까지 설치하고, 겹치는 도구는 studio의 고정 버전을 씁니다.");
+    if (studio && os === "win") notes.push("studio는 Windows에서 바로 설치되지 않습니다. 나머지를 설치한 뒤 화면에 나오는 WSL2 Ubuntu 안내를 따르세요. Ubuntu 터미널에서는 curl -fsSL " + SITE + "/install.sh | sh -s -- --profile studio 를 실행합니다.");
+    if (os === "win") notes.push("① 문장 속 명령은 PowerShell·명령 프롬프트·Git Bash 어디서 실행돼도 됩니다. ② 명령은 PowerShell 전용입니다(끝의 Remove-Item은 이 창에 남은 설정값을 지웁니다).");
     var ul = document.getElementById("b-notes"); ul.innerHTML = "";
     notes.forEach(function (n) { var li = document.createElement("li"); li.textContent = n; ul.appendChild(li); });
   }
   var bform = document.getElementById("b-form");
   bform.addEventListener("submit", function (e) { e.preventDefault(); });
   bform.addEventListener("change", function (e) { if (e.target && e.target.name) e.target.dataset.touched = "1"; build(); });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-pick-bundle]");
+    if (!b) return;
+    var el = document.getElementById("b-p-" + b.getAttribute("data-pick-bundle"));
+    if (!el) return;
+    el.checked = !el.checked; build();
+    toast((el.checked ? "설치 문장에 넣었습니다" : "설치 문장에서 뺐습니다") + ". 아래 '설치 문장 만들기'에서 확인하세요.");
+  });
 
   /* 문제 해결 찾기 */
   var q = document.getElementById("faq-q"), items = Array.prototype.slice.call(document.querySelectorAll("#faq-list details"));
@@ -1245,7 +1571,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !present.hidden) closePresent(); });
   document.getElementById("share-copy").addEventListener("click", function (e) {
     var msg = "nalssam's 분필팩 — 교사용 AI 하네스 팩\n" +
-      "Claude Code·ChatGPT Codex에 학습지·지도안·공문·가정통신문 스킬과 한글(HWPX)·문서 도구를 한 줄로 설치합니다.\n" +
+      "Claude 앱(Code 탭)이나 ChatGPT 앱(Codex)의 채팅창에 설치 문장을 붙여넣기만 하면 학습지·지도안·공문·가정통신문 스킬과 한글(HWPX)·문서 도구가 설치됩니다.\n" +
       "설치 안내: " + SITE;
     copy(msg, e.currentTarget, null);
   });
@@ -1254,6 +1580,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
   if (hash === "claude" || hash === "codex") { var ins = document.getElementById("install"); if (ins) ins.scrollIntoView(); }
   void DATA;
 })();
+</script>
 </script>
 
 </body>

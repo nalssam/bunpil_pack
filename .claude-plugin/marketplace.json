@@ -11,7 +11,7 @@
       "displayName": "분필 시작 팩",
       "source": "./plugins/claude/bunpil-start",
       "description": "교사 맞춤 지침(CLAUDE.md·AGENTS.md)을 만드는 설정 마법사, 학생 개인정보 가드, 설치 점검. 분필팩을 쓰려면 가장 먼저 설치합니다.",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "category": "productivity",
       "tags": [
         "teacher",
@@ -25,7 +25,7 @@
       "displayName": "분필 수업자료 팩",
       "source": "./plugins/claude/bunpil-class",
       "description": "학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 수업 설명·소개 영상(초안), 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "category": "productivity",
       "tags": [
         "teacher",
@@ -40,7 +40,7 @@
       "displayName": "분필 학교업무 팩",
       "source": "./plugins/claude/bunpil-school",
       "description": "공문 처리 하네스(할 일·교직원 안내·초안·검토), 가정통신문, 물품 품의 산출내역, 학부모 설문 분석, 한글(HWPX) 문서 안내.",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "category": "productivity",
       "tags": [
         "teacher",
@@ -54,7 +54,7 @@
       "displayName": "분필 하네스빌더 팩",
       "source": "./plugins/claude/bunpil-builder",
       "description": "반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "category": "productivity",
       "tags": [
         "teacher",
@@ -68,7 +68,7 @@
       "displayName": "분필 커넥터 팩",
       "source": "./plugins/claude/bunpil-connect",
       "description": "노션·패들렛·캔바 원격 MCP 커넥터를 등록하고 하네스별 로그인 방법을 안내합니다.",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "category": "productivity",
       "tags": [
         "teacher",
