@@ -11,7 +11,7 @@
 #   1) 컴퓨터에 있는 Claude Code, Codex(ChatGPT)를 찾는다 (옵션을 주면 없을 때 설치한다)
 #   2) 분필팩(플러그인 5종)을 내려받아 ~/.bunpil 에 두고 설치한다 (Git 없어도 됨)
 #   3) 날쌤 추천 스킬·MCP·플러그인 묶음을 함께 설치한다 (catalog/recommended.json)
-#        teacher(기본) 한글·발표 자료·문서 변환·브라우저 자동화(RPA)·하네스 / creator 웹·디자인·영상 / dev 개발자용
+#        teacher(기본) 한글·발표 자료·문서 변환·브라우저 자동화(RPA)·웹 수집·하네스 / creator 웹·디자인·영상·인스타 / dev 개발자용
 #        --nalssam 을 주면 날쌤팩(영상·모션·분석 도구, 고정 버전)도 함께 설치한다
 #   4) 이미 설치되어 있으면 최신으로 바꾼다 (다시 실행 = 업데이트)
 #  관리자 권한(sudo)이 필요 없다.
@@ -31,6 +31,7 @@
 #   BUNPIL_HOME  분필팩을 둘 폴더(기본 ~/.bunpil)
 #   BUNPIL_PROFILE · BUNPIL_ONLY(claude|codex) · BUNPIL_INSTALL_CLAUDE · BUNPIL_INSTALL_CODEX
 #   BUNPIL_WITH_TOOLS · BUNPIL_ASK · BUNPIL_RECS(0=분필팩만) · BUNPIL_HWPX(0=빼기) · BUNPIL_NALSSAM · BUNPIL_UNINSTALL  (값 1 = 켜기)
+#   PERPLEXITY_API_KEY  있으면 최신 검색 Perplexity(MCP)도 연결 (유료 키, Claude Code·Codex 설정에 저장됨)
 # ─────────────────────────────────────────────────────────────
 set -u
 # 미리 정한 값 — Claude용: Claude Code가 없으면 설치하고 Node.js·uv도 준비한다 (환경변수로 바꿀 수 있다)
@@ -48,6 +49,9 @@ MARKET="bunpil"
 PLUGINS="bunpil-start bunpil-class bunpil-school bunpil-builder bunpil-connect"
 SKILLS_CLI="skills@1.7.2"
 PLAYWRIGHT_MCP="@playwright/mcp@latest"
+PERPLEXITY_MCP="@perplexity-ai/mcp-server"
+FIRECRAWL_URL="https://mcp.firecrawl.dev/v2/mcp"      # 키 없이 쓰는 무료 구간(수집·검색·읽기 3종)
+GLIF_URL="https://glif.app/api/mcp"
 NODE_DIST="${BUNPIL_NODE_DIST:-https://nodejs.org/dist/latest-v24.x}"
 PPTX_COMMIT="ae3d919005100472805bf39ddab234bd1cf72577"   # ZZombie04/pptx_maker (날쌤팩 v1.0.1과 같은 커밋)
 NALSSAM_VERSION="v1.0.1"                                 # nalssam/nalssam-pack 릴리스
@@ -412,6 +416,29 @@ mcp_add() {    # mcp_add <claude|codex> <이름> <표시이름> <명령...>
     if codex mcp add "$name" -- "$@" >/dev/null 2>&1; then ok "$label"; else fail "$label — MCP 등록 실패"; fi
   fi
 }
+mcp_http() {   # mcp_http <claude|codex> <이름> <표시이름> <주소>  — 원격(HTTP) MCP
+  host="$1"; name="$2"; label="$3"; url="$4"
+  if [ "$host" = claude ]; then
+    if claude mcp get "$name" >/dev/null 2>&1; then ok "$label — 이미 연결됨"; return; fi
+    if claude mcp add -s user --transport http "$name" "$url" >/dev/null 2>&1; then ok "$label"; else fail "$label — MCP 등록 실패"; fi
+  else
+    if codex mcp get "$name" >/dev/null 2>&1; then ok "$label — 이미 연결됨"; return; fi
+    if codex mcp add "$name" --url "$url" >/dev/null 2>&1; then ok "$label"; else fail "$label — MCP 등록 실패"; fi
+  fi
+}
+perplexity_mcp() {  # 유료 API 키가 있을 때만 연결한다
+  label="최신 뉴스·문서 검색 · Perplexity(MCP)"
+  if [ -z "${PERPLEXITY_API_KEY:-}" ]; then skip "$label — 유료 API 키가 있어야 해서 건너뜀 (아래 '다음 단계' 참고)"; PPLX_SKIPPED=1; return; fi
+  if [ "$HAS_NPX" = 0 ]; then skip "$label — Node.js가 없어 건너뜀"; return; fi
+  if [ "$1" = claude ]; then
+    if claude mcp get perplexity >/dev/null 2>&1; then ok "$label — 이미 연결됨"; return; fi
+    if claude mcp add -s user perplexity -e "PERPLEXITY_API_KEY=$PERPLEXITY_API_KEY" -- npx -y "$PERPLEXITY_MCP" >/dev/null 2>&1; then ok "$label"; else fail "$label — MCP 등록 실패"; fi
+  else
+    if codex mcp get perplexity >/dev/null 2>&1; then ok "$label — 이미 연결됨"; return; fi
+    if codex mcp add perplexity --env "PERPLEXITY_API_KEY=$PERPLEXITY_API_KEY" -- npx -y "$PERPLEXITY_MCP" >/dev/null 2>&1; then ok "$label"; else fail "$label — MCP 등록 실패"; fi
+  fi
+}
+PPLX_SKIPPED=0; GLIF_ON=0
 MD_WARM=0
 warm_markitdown() {  # 첫 실행 때 내려받는 시간(30초 안팎) 때문에 MCP 연결이 시간 초과되지 않도록 미리 받아 둔다
   [ "$MD_WARM" = 1 ] && return 0; MD_WARM=1
@@ -419,7 +446,7 @@ warm_markitdown() {  # 첫 실행 때 내려받는 시간(30초 안팎) 때문�
   return 0
 }
 NALSSAM_DONE=0
-NALSSAM_REPOS="chrisryugj/kordoc revfactory/harness nextlevelbuilder/ui-ux-pro-max-skill Leonxlnx/taste-skill pbakaus/impeccable bradautomates/claude-video aldegad/sprite-gen obra/superpowers obra/superpowers-marketplace multica-ai/andrej-karpathy-skills JuliusBrussee/caveman openai/codex-plugin-cc Panniantong/Agent-Reach affaan-m/ECC wshobson/agents google/skills thedotmack/claude-mem"
+NALSSAM_REPOS="Leonxlnx/cinetic chrisryugj/kordoc revfactory/harness nextlevelbuilder/ui-ux-pro-max-skill Leonxlnx/taste-skill pbakaus/impeccable bradautomates/claude-video aldegad/sprite-gen obra/superpowers obra/superpowers-marketplace multica-ai/andrej-karpathy-skills JuliusBrussee/caveman openai/codex-plugin-cc Panniantong/Agent-Reach affaan-m/ECC wshobson/agents google/skills thedotmack/claude-mem"
 in_nalssam() { [ "$NALSSAM_DONE" = 1 ] || return 1; case " $NALSSAM_REPOS " in *" $1 "*) return 0 ;; esac; return 1; }
 NALSSAM_SKIP="날쌤팩에 들어 있어 건너뜀"
 
@@ -536,24 +563,31 @@ bunpil_codex() {
 # ── 추천 묶음 (catalog/recommended.json과 같게 유지) ─────────
 recs_claude() {
   if in_profile teacher; then
-    say "  ${D}[teacher] 한글·문서·자동화·하네스${N}"
+    say "  ${D}[teacher] 한글·문서·자동화·웹 수집·하네스${N}"
     [ "$skip_hwpx" = 1 ] || c_plugin airmang/hwpx-plugins hwpx-plugin@hwpx "한글(HWPX) 편집 엔진 · airmang/hwpx-plugins"
     c_plugin chrisryugj/kordoc kordoc@kordoc "한글·PDF 읽기·공문 프리셋 · chrisryugj/kordoc"
     if [ "$HAS_NPX" = 1 ]; then
       mcp_add claude kordoc "kordoc 문서 도구 17종(MCP)" npx -y kordoc mcp
       mcp_add claude playwright "브라우저 자동화 RPA(MCP) · microsoft/playwright" npx -y "$PLAYWRIGHT_MCP"
     else skip "kordoc MCP·브라우저 자동화 — Node.js가 없어 건너뜀"; fi
+    mcp_http claude firecrawl "웹사이트 내용 수집 · Firecrawl(MCP, 키 없이)" "$FIRECRAWL_URL"
+    perplexity_mcp claude
     if [ "$HAS_UVX" = 1 ]; then mcp_add claude markitdown "파일 → 텍스트 변환(MCP) · microsoft/markitdown" uvx markitdown-mcp; warm_markitdown
     else skip "파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀"; fi
     c_plugin revfactory/harness harness@harness-marketplace "하네스 팩토리 · revfactory/harness"
   fi
   if in_profile creator; then
-    say "  ${D}[creator] 웹·디자인·영상${N}"
+    say "  ${D}[creator] 웹·디자인·영상·인스타${N}"
     c_plugin nextlevelbuilder/ui-ux-pro-max-skill ui-ux-pro-max@ui-ux-pro-max-skill "UI·UX 디자인 · ui-ux-pro-max"
     c_plugin Leonxlnx/taste-skill taste-skill@taste-skill "디자인 감각 · taste-skill"
     c_plugin pbakaus/impeccable impeccable@impeccable "디자인 다듬기 · impeccable"
     c_plugin bradautomates/claude-video watch@claude-video "영상 보고 요약 · claude-video(watch)"
+    skills_add Leonxlnx/cinetic claude-code "소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)"
     skills_add aldegad/sprite-gen claude-code "스프라이트 이미지 · sprite-gen"
+    c_plugin Jakeschincariol/instagram-agent-skill instagram-agent@instagram-agent-skill "인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill"
+    c_plugin glifxyz/glif-mcp-server glif@glif "이미지·영상 AI · Glif 플러그인"
+    mcp_http claude glif "Glif 연결(MCP, /mcp에서 로그인)" "$GLIF_URL"
+    GLIF_ON=1
   fi
   if in_profile dev; then
     say "  ${D}[dev] 개발자용${N}"
@@ -571,23 +605,29 @@ recs_claude() {
 }
 recs_codex() {
   if in_profile teacher; then
-    say "  ${D}[teacher] 한글·문서·자동화·하네스${N}"
+    say "  ${D}[teacher] 한글·문서·자동화·웹 수집·하네스${N}"
     [ "$skip_hwpx" = 1 ] || x_plugin airmang/hwpx-plugins hwpx-plugin@hwpx "한글(HWPX) 편집 엔진 · airmang/hwpx-plugins"
     if [ "$HAS_NPX" = 1 ]; then
       mcp_add codex kordoc "kordoc 문서 도구 17종(MCP) · chrisryugj/kordoc" npx -y kordoc mcp
       mcp_add codex playwright "브라우저 자동화 RPA(MCP) · microsoft/playwright" npx -y "$PLAYWRIGHT_MCP"
     else skip "kordoc·브라우저 자동화 — Node.js가 없어 건너뜀"; fi
+    mcp_http codex firecrawl "웹사이트 내용 수집 · Firecrawl(MCP, 키 없이)" "$FIRECRAWL_URL"
+    perplexity_mcp codex
     if [ "$HAS_UVX" = 1 ]; then mcp_add codex markitdown "파일 → 텍스트 변환(MCP) · microsoft/markitdown" uvx markitdown-mcp; warm_markitdown
     else skip "파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀"; fi
     skills_add revfactory/harness codex "하네스 팩토리 · revfactory/harness"
   fi
   if in_profile creator; then
-    say "  ${D}[creator] 웹·디자인·영상${N}"
+    say "  ${D}[creator] 웹·디자인·영상·인스타${N}"
     skills_add nextlevelbuilder/ui-ux-pro-max-skill codex "UI·UX 디자인 · ui-ux-pro-max"
     skills_add Leonxlnx/taste-skill codex "디자인 감각 · taste-skill"
     skills_add pbakaus/impeccable codex "디자인 다듬기 · impeccable"
     x_plugin bradautomates/claude-video watch@claude-video "영상 보고 요약 · claude-video(watch)"
+    skills_add Leonxlnx/cinetic codex "소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)"
     skills_add aldegad/sprite-gen codex "스프라이트 이미지 · sprite-gen"
+    x_plugin Jakeschincariol/instagram-agent-skill instagram-agent@instagram-agent-skill "인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill"
+    x_plugin glifxyz/glif-mcp-server glif@glif "이미지·영상 AI · Glif(MCP 포함)"
+    GLIF_ON=1
   fi
   if in_profile dev; then
     say "  ${D}[dev] 개발자용${N}"
@@ -640,12 +680,20 @@ if [ "$HAS_CLAUDE" = 1 ]; then
   say "   1. 작업 폴더를 만들고 실행:  mkdir -p ~/분필작업 && cd ~/분필작업 && claude"
   say "   2. 처음이면 브라우저에서 로그인 → 대화창에 \"설정 시작해줘\""
   say "   3. 노션·패들렛·캔바 연결: 대화창에서  /mcp  → 서비스 선택 → 로그인"
+  [ "$GLIF_ON" = 1 ] && say "      Glif(이미지·영상 AI)도  /mcp  → glif → 로그인"
+  say "   4. 크롬 연결(지금 열어 둔 탭 읽기·클릭): 크롬 웹스토어에서 'Claude' 확장 설치 → claude --chrome"
+  say "      늘 켜 두려면 대화창에서  /chrome  → Enabled by default  (유료 요금제 필요, WSL은 지원 안 함)"
 fi
 if [ "$HAS_CODEX" = 1 ]; then
   say "  Codex"
   say "   1. 작업 폴더를 만들고 실행:  mkdir -p ~/분필작업 && cd ~/분필작업 && codex"
   say "   2. 처음이면 'Sign in with ChatGPT'로 로그인 → /hooks 에서 분필 가드 신뢰(trust)"
   say "   3. 대화창에 \"설정 시작해줘\"  ·  노션 연결:  codex mcp login notion"
+  [ "$GLIF_ON" = 1 ] && say "      Glif(이미지·영상 AI) 로그인:  codex mcp login glif"
+fi
+if [ "$PPLX_SKIPPED" = 1 ]; then
+  say "  Perplexity(최신 검색)는 유료 API 키가 필요합니다. console.perplexity.ai 에서 키를 받은 뒤"
+  say "   같은 명령의  | sh  부분을  | PERPLEXITY_API_KEY=받은키 sh  로 바꿔 다시 실행하세요."
 fi
 if [ "$recs" = 1 ] && { [ "$HAS_NPX" = 0 ] || [ "$HAS_UVX" = 0 ]; }; then
   if [ "$with_tools" = 1 ]; then say "  Node.js·uv를 준비하지 못해 일부 도구를 건너뛰었습니다. 인터넷 연결을 확인하고 같은 명령을 다시 실행하세요."

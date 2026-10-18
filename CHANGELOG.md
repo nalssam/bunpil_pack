@@ -1,5 +1,17 @@
 # 변경 기록
 
+## 0.5.0 — 2026-10-18
+- teacher 묶음에 웹사이트 내용 수집 **Firecrawl**(호스팅 MCP, 키 없이 쓰는 무료 구간 — 수집·검색·읽기) 연결
+- teacher 묶음에 최신 뉴스·문서 검색 **Perplexity**(@perplexity-ai/mcp-server) — 유료 키라 `PERPLEXITY_API_KEY`가 있을 때만 연결하고, 없으면 건너뛰고 방법 안내
+- creator 묶음에 **인스타그램 스킬 13종**(Jakeschincariol/instagram-agent-skill, MIT — 훅·릴스 대본·화면 자막·캡션) Claude Code·Codex 플러그인으로 설치
+- creator 묶음에 이미지·영상 AI **Glif**(glifxyz/glif-mcp-server) 플러그인과 MCP 연결 — 처음 한 번 로그인
+- 크롬 연결(Claude in Chrome): 확장 설치는 명령으로 할 수 없어 설치 뒤 '다음 단계'와 사이트 문제 해결에 안내
+- creator 묶음에 모션그래픽: **Cinetic** 스킬(Leonxlnx/cinetic, macOS·Linux·WSL2, `skills add`)과 **Prompt Motion**(prompt-motion.com 사례·프롬프트 모음, 링크 안내)
+- 새 스킬 **class-video**(수업 영상 만들기, bunpil-class): 스토리보드 승인 → Manim 설명 영상 + edge-tts 한국어 음성, 소개 영상은 Cinetic, 안 되면 HTML+ffmpeg. 준비 점검·개인정보·원작자 권리 안내 포함, 평가 사례 5건
+- 중복 정리: Playwright(teacher)·codex-plugin-cc(dev)는 이미 있어 그대로 두고, nalssam 묶음의 Cinetic은 creator 한 줄로 합침(--nalssam이면 날쌤팩이 설치)
+- 수정: Perplexity 키를 Claude Code에 등록할 때 인자 순서 오류
+- 설치 점검(checkup)이 firecrawl·perplexity·glif를 인식
+
 ## 0.4.0 — 2026-10-16
 - teacher 묶음에 한국어 발표 자료 엔진 **pptx-maker**(ZZombie04/pptx_maker, MIT) 추가 — 고정 커밋을 `uv tool install`로 설치하고 `pptx-maker setup`으로 Claude Code·Codex에 MCP·스킬 연결(Windows 포함)
 - 수업 슬라이드 스킬(class-slides)이 pptx-maker를 먼저 사용(초등 `class_kids`·중등 `class_teen` 용도, 점검·채점 90점 이상)

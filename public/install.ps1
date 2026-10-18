@@ -56,6 +56,9 @@ try {
   $plugins = @('bunpil-start', 'bunpil-class', 'bunpil-school', 'bunpil-builder', 'bunpil-connect')
   $skillsCli = 'skills@1.7.2'
   $playwrightMcp = '@playwright/mcp@latest'
+  $perplexityMcp = '@perplexity-ai/mcp-server'
+  $firecrawlUrl = 'https://mcp.firecrawl.dev/v2/mcp'   # 키 없이 쓰는 무료 구간(수집·검색·읽기 3종)
+  $glifUrl = 'https://glif.app/api/mcp'
   $nodeDist = (Opt 'BUNPIL_NODE_DIST' 'NodeDist' 'https://nodejs.org/dist/latest-v24.x').TrimEnd('/')
   $pptxCommit = 'ae3d919005100472805bf39ddab234bd1cf72577'   # ZZombie04/pptx_maker (날쌤팩 v1.0.1과 같은 커밋)
   $nalssamVersion = 'v1.0.1'
@@ -77,7 +80,7 @@ try {
   $profileList = @($profiles.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ -and $_ -ne 'nalssam' })
   if ($profileList.Count -eq 0) { $profileList = @('teacher') }
 
-  $st = @{ errors = 0; pathChanged = $false; hasClaude = $false; hasCodex = $false; hasNpx = $false; hasUvx = $false; hasGit = $false; hwpxDone = $false; pptxDone = $false; mdWarm = $false }
+  $st = @{ errors = 0; pathChanged = $false; hasClaude = $false; hasCodex = $false; hasNpx = $false; hasUvx = $false; hasGit = $false; hwpxDone = $false; pptxDone = $false; mdWarm = $false; pplxSkipped = $false; glifOn = $false }
   $gitSkip = 'Git이 없어 건너뜀 (Git 설치 후 같은 명령을 다시 실행)'
 
   function Say([string]$m) { Write-Host $m }
@@ -563,6 +566,24 @@ try {
     if ($hostName -eq 'claude') { $argv = @('mcp', 'add', '-s', 'user', $name, '--') + $cmd } else { $argv = @('mcp', 'add', $name, '--') + $cmd }
     if (Run $hostName $argv) { Ok $label } else { Fail "$label — MCP 등록 실패" }
   }
+  function McpHttp([string]$hostName, [string]$name, [string]$label, [string]$url) {
+    if (Run $hostName @('mcp', 'get', $name)) { Ok "$label — 이미 연결됨"; return }
+    if ($hostName -eq 'claude') { $argv = @('mcp', 'add', '-s', 'user', '--transport', 'http', $name, $url) } else { $argv = @('mcp', 'add', $name, '--url', $url) }
+    if (Run $hostName $argv) { Ok $label } else { Fail "$label — MCP 등록 실패" }
+  }
+  # 유료 API 키가 있을 때만 연결한다
+  function PerplexityMcp([string]$hostName) {
+    $label = '최신 뉴스·문서 검색 · Perplexity(MCP)'
+    $key = $env:PERPLEXITY_API_KEY
+    if (-not $key) { Skip "$label — 유료 API 키가 있어야 해서 건너뜀 (아래 '다음 단계' 참고)"; $st.pplxSkipped = $true; return }
+    if (-not $st.hasNpx) { Skip "$label — Node.js가 없어 건너뜀"; return }
+    if (Run $hostName @('mcp', 'get', 'perplexity')) { Ok "$label — 이미 연결됨"; return }
+    $cmd = @('npx', '-y', $perplexityMcp)
+    if ($isWin) { $cmd = @('cmd', '/c') + $cmd }
+    if ($hostName -eq 'claude') { $argv = @('mcp', 'add', '-s', 'user', 'perplexity', '-e', "PERPLEXITY_API_KEY=$key", '--') + $cmd }
+    else { $argv = @('mcp', 'add', 'perplexity', '--env', "PERPLEXITY_API_KEY=$key", '--') + $cmd }
+    if (Run $hostName $argv) { Ok $label } else { Fail "$label — MCP 등록 실패" }
+  }
   # 첫 실행 때 내려받는 시간(30초 안팎) 때문에 MCP 연결이 시간 초과되지 않도록 미리 받아 둔다
   function WarmMarkitdown {
     if ($st.mdWarm) { return }
@@ -666,24 +687,32 @@ try {
   # ── 추천 묶음 (catalog/recommended.json과 같게 유지) ─────
   function RecsClaude {
     if (InProfile 'teacher') {
-      Write-Host '  [teacher] 한글·문서·자동화·하네스' -ForegroundColor DarkGray
+      Write-Host '  [teacher] 한글·문서·자동화·웹 수집·하네스' -ForegroundColor DarkGray
       if (-not $skipHwpx) { CPlugin 'airmang/hwpx-plugins' 'hwpx-plugin@hwpx' '한글(HWPX) 편집 엔진 · airmang/hwpx-plugins' }
       CPlugin 'chrisryugj/kordoc' 'kordoc@kordoc' '한글·PDF 읽기·공문 프리셋 · chrisryugj/kordoc'
       if ($st.hasNpx) {
         McpAdd 'claude' 'kordoc' 'kordoc 문서 도구 17종(MCP)' @('npx', '-y', 'kordoc', 'mcp')
         McpAdd 'claude' 'playwright' '브라우저 자동화 RPA(MCP) · microsoft/playwright' @('npx', '-y', $playwrightMcp)
       } else { Skip 'kordoc MCP·브라우저 자동화 — Node.js가 없어 건너뜀' }
+      McpHttp 'claude' 'firecrawl' '웹사이트 내용 수집 · Firecrawl(MCP, 키 없이)' $firecrawlUrl
+      PerplexityMcp 'claude'
       if ($st.hasUvx) { McpAdd 'claude' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp'); WarmMarkitdown }
       else { Skip '파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀' }
       CPlugin 'revfactory/harness' 'harness@harness-marketplace' '하네스 팩토리 · revfactory/harness'
     }
     if (InProfile 'creator') {
-      Write-Host '  [creator] 웹·디자인·영상' -ForegroundColor DarkGray
+      Write-Host '  [creator] 웹·디자인·영상·인스타' -ForegroundColor DarkGray
       CPlugin 'nextlevelbuilder/ui-ux-pro-max-skill' 'ui-ux-pro-max@ui-ux-pro-max-skill' 'UI·UX 디자인 · ui-ux-pro-max'
       CPlugin 'Leonxlnx/taste-skill' 'taste-skill@taste-skill' '디자인 감각 · taste-skill'
       CPlugin 'pbakaus/impeccable' 'impeccable@impeccable' '디자인 다듬기 · impeccable'
       CPlugin 'bradautomates/claude-video' 'watch@claude-video' '영상 보고 요약 · claude-video(watch)'
+      if ($isWin) { Skip '소개·출시 영상 만들기 · Cinetic — bash 스크립트라 Windows 기본 터미널에서는 안 돼서 건너뜀 (WSL2 Ubuntu에서는 가능, 수업 설명 영상은 분필팩 수업 영상 스킬이 대신 안내)' }
+      else { SkillsAdd 'Leonxlnx/cinetic' 'claude-code' '소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)' }
       SkillsAdd 'aldegad/sprite-gen' 'claude-code' '스프라이트 이미지 · sprite-gen'
+      CPlugin 'Jakeschincariol/instagram-agent-skill' 'instagram-agent@instagram-agent-skill' '인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill'
+      CPlugin 'glifxyz/glif-mcp-server' 'glif@glif' '이미지·영상 AI · Glif 플러그인'
+      McpHttp 'claude' 'glif' 'Glif 연결(MCP, /mcp에서 로그인)' $glifUrl
+      $st.glifOn = $true
     }
     if (InProfile 'dev') {
       Write-Host '  [dev] 개발자용' -ForegroundColor DarkGray
@@ -701,7 +730,7 @@ try {
   }
   function RecsCodex {
     if (InProfile 'teacher') {
-      Write-Host '  [teacher] 한글·문서·자동화·하네스' -ForegroundColor DarkGray
+      Write-Host '  [teacher] 한글·문서·자동화·웹 수집·하네스' -ForegroundColor DarkGray
       if (-not $skipHwpx) {
         if ($isWin) { Skip '한글(HWPX) 편집 엔진 · hwpx-plugin — Windows용 Codex에서는 실행되지 않아 건너뜀 (한글 양식 보고서·kordoc이 대신 맡음)' }
         else { XPlugin 'airmang/hwpx-plugins' 'hwpx-plugin@hwpx' '한글(HWPX) 편집 엔진 · airmang/hwpx-plugins' }
@@ -710,17 +739,24 @@ try {
         McpAdd 'codex' 'kordoc' 'kordoc 문서 도구 17종(MCP) · chrisryugj/kordoc' @('npx', '-y', 'kordoc', 'mcp')
         McpAdd 'codex' 'playwright' '브라우저 자동화 RPA(MCP) · microsoft/playwright' @('npx', '-y', $playwrightMcp)
       } else { Skip 'kordoc·브라우저 자동화 — Node.js가 없어 건너뜀' }
+      McpHttp 'codex' 'firecrawl' '웹사이트 내용 수집 · Firecrawl(MCP, 키 없이)' $firecrawlUrl
+      PerplexityMcp 'codex'
       if ($st.hasUvx) { McpAdd 'codex' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp'); WarmMarkitdown }
       else { Skip '파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀' }
       SkillsAdd 'revfactory/harness' 'codex' '하네스 팩토리 · revfactory/harness'
     }
     if (InProfile 'creator') {
-      Write-Host '  [creator] 웹·디자인·영상' -ForegroundColor DarkGray
+      Write-Host '  [creator] 웹·디자인·영상·인스타' -ForegroundColor DarkGray
       SkillsAdd 'nextlevelbuilder/ui-ux-pro-max-skill' 'codex' 'UI·UX 디자인 · ui-ux-pro-max'
       SkillsAdd 'Leonxlnx/taste-skill' 'codex' '디자인 감각 · taste-skill'
       SkillsAdd 'pbakaus/impeccable' 'codex' '디자인 다듬기 · impeccable'
       XPlugin 'bradautomates/claude-video' 'watch@claude-video' '영상 보고 요약 · claude-video(watch)'
+      if ($isWin) { Skip '소개·출시 영상 만들기 · Cinetic — bash 스크립트라 Windows 기본 터미널에서는 안 돼서 건너뜀 (WSL2 Ubuntu에서는 가능, 수업 설명 영상은 분필팩 수업 영상 스킬이 대신 안내)' }
+      else { SkillsAdd 'Leonxlnx/cinetic' 'codex' '소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)' }
       SkillsAdd 'aldegad/sprite-gen' 'codex' '스프라이트 이미지 · sprite-gen'
+      XPlugin 'Jakeschincariol/instagram-agent-skill' 'instagram-agent@instagram-agent-skill' '인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill'
+      XPlugin 'glifxyz/glif-mcp-server' 'glif@glif' '이미지·영상 AI · Glif(MCP 포함)'
+      $st.glifOn = $true
     }
     if (InProfile 'dev') {
       Write-Host '  [dev] 개발자용' -ForegroundColor DarkGray
@@ -773,12 +809,20 @@ try {
     Say '   1. 작업 폴더를 만들고 실행:  mkdir -Force ~\분필작업 > $null; cd ~\분필작업; claude'
     Say '   2. 처음이면 브라우저에서 로그인 → 대화창에 "설정 시작해줘"'
     Say '   3. 노션·패들렛·캔바 연결: 대화창에서  /mcp  → 서비스 선택 → 로그인'
+    if ($st.glifOn) { Say '      Glif(이미지·영상 AI)도  /mcp  → glif → 로그인' }
+    Say "   4. 크롬 연결(지금 열어 둔 탭 읽기·클릭): 크롬 웹스토어에서 'Claude' 확장 설치 → claude --chrome"
+    Say '      늘 켜 두려면 대화창에서  /chrome  → Enabled by default  (유료 요금제 필요)'
   }
   if ($st.hasCodex) {
     Say '  Codex'
     Say '   1. 작업 폴더를 만들고 실행:  mkdir -Force ~\분필작업 > $null; cd ~\분필작업; codex'
     Say '   2. 처음이면 "Sign in with ChatGPT"로 로그인 → /hooks 에서 분필 가드 신뢰(trust)'
     Say '   3. 대화창에 "설정 시작해줘"  ·  노션 연결:  codex mcp login notion'
+    if ($st.glifOn) { Say '      Glif(이미지·영상 AI) 로그인:  codex mcp login glif' }
+  }
+  if ($st.pplxSkipped) {
+    Say '  Perplexity(최신 검색)는 유료 API 키가 필요합니다. console.perplexity.ai 에서 키를 받은 뒤'
+    Say '   앞에  $env:PERPLEXITY_API_KEY="받은키";  를 붙여 같은 명령을 다시 실행하세요.'
   }
   if ($recs -and (-not $st.hasNpx -or -not $st.hasUvx)) {
     if ($withTools) { Say '  Node.js·uv를 준비하지 못해 일부 도구를 건너뛰었습니다. 인터넷 연결을 확인하고 같은 명령을 다시 실행하세요.' }

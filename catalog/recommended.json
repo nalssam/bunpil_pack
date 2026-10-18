@@ -1,9 +1,9 @@
 {
-  "version": "2026-10-16",
-  "note": "날쌤 추천 모음. 분필팩은 이 저장소들을 복사·재배포하지 않고, 각 원 저장소에서 직접 설치만 한다. 설치 스크립트(install.sh, install.ps1)와 이 목록은 함께 고친다. nalssam 묶음은 날쌤팩(nalssam/nalssam-pack) 설치기가 고정 커밋으로 설치하고, 분필팩은 그 설치기를 부르기만 한다.",
+  "version": "2026-10-18",
+  "note": "날쌤 추천 모음. 분필팩은 이 저장소들을 복사·재배포하지 않고, 각 원 저장소에서 직접 설치만 한다. 설치 스크립트(install.sh, install.ps1)와 이 목록은 함께 고친다. nalssam 묶음은 날쌤팩(nalssam/nalssam-pack) 설치기가 고정 커밋으로 설치하고, 분필팩은 그 설치기를 부르기만 한다. 중복 정리: Playwright는 teacher에, codex-plugin-cc는 dev에 이미 있어 다시 넣지 않고, Cinetic은 nalssam 묶음에서 creator로 합쳤다(--nalssam이면 날쌤팩이 설치하므로 분필팩은 건너뜀).",
   "profiles": {
-    "teacher": "기본. 한글·문서·업무 자동화(RPA)·하네스",
-    "creator": "웹·디자인·영상 자료 만들기",
+    "teacher": "기본. 한글·문서·업무 자동화(RPA)·웹 수집·하네스",
+    "creator": "웹·디자인·영상(모션그래픽)·인스타그램 자료 만들기",
     "dev": "고급·개발자용. 큰 모음은 마켓플레이스만 등록",
     "all": "teacher + creator + dev",
     "nalssam": "날쌤팩 전체(고급) — 영상·모션·발표·분석 도구를 고정 버전으로 함께 설치. macOS·Linux·WSL2, 수 GB"
@@ -68,6 +68,38 @@
       "claude": "mcp playwright (npx -y @playwright/mcp@latest)",
       "codex": "mcp playwright (npx -y @playwright/mcp@latest)",
       "needs": "Node.js"
+    },
+    {
+      "id": "firecrawl",
+      "profile": "teacher",
+      "repo": "firecrawl/firecrawl-mcp-server",
+      "license": "MIT",
+      "label": "웹사이트 내용 통째로 수집·검색·읽기(MCP, 키 없이 쓰는 무료 구간)",
+      "claude": "mcp firecrawl (https://mcp.firecrawl.dev/v2/mcp)",
+      "codex": "mcp firecrawl (https://mcp.firecrawl.dev/v2/mcp)",
+      "needs": "-"
+    },
+    {
+      "id": "perplexity",
+      "profile": "teacher",
+      "repo": "perplexityai/modelcontextprotocol",
+      "license": "MIT",
+      "label": "최신 뉴스·문서를 찾아보고 답변(MCP) — 유료 API 키가 있을 때만 연결",
+      "claude": "mcp perplexity (npx -y @perplexity-ai/mcp-server, PERPLEXITY_API_KEY 있을 때)",
+      "codex": "mcp perplexity (npx -y @perplexity-ai/mcp-server, PERPLEXITY_API_KEY 있을 때)",
+      "needs": "Node.js, Perplexity API 키(유료)"
+    },
+    {
+      "id": "claude-in-chrome",
+      "profile": "teacher",
+      "repo": "anthropics/claude-code",
+      "license": "-",
+      "label": "크롬 연결 — 지금 열어 둔 탭 읽기·클릭(Claude in Chrome 확장)",
+      "claude": "안내 claude --chrome",
+      "codex": "-",
+      "needs": "크롬 확장 설치, Claude 유료 요금제",
+      "name": "Claude in Chrome",
+      "url": "https://code.claude.com/docs/en/chrome"
     },
     {
       "id": "harness",
@@ -138,6 +170,68 @@
       "claude": "skills add",
       "codex": "skills add",
       "needs": "Node.js(설치), Python(실행)"
+    },
+    {
+      "id": "instagram-agent",
+      "profile": "creator",
+      "repo": "Jakeschincariol/instagram-agent-skill",
+      "license": "MIT",
+      "label": "인스타그램 스킬 13종 — 아이디어 한 줄로 훅·릴스 대본·화면 자막·캡션(올리기는 직접)",
+      "claude": "plugin instagram-agent@instagram-agent-skill",
+      "codex": "plugin instagram-agent@instagram-agent-skill",
+      "needs": "Python 3(점검 도구)"
+    },
+    {
+      "id": "glif",
+      "profile": "creator",
+      "repo": "glifxyz/glif-mcp-server",
+      "license": "MIT",
+      "label": "이미지·영상·음성 AI 수백 개 연결(Glif)",
+      "claude": "plugin glif@glif + mcp glif (https://glif.app/api/mcp)",
+      "codex": "plugin glif@glif",
+      "needs": "Glif 계정 로그인(크레딧)"
+    },
+    {
+      "id": "cinetic",
+      "profile": "creator",
+      "repo": "Leonxlnx/cinetic",
+      "license": "MIT",
+      "label": "문장 한두 줄로 소개·출시 영상(소리 포함) 제작 스킬 — 날쌤팩에도 있는 도구라, 날쌤팩을 같이 설치하면 그쪽 것을 씀",
+      "claude": "skills add Leonxlnx/cinetic (macOS·Linux·WSL2)",
+      "codex": "skills add Leonxlnx/cinetic (macOS·Linux·WSL2)",
+      "needs": "bash, Node 22+, ffmpeg 6+, Python 3.11+, Chromium"
+    },
+    {
+      "id": "prompt-motion",
+      "profile": "creator",
+      "repo": "prompt-motion.com",
+      "name": "Prompt Motion",
+      "url": "https://prompt-motion.com",
+      "license": "-",
+      "label": "클로드로 만든 모션 영상 234개와 프롬프트 원문 모음(로그인 없음, 2026-10-14 기준) — 영상·프롬프트는 각 원작자 것",
+      "claude": "링크 사이트에서 Copy",
+      "codex": "링크 사이트에서 Copy",
+      "needs": "-"
+    },
+    {
+      "id": "manim",
+      "profile": "creator",
+      "repo": "ManimCommunity/manim",
+      "license": "MIT",
+      "label": "수학·과학 개념 설명 애니메이션(수업 영상 스킬이 필요할 때 파이썬 환경에 설치)",
+      "claude": "필요할 때 설치 (pip install manim)",
+      "codex": "필요할 때 설치 (pip install manim)",
+      "needs": "Python, ffmpeg, Linux는 cairo·pango"
+    },
+    {
+      "id": "edge-tts",
+      "profile": "creator",
+      "repo": "rany2/edge-tts",
+      "license": "LGPL-3.0",
+      "label": "한국어 음성 합성(대본을 인터넷 음성 서비스로 보냄 — 학생 정보 금지)",
+      "claude": "필요할 때 설치 (pip install edge-tts)",
+      "codex": "필요할 때 설치 (pip install edge-tts)",
+      "needs": "Python, 인터넷"
     },
     {
       "id": "superpowers",
@@ -248,16 +342,6 @@
       "claude": "날쌤팩",
       "codex": "날쌤팩",
       "needs": "ffmpeg, 나레이션은 ElevenLabs 키"
-    },
-    {
-      "id": "cinetic",
-      "profile": "nalssam",
-      "repo": "Leonxlnx/cinetic",
-      "license": "MIT",
-      "label": "시네마틱 영상 제작 스킬과 렌더 환경",
-      "claude": "날쌤팩",
-      "codex": "날쌤팩",
-      "needs": "Chromium, ffmpeg"
     },
     {
       "id": "motion-graphics",

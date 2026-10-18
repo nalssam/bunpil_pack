@@ -17,6 +17,14 @@ Copyright 2026 날쌤(nalssam) · 몽당분필 (사단법인 디지털미디어�
 - ZZombie04/pptx_maker — MIT
 - microsoft/markitdown — MIT
 - microsoft/playwright (@playwright/mcp) — Apache-2.0
+- firecrawl/firecrawl-mcp-server (호스팅 MCP 주소로 연결) — MIT
+- perplexityai/modelcontextprotocol (@perplexity-ai/mcp-server) — MIT
+- Jakeschincariol/instagram-agent-skill — MIT
+- Leonxlnx/cinetic — MIT
+- ManimCommunity/manim — MIT (수업 영상 스킬이 필요할 때 설치)
+- rany2/edge-tts — LGPL-3.0 (수업 영상 스킬이 필요할 때 설치)
+- prompt-motion.com — 링크로만 안내(영상·프롬프트는 각 원작자 것)
+- glifxyz/glif-mcp-server — MIT
 - revfactory/harness, revfactory/harness-100 — Apache-2.0
 - nextlevelbuilder/ui-ux-pro-max-skill — MIT
 - Leonxlnx/taste-skill — MIT

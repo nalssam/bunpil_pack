@@ -15,7 +15,7 @@
 | 플러그인(표시명) | 스킬 | Claude 전용 요소 | 공통 요소 |
 |---|---|---|---|
 | bunpil-start (분필 시작 팩) | `setup`, `privacy-guard`, `checkup` | 훅(Claude Code·Cowork) | 훅(Codex, 신뢰 필요), Codex onboardingSkill=setup |
-| bunpil-class (수업자료 팩) | `worksheet`, `lesson-plan`, `class-slides`, `papercraft`, `coloring`, `rubric` | — | — |
+| bunpil-class (수업자료 팩) | `worksheet`, `lesson-plan`, `class-slides`, `class-video`, `papercraft`, `coloring`, `rubric` | — | — |
 | bunpil-school (학교업무 팩) | `gongmun`, `newsletter`, `pumui`, `parent-survey`, `hwpx-doc` | 서브에이전트 5종(gongmun용) | — |
 | bunpil-builder (하네스빌더 팩) | `skill-maker`, `harness-fix`, `eval-run`, `share-skill` | 서브에이전트 `skill-auditor` | — |
 | bunpil-connect (커넥터 팩) | `connect` | — | 원격 MCP 3종(Notion·Padlet·Canva) |

@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "bunpil-builder",
   "displayName": "분필 하네스빌더 팩",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "반복 업무를 스킬로 만들고(skill-maker), 실수를 규칙으로 고치고(harness-fix), 시험하고(eval-run), 동료와 나누고(share-skill), 하네스 예시 100종에서 골라 가져오는(harness-gallery) 하네스 엔지니어링 도구.",
   "author": {
     "name": "nalssam(날쌤) · 몽당분필",

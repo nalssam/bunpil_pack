@@ -1,6 +1,6 @@
 {
   "name": "bunpil-class",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": {
     "name": "nalssam(날쌤) · 몽당분필",
     "url": "https://nalssam-bunpil.vercel.app"
@@ -9,13 +9,14 @@
   "repository": "https://github.com/nalssam/bunpil_pack",
   "license": "MIT",
   "displayName": "분필 수업자료 팩",
-  "shortDescription": "학습지·지도안·수업 PPT·도안",
-  "description": "학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.",
+  "shortDescription": "학습지·지도안·수업 PPT·수업 영상·도안",
+  "description": "학습지(수준별), 지도안, 교과서 기반 수업 슬라이드, 수업 설명·소개 영상(초안), 페이퍼크래프트 전개도, 컬러링 도안, 루브릭을 초안으로 만듭니다.",
   "keywords": [
     "teacher",
     "worksheet",
     "lesson-plan",
-    "rubric"
+    "rubric",
+    "video"
   ],
   "category": "productivity",
   "defaultPrompt": [

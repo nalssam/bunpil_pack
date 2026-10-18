@@ -50,6 +50,7 @@ SKILLS = {
     "worksheet": ("수준별 학습지", "4학년 분수 덧셈 학습지를 수준별로 3장 만들어줘"),
     "lesson-plan": ("수업 지도안", "5학년 사회 '조선의 건국' 40분 지도안 써줘"),
     "class-slides": ("수업 슬라이드", "이 지도안으로 수업 슬라이드 만들어줘"),
+    "class-video": ("수업 영상", "분수의 덧셈을 설명하는 1분 영상 만들어줘"),
     "papercraft": ("페이퍼크래프트 도안", "태양계 행성 페이퍼크래프트 도안 만들어줘"),
     "coloring": ("컬러링 도안", "가을 주제 컬러링 도안 만들어줘"),
     "rubric": ("평가 루브릭", "모둠 발표 평가 루브릭을 3단계로 만들어줘"),
@@ -304,6 +305,12 @@ def kind(s: str) -> str:
         k = "MCP"
     elif "가져오기" in s:
         k = "골라 가져오기"
+    elif s.startswith("링크"):
+        k = "참고 사이트"
+    elif s.startswith("필요할 때"):
+        k = "필요할 때 설치"
+    elif s.startswith("안내"):
+        k = "직접 설치 안내"
     elif s == "날쌤팩":
         k = "날쌤팩으로 설치"
     else:
@@ -322,7 +329,8 @@ def catalog_html(data: dict) -> str:
         rows = []
         for i in items:
             need = "" if i.get("needs", "-") in ("-", "") else f'<span class="need">필요: {esc(i["needs"])}</span>'
-            rows.append(f'<tr><td class="repo"><a href="https://github.com/{esc(i["repo"])}" rel="noopener">{esc(i["repo"])}</a></td>'
+            href = i.get("url") or f'https://github.com/{i["repo"]}'
+            rows.append(f'<tr><td class="repo"><a href="{esc(href)}" rel="noopener">{esc(i.get("name") or i["repo"])}</a></td>'
                         f'<td>{esc(i["label"])}{need}</td><td>{kind(i["claude"])}</td><td>{kind(i["codex"])}</td></tr>')
         table = ('<div class="table-wrap"><table><thead><tr><th scope="col">저장소</th><th scope="col">하는 일</th>'
                  '<th scope="col">Claude Code</th><th scope="col">Codex</th></tr></thead><tbody>'

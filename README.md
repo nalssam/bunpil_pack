@@ -38,7 +38,7 @@ Claude 앱 → **사용자 지정(Customize) → 플러그인(Plugins) → 추�
 | 플러그인 | 하는 일 | 스킬 |
 |---|---|---|
 | **분필 시작 팩** `bunpil-start` | 내 맞춤 지침 만들기, 학생 개인정보 가드, 설치 점검 | setup · privacy-guard · checkup |
-| **분필 수업자료 팩** `bunpil-class` | 수준별 학습지, 지도안, 수업 슬라이드, 페이퍼크래프트, 컬러링 도안, 루브릭 | worksheet · lesson-plan · class-slides · papercraft · coloring · rubric |
+| **분필 수업자료 팩** `bunpil-class` | 수준별 학습지, 지도안, 수업 슬라이드, 수업 영상, 페이퍼크래프트, 컬러링 도안, 루브릭 | worksheet · lesson-plan · class-slides · class-video · papercraft · coloring · rubric |
 | **분필 학교업무 팩** `bunpil-school` | 공문 처리 하네스, 가정통신문, 품의 산출내역, 학부모 설문 분석, 한글 문서·기안문 | gongmun · newsletter · pumui · parent-survey · hwpx-doc |
 | **분필 하네스빌더 팩** `bunpil-builder` | 나만의 스킬 만들기, 실수를 규칙으로, 스킬 시험, 동료와 나누기, 하네스 예시 100종 가져오기 | skill-maker · harness-fix · eval-run · share-skill · harness-gallery |
 | **분필 커넥터 팩** `bunpil-connect` | 노션·패들렛·캔바 연결 | connect |
@@ -47,10 +47,10 @@ Claude 앱 → **사용자 지정(Customize) → 플러그인(Plugins) → 추�
 
 분필팩은 아래 도구를 복사·재배포하지 않고 각 원 저장소에서 직접 설치합니다. 전체 목록과 설치 방식: [catalog/recommended.json](catalog/recommended.json), 사이트의 "무엇이 설치되나요".
 
-- **teacher (기본)** — airmang/hwpx-plugins, chrisryugj/kordoc, ZZombie04/hwpx_new, ZZombie04/pptx_maker(한국어 발표 자료 엔진), microsoft/markitdown, microsoft/playwright, revfactory/harness, revfactory/harness-100
-- **creator** — ui-ux-pro-max-skill, taste-skill, impeccable, claude-video, sprite-gen
+- **teacher (기본)** — airmang/hwpx-plugins, chrisryugj/kordoc, ZZombie04/hwpx_new, ZZombie04/pptx_maker(한국어 발표 자료 엔진), microsoft/markitdown, microsoft/playwright, Firecrawl(웹사이트 내용 수집, 키 없이), Perplexity(최신 검색, `PERPLEXITY_API_KEY`가 있을 때만), revfactory/harness, revfactory/harness-100 · 크롬 연결(Claude in Chrome)은 설치 뒤 안내
+- **creator** — ui-ux-pro-max-skill, taste-skill, impeccable, claude-video, sprite-gen, instagram-agent-skill(인스타 스킬 13종), Glif(이미지·영상 AI, 로그인 필요), Cinetic(소개·출시 영상 스킬, macOS·Linux·WSL2), Prompt Motion(모션 영상·프롬프트 모음 사이트, 링크) · 수업 영상 스킬(class-video)이 필요할 때 Manim·edge-tts를 설치
 - **dev** — superpowers, andrej-karpathy-skills, caveman, codex-plugin-cc, Agent-Reach, ECC·wshobson/agents·google/skills·claude-mem(목록만 등록)
-- **nalssam** — 날쌤팩으로 설치: Motion Director, Showreel, Cinetic, motion-graphics, REA, After Effects MCP, Claude 네이티브 플러그인 122개(아래 "날쌤팩")
+- **nalssam** — 날쌤팩으로 설치: Motion Director, Showreel, motion-graphics, REA, After Effects MCP, Claude 네이티브 플러그인 122개(아래 "날쌤팩")
 
 ## 날쌤팩 (고급)
 
@@ -85,7 +85,7 @@ macOS·Linux는 `install.sh | sh -s -- <옵션>`, Windows는 같은 이름의 �
 
 | 기능 | 웹 채팅 | Cowork | Claude Code | Codex |
 |---|---|---|---|---|
-| 분필팩 스킬 20종 | ○ | ○ | ○ | ○ |
+| 분필팩 스킬 21종 | ○ | ○ | ○ | ○ |
 | 개인정보 자동 점검(훅) | × (지침으로 대신) | ○ | ○ | `/hooks` 신뢰 후 ○ |
 | 공문 처리 서브에이전트 | × (순서대로 처리) | ○ | ○ | × (순서대로 처리) |
 | 노션·패들렛·캔바 | 커넥터 연결 후 ○ | 커넥터 연결 후 ○ | `/mcp` 로그인 후 ○ | `codex mcp login` 후 ○ |

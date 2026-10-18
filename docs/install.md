@@ -95,7 +95,7 @@ curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --nalssam
 ## 설치하면 바뀌는 것
 
 - 홈 폴더의 `.bunpil` 폴더: 분필팩(`bunpil-pack`), 관리자 권한 없이 설치한 Node.js(`node`), PATH 설정(`env`, macOS·Linux)
-- Claude Code·Codex 설정: 분필팩·추천 플러그인, MCP 연결(kordoc, playwright, markitdown, hwpx_new)
+- Claude Code·Codex 설정: 분필팩·추천 플러그인, MCP 연결(kordoc, playwright, markitdown, hwpx_new, pptx_maker, firecrawl, 키가 있으면 perplexity, creator 묶음이면 glif)
 - 없을 때만: Claude Code·Codex CLI·Node.js·uv·Git, PATH 추가(macOS·Linux는 `~/.bunpil/env`와 셸 설정 파일의 `# bunpil-path` 한 줄, Windows는 사용자 PATH)
 - Windows에서 Codex를 npm으로 설치한 경우에만: 현재 사용자 PowerShell 실행 정책을 RemoteSigned로(`$env:BUNPIL_KEEP_POLICY="1"`이면 바꾸지 않음)
 
