@@ -108,7 +108,7 @@ curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh -s -- --profile teac
   ```bash
   curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --claude --profile teacher,studio --install-claude --with-tools
   ```
-- **Windows**는 바로 설치되지 않습니다. 나머지를 설치한 뒤 화면에 나오는 WSL2 Ubuntu 안내를 따르고, Ubuntu 터미널에서 `curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --profile studio`를 실행합니다. 이때는 WSL 안의 Claude Code·Codex에 설치됩니다.
+- **Windows**는 바로 설치되지 않습니다. 나머지를 설치한 뒤 화면에 나오는 WSL2 Ubuntu 안내를 따르고, Ubuntu 터미널에서 `curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --profile studio --install-claude`를 실행합니다(Codex를 쓰면 `--install-codex`). WSL 안에는 Claude Code·Codex가 따로 없으므로 이 옵션이 WSL 안에 설치해 줍니다.
 - Claude Code가 있으면 스킬과 네이티브 플러그인 122개(개발·Google Cloud 플러그인 포함)까지 설치합니다. 겹치는 추천 도구는 studio의 고정 버전을 쓰고 분필팩은 그 항목을 건너뜁니다. 분필팩에 없는 studio MCP(REA, Motion 등)는 Claude Code에 `nalssam-` 이름으로 연결합니다.
 - **점검**: 채팅창에서 `스튜디오 설치 점검해줘`, 터미널에서 `nalssam-pack doctor --verify-mcp`. 나레이션(ElevenLabs)·음성 인식(Gemini 등)·Google Cloud·After Effects는 각자 계정·프로그램을 연결해야 합니다([연결 안내](studio/connectors.md)).
 - 예전에 날쌤팩을 설치했다면 그대로 이어집니다. 명령 이름(`nalssam-pack`)과 설치 기록 폴더(`~/.local/share/nalssam-pack`)를 바꾸지 않았고, 옛 옵션 `--nalssam`도 `--profile studio`와 같은 뜻입니다.
@@ -149,8 +149,8 @@ curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh -s -- --profile teac
 
 - 홈 폴더의 `.bunpil` 폴더: 분필팩(`bunpil-pack`), 관리자 권한 없이 설치한 Node.js(`node`), PATH 설정(`env`, macOS·Linux)
 - Claude Code·Codex 설정: 분필팩·추천 플러그인, MCP 연결(kordoc, playwright, markitdown, hwpx_new, pptx_maker, firecrawl, 키가 있으면 perplexity, creator 묶음이면 glif). Claude 앱의 Code 탭과 ChatGPT 앱의 Codex는 터미널의 Claude Code·Codex CLI와 같은 설정 파일을 씁니다.
-- 없을 때만: Claude Code·Codex CLI·Node.js·uv·Git, PATH 추가(macOS·Linux는 `~/.bunpil/env`와 셸 설정 파일의 `# bunpil-path` 한 줄, Windows는 사용자 PATH)
+- 없을 때만: Claude Code·Codex CLI·Node.js·uv(Git은 Windows·macOS만 자동 안내, Linux·WSL은 직접 설치), PATH 추가(macOS·Linux는 `~/.bunpil/env`와 셸 설정 파일의 `# bunpil-path` 한 줄, Windows는 사용자 PATH)
 - Windows에서 Codex를 npm으로 설치한 경우에만: 현재 사용자 PowerShell 실행 정책을 RemoteSigned로(`$env:BUNPIL_KEEP_POLICY="1"`이면 바꾸지 않음)
-- studio 묶음을 고른 경우에만: `~/.local/share/nalssam-pack`(설치 기록·소스·캐시), `~/.agents/skills`, Claude Code가 있으면 `~/.claude/skills`와 네이티브 플러그인, Codex 설정의 MCP 연결, 셸 설정 파일(`.bashrc`·`.zshrc`·`.profile`)의 `# 날쌤팩` 표시가 붙은 한 줄
+- studio 묶음을 고른 경우에만: `~/.local/share/nalssam-pack`(설치 기록·소스·캐시), `~/.agents/skills`, Claude Code가 있으면 `~/.claude/skills`와 네이티브 플러그인, Codex 설정의 MCP 연결, 셸 설정 파일(`.bashrc`·`.zshrc`·`.profile`)의 `# 날쌤팩` 표시가 붙은 한 줄(이 줄은 PATH 앞쪽에 studio의 python·node를 두므로, 새 터미널에서 `python3`·`node`가 studio 것으로 잡힐 수 있습니다. 내 파이썬 스크립트가 패키지를 못 찾으면 이 한 줄을 지우거나 가상환경을 쓰세요)
 
 문의: GitHub Issues — https://github.com/nalssam/bunpil_pack/issues

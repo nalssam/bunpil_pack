@@ -79,8 +79,9 @@ try {
   $uninstall = ((Opt 'BUNPIL_UNINSTALL' 'Uninstall' '0') -eq '1')
   $profiles = Opt 'BUNPIL_PROFILE' 'Profile' 'teacher'
   # 예전 이름(날쌤팩) 호환: BUNPIL_NALSSAM=1 · 프로필 nalssam 은 모두 studio 묶음을 고른 것으로 본다
+  $profiles = ($profiles -replace '\s', '').ToLower()   # 공백·대소문자 차이는 무시
   if ((Opt 'BUNPIL_NALSSAM' 'Nalssam' '0') -eq '1') { $profiles = $profiles + ',studio' }
-  if ((',' + $profiles + ',') -match ',nalssam,') { $profiles = $profiles + ',studio' }
+  if ((',' + $profiles + ',') -match ',nalssam,') { $profiles = $profiles + ',teacher,studio' }   # 예전 nalssam = 분필팩 기본(teacher) + 날쌤팩
   if ((',' + $profiles + ',') -match ',all,') { $profiles = 'teacher,creator,dev,studio' }
   $profileList = @(); $badProfiles = @()
   foreach ($t in @($profiles.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
@@ -88,7 +89,7 @@ try {
     elseif ($t -ne 'nalssam' -and $t -ne 'all') { $badProfiles += $t }
   }
   if ($profileList.Count -eq 0) { $profileList = @('teacher') }
-  $studio = ($recs -and ($profileList -contains 'studio'))
+  $studio = ($profileList -contains 'studio')   # --bunpil-only 와 함께여도 studio 를 직접 골랐다면 안내한다
 
   $st = @{ errors = 0; pathChanged = $false; hasClaude = $false; hasCodex = $false; hasNpx = $false; hasUvx = $false; hasGit = $false; hwpxDone = $false; pptxDone = $false; mdWarm = $false; pplxSkipped = $false; glifOn = $false }
   $gitSkip = 'Git이 없어 건너뜀 (Git 설치 후 같은 명령을 다시 실행)'
@@ -646,7 +647,7 @@ try {
     if ($isWin) {
       Skip '스튜디오 — Windows에서는 WSL2 Ubuntu 안에서 설치합니다(Windows의 Claude·ChatGPT 앱 환경과는 따로 설치됩니다)'
       Say '    1) PowerShell(관리자)에서  wsl --install  → 다시 시작 → Ubuntu 열기'
-      Say "    2) Ubuntu 터미널에서  curl -fsSL $site/install.sh | sh -s -- --profile studio"
+      Say "    2) Ubuntu 터미널에서  curl -fsSL $site/install.sh | sh -s -- --profile studio --install-claude   (Codex를 쓰면 --install-codex)"
       Say '    ※ WSL2 안에 설치한 도구는 Ubuntu 안에서 연 Claude Code·Codex에서 쓰입니다'
     } else {
       Skip "스튜디오 — macOS·Linux에서는 터미널 한 줄 설치에 --profile studio 를 붙이세요:  curl -fsSL $site/install.sh | sh -s -- --profile studio"

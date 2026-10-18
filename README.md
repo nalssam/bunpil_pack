@@ -32,7 +32,7 @@ Windows용 명령은 PowerShell, 명령 프롬프트, Git Bash 어디서 실행�
 이 문장이 하는 일:
 
 1. Claude Code(또는 Codex CLI)가 없으면 공식 설치 프로그램으로 설치합니다.
-2. Node.js·uv가 없으면 관리자 권한 없이 설치하고, Git이 없으면 설치합니다(Windows는 winget이라 허용 창이 뜨면 **예**, 맥은 "개발자 도구 설치" 창에서 **설치**를 누른 뒤 같은 문장을 한 번 더 붙여넣기). Git이 없어도 Git이 필요한 추천 도구만 건너뛰고 나머지는 설치됩니다.
+2. Node.js·uv가 없으면 관리자 권한 없이 설치하고, Git이 없으면 Windows는 winget으로 설치하고(허용 창이 뜨면 **예**), 맥은 "개발자 도구 설치" 창에서 **설치**를 누른 뒤 같은 문장을 한 번 더 붙여넣습니다(Linux·WSL은 직접 설치: `sudo apt install git`). Git이 없어도 Git이 필요한 추천 도구만 건너뛰고 나머지는 설치됩니다.
 3. 분필팩을 `~/.bunpil`에 내려받아 플러그인 5종을 설치합니다. Git이 없어도 됩니다.
 4. teacher 추천 묶음(한글 HWPX 도구 3종, 발표 자료 엔진, 문서 변환, 브라우저 자동화, 웹 수집, 하네스 팩토리)을 각 원 저장소에서 설치합니다.
 
@@ -78,9 +78,9 @@ Chat·Cowork만 쓰거나 명령 실행이 막힌 PC에서는 Claude 앱 → **�
 
 ## studio 묶음 (고급, 예전 날쌤팩)
 
-영상·모션그래픽·발표 자료·앱 분석·개발 도구까지 쓰는 전체 작업 환경입니다. 원본 저장소 29개를 커밋 고정으로 설치합니다(macOS·Linux·Windows는 WSL2 Ubuntu, 수 GB, 10~30분). 예전에는 [nalssam/nalssam-pack](https://github.com/nalssam/nalssam-pack)으로 따로 배포했고, 지금은 이 저장소의 [`studio/`](studio/) 폴더(MIT)가 설치 엔진입니다. 명령 이름(`nalssam-pack`)과 설치 기록 폴더(`~/.local/share/nalssam-pack`)는 이미 설치한 분의 환경과 이어지도록 그대로 둡니다.
+영상·모션그래픽·발표 자료·앱 분석·개발 도구까지 쓰는 전체 작업 환경입니다. 원본 저장소 29개(참고용 3개 포함)를 커밋으로 고정해 설치합니다(macOS·Linux·Windows는 WSL2 Ubuntu, 수 GB, 10~30분). 예전에는 [nalssam/nalssam-pack](https://github.com/nalssam/nalssam-pack)으로 따로 배포했고, 지금은 이 저장소의 [`studio/`](studio/) 폴더(MIT)가 설치 엔진입니다. 명령 이름(`nalssam-pack`)과 설치 기록 폴더(`~/.local/share/nalssam-pack`)는 이미 설치한 분의 환경과 이어지도록 그대로 둡니다.
 
-- 설치: 위 설치 문장을 만들 때 **studio**를 골라 더하거나, macOS·Linux·WSL2 터미널에서 `curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --profile studio` (옛 `--nalssam`도 같은 뜻입니다). Claude Code가 있으면 `--claude`로 설치해 네이티브 플러그인까지 켜고, 겹치는 추천 도구는 studio의 고정 버전을 씁니다. studio 공통 MCP 중 분필팩에 없는 것(REA, Motion 등)은 Claude Code에 `nalssam-` 이름으로 연결합니다.
+- 설치: 위 설치 문장을 만들 때 **studio**를 골라 더하거나, macOS·Linux·WSL2 터미널에서 `curl -fsSL https://nalssam-bunpil.vercel.app/install.sh | sh -s -- --profile studio --install-claude` (WSL처럼 Claude Code가 없는 곳에서는 `--install-claude`가 함께 설치합니다. 옛 `--nalssam`도 같은 뜻입니다). Claude Code가 있으면 `--claude`로 설치해 네이티브 플러그인까지 켜고, 겹치는 추천 도구는 studio의 고정 버전을 씁니다. studio 공통 MCP 중 분필팩에 없는 것(REA, Motion 등)은 Claude Code에 `nalssam-` 이름으로 연결합니다.
 - Windows의 한 줄 설치는 studio를 직접 설치하지 않고 WSL2 안내만 보여 줍니다(`$env:BUNPIL_PROFILE="studio";`).
 - 점검: 채팅창에서 "스튜디오 설치 점검해줘" 또는 터미널에서 `nalssam-pack doctor --verify-mcp`. ElevenLabs·Gemini·Google Cloud·After Effects 같은 계정·프로그램은 따로 연결합니다([docs/studio/connectors.md](docs/studio/connectors.md)).
 - 엔진 설명과 검증 범위: [studio/README.md](studio/README.md), [studio/VERIFICATION.md](studio/VERIFICATION.md)

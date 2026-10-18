@@ -467,7 +467,7 @@ body[data-mobile="1"] .mobile-note { display: block; }
           <div class="board-actions">
             <a class="btn btn-chalk" href="https://nalssam-bunpil.vercel.app/bunpil-pack.zip" rel="noopener">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>분필팩 내려받기<small>zip · 431KB · 풀고 더블클릭으로 설치</small></span>
+              <span>분필팩 내려받기<small>zip · 432KB · 풀고 더블클릭으로 설치</small></span>
             </a>
             <a class="btn btn-line" href="#install">처음이라면 1교시부터<small>순서대로 따라 하기</small></a>
           </div>
@@ -1045,7 +1045,7 @@ curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh</code><button class="
         <header><h3>studio</h3><span class="badge adv">고급 · 예전 날쌤팩</span></header>
         <p class="sum">영상·모션그래픽·발표 자료·앱 분석·개발까지 쓰는 전체 작업실</p>
         <ul>
-          <li>원본 저장소 <b>29개</b>를 커밋으로 고정한 버전으로 설치(다시 설치해도 같은 버전)</li>
+          <li>원본 저장소 <b>29개</b>(참고용 포함)를 커밋으로 고정한 버전으로 설치(다시 설치해도 같은 버전)</li>
           <li>Claude에는 개발·Google Cloud 포함 네이티브 플러그인 <b>122개</b>까지</li>
           <li>Codex에는 스킬 수백 개와 MCP 6종 자동 연결</li>
         </ul>
@@ -1057,7 +1057,7 @@ curl -fsSL https://nalssam-bunpil.vercel.app/codex.sh | sh</code><button class="
     <ul class="bundles-notes">
       <li>묶음에 든 도구는 <a href="#contents">설치되는 것</a>의 표에서 하나씩 볼 수 있습니다.</li>
       <li>studio를 설치한 뒤에는 채팅창에서 <b>"스튜디오 설치 점검해줘"</b>라고 하면 실제 연결을 점검합니다. 터미널에서는 <code>nalssam-pack doctor --verify-mcp</code>입니다.</li>
-      <li>Claude에서 studio는 개발용 플러그인까지 켭니다. 필요 없는 플러그인은 Code 탭의 입력창 옆 <b>+</b> → <b>Plugins</b> → <b>Manage plugins</b>(터미널은 <code>/plugin</code>)에서 끌 수 있습니다.</li>
+      <li>Claude에서 studio는 개발용 플러그인까지 켭니다. 필요 없는 플러그인은 Code 탭의 입력창 옆 <b>+</b> → <b>Plugins</b> → <b>Manage plugins</b>(터미널은 <code>/plugin</code>)에서 끌 수 있습니다. 단, studio 묶음을 다시 설치(업데이트)하면 꺼 둔 플러그인이 다시 켜질 수 있으니 업데이트 뒤에 한 번 더 확인하세요.</li>
       <li>이미 날쌤팩을 설치했다면 그대로 이어집니다. 명령 이름(<code>nalssam-pack</code>)과 설치 기록 폴더(<code>~/.local/share/nalssam-pack</code>)를 바꾸지 않았으므로, studio를 다시 설치하면 빠진 것만 채웁니다. 설치 엔진: <a href="https://github.com/nalssam/bunpil_pack/tree/main/studio" rel="noopener">GitHub nalssam/bunpil_pack/studio</a></li>
     </ul>
   </section>
@@ -1380,9 +1380,10 @@ curl -fsSL https://nalssam-bunpil.vercel.app/uninstall.sh | sh</code><button cla
     document.querySelectorAll("[data-quick-step]").forEach(function (li) { li.innerHTML = QUICK[state.host][Number(li.getAttribute("data-quick-step"))]; });
     document.querySelector("[data-quick-what]").innerHTML = WHAT[state.host];
     var bo = document.getElementById(state.os === "win" ? "b-os-win" : "b-os-mac");
-    if (bo && !bo.dataset.touched) { bo.checked = true; }
+    var bfm = document.getElementById("b-form");
+    if (bo && !(bfm && bfm.dataset.tOs)) { bo.checked = true; }
     var bh = document.getElementById(state.host === "claude" ? "b-host-claude" : "b-host-codex");
-    if (bh && !bh.dataset.touched && !document.getElementById("b-host-both").checked) { bh.checked = true; }
+    if (bh && !(bfm && bfm.dataset.tHost) && !document.getElementById("b-host-both").checked) { bh.checked = true; }
     build();
   }
 
@@ -1528,14 +1529,14 @@ curl -fsSL https://nalssam-bunpil.vercel.app/uninstall.sh | sh</code><button cla
     if (host === "both") notes.push(inst ? "Claude Code와 Codex 모두에 설치하고, 없는 쪽은 새로 설치합니다." : "컴퓨터에서 찾은 Claude Code·Codex에만 설치합니다.");
     if (!tools) notes.push("Node.js·uv·Git이 없으면 일부 추천 도구는 건너뜁니다.");
     if (studio && os === "mac") notes.push("studio(수 GB, 10~30분)도 설치합니다. Claude Code가 있으면 네이티브 플러그인까지 설치하고, 겹치는 도구는 studio의 고정 버전을 씁니다.");
-    if (studio && os === "win") notes.push("studio는 Windows에서 바로 설치되지 않습니다. 나머지를 설치한 뒤 화면에 나오는 WSL2 Ubuntu 안내를 따르세요. Ubuntu 터미널에서는 curl -fsSL " + SITE + "/install.sh | sh -s -- --profile studio 를 실행합니다.");
+    if (studio && os === "win") notes.push("studio는 Windows에서 바로 설치되지 않습니다. 나머지를 설치한 뒤 화면에 나오는 WSL2 Ubuntu 안내를 따르세요. Ubuntu 터미널에서는 curl -fsSL " + SITE + "/install.sh | sh -s -- --profile studio --install-claude 를 실행합니다(Codex를 쓰면 --install-codex).");
     if (os === "win") notes.push("① 문장 속 명령은 PowerShell·명령 프롬프트·Git Bash 어디서 실행돼도 됩니다. ② 명령은 PowerShell 전용입니다(끝의 Remove-Item은 이 창에 남은 설정값을 지웁니다).");
     var ul = document.getElementById("b-notes"); ul.innerHTML = "";
     notes.forEach(function (n) { var li = document.createElement("li"); li.textContent = n; ul.appendChild(li); });
   }
   var bform = document.getElementById("b-form");
   bform.addEventListener("submit", function (e) { e.preventDefault(); });
-  bform.addEventListener("change", function (e) { if (e.target && e.target.name) e.target.dataset.touched = "1"; build(); });
+  bform.addEventListener("change", function (e) { if (e.target && e.target.name === "b-os") bform.dataset.tOs = "1"; if (e.target && e.target.name === "b-host") bform.dataset.tHost = "1"; build(); });
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-pick-bundle]");
     if (!b) return;
@@ -1580,7 +1581,6 @@ curl -fsSL https://nalssam-bunpil.vercel.app/uninstall.sh | sh</code><button cla
   if (hash === "claude" || hash === "codex") { var ins = document.getElementById("install"); if (ins) ins.scrollIntoView(); }
   void DATA;
 })();
-</script>
 </script>
 
 </body>

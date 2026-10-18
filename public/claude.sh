@@ -107,8 +107,9 @@ while [ $# -gt 0 ]; do
   [ $# -gt 0 ] && shift
 done
 # 예전 이름(날쌤팩) 호환: --nalssam · BUNPIL_NALSSAM=1 · --profile nalssam 은 모두 studio 묶음을 고른 것으로 본다
+profiles=$(printf '%s' "$profiles" | tr -d ' \t' | tr 'A-Z' 'a-z')   # 공백·대소문자 차이는 무시
 [ "$legacy_studio" = 1 ] && profiles="$profiles,studio"
-case ",$profiles," in *,nalssam,*) profiles="$profiles,studio" ;; esac
+case ",$profiles," in *,nalssam,*) profiles="$profiles,teacher,studio" ;; esac   # 예전 nalssam = 분필팩 기본(teacher) + 날쌤팩
 case ",$profiles," in *,all,*) profiles="teacher,creator,dev,studio" ;; esac
 bad_profiles=""; good_profiles=""
 set -f
@@ -123,7 +124,7 @@ set +f
 profiles="$good_profiles"
 [ -n "$profiles" ] || profiles="teacher"
 in_profile() { case ",$profiles," in *",$1,"*) return 0 ;; esac; return 1; }
-studio=0; [ "$recs" = 1 ] && in_profile studio && studio=1
+studio=0; in_profile studio && studio=1   # --bunpil-only 와 함께여도 studio 를 직접 골랐다면 설치한다
 
 if [ -t 1 ]; then B=$(printf '\033[1m'); G=$(printf '\033[32m'); Y=$(printf '\033[33m'); R=$(printf '\033[31m'); D=$(printf '\033[2m'); N=$(printf '\033[0m'); else B=""; G=""; Y=""; R=""; D=""; N=""; fi
 say()  { printf '%s\n' "$*"; }
@@ -234,6 +235,11 @@ if [ "$uninstall" = 1 ]; then
   if [ "$want_codex" = 1 ] && has codex; then
     for p in $PLUGINS; do codex plugin remove "$p@$MARKET" >/dev/null 2>&1 && ok "Codex: $p 제거"; done
     if x_has_market "$MARKET"; then codex plugin marketplace remove "$MARKET" >/dev/null 2>&1 && ok "Codex: 분필팩 목록 제거"; fi
+  fi
+  if [ "$want_claude" = 1 ] && has claude; then   # 스튜디오 공통 MCP로 분필팩이 연결해 둔 nalssam-* 항목(스튜디오를 지우면 연결할 곳이 없어진다)
+    for n in nalssam-rea nalssam-motion nalssam-pptx nalssam-hwpx nalssam-markitdown nalssam-kordoc; do
+      if claude mcp get "$n" >/dev/null 2>&1; then claude mcp remove -s user "$n" >/dev/null 2>&1 && ok "Claude Code: $n 연결 해제"; fi
+    done
   fi
   case "$PACK_DIR" in */bunpil-pack) if [ -d "$PACK_DIR" ]; then rm -rf "$PACK_DIR" && ok "내려받은 분필팩 폴더 삭제 ($PACK_DIR)"; fi ;; esac
   say ""
@@ -503,9 +509,9 @@ pptx_maker() { # 한국어 발표 자료 엔진: 고정 커밋으로 설치하�
 
 studio_pack() { # 스튜디오 묶음: 분필팩 폴더 안의 studio/install.sh(고정 버전 설치 엔진)를 부른다(Claude Code가 있으면 --claude)
   say "${B}[스튜디오]${N} 영상·모션·발표·분석 도구 — 수 GB를 내려받아 10분 이상 걸릴 수 있습니다"
-  case "$(uname -s)" in Darwin|Linux) ;; *) skip "스튜디오 — macOS·Linux·WSL2에서만 설치됩니다"; return 0 ;; esac
-  if ! has bash; then skip "스튜디오 — bash가 없어 건너뜀"; return 0; fi
-  if [ "$HAS_GIT" = 0 ]; then skip "스튜디오 — $GIT_SKIP"; return 0; fi
+  case "$(uname -s)" in Darwin|Linux) ;; *) fail "스튜디오 — macOS·Linux·WSL2에서만 설치됩니다"; return 0 ;; esac
+  if ! has bash; then fail "스튜디오 — bash가 없어 설치하지 못했습니다"; return 0; fi
+  if [ "$HAS_GIT" = 0 ]; then fail "스튜디오 — Git이 없어 설치하지 못했습니다 (Git 설치 후 같은 명령을 다시 실행)"; return 0; fi
   s_dir="${BUNPIL_STUDIO_DIR:-}"; s_tmp=""
   if [ -z "$s_dir" ]; then
     if [ -f "$PACK_DIR/studio/pack.py" ]; then s_dir="$PACK_DIR/studio"
