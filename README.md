@@ -71,10 +71,11 @@ Chat·Cowork만 쓰거나 명령 실행이 막힌 PC에서는 Claude 앱 → **�
 
 분필팩 하나에 모든 도구가 들어 있습니다. 기본은 **teacher**이고, 필요한 묶음만 더합니다(사이트의 "묶음 고르기"와 "설치 문장 만들기"에서 고르면 문장이 바뀝니다). 분필팩은 아래 도구를 복사·재배포하지 않고 각 원 저장소에서 직접 설치합니다. 전체 목록과 설치 방식: [catalog/recommended.json](catalog/recommended.json), 사이트의 "무엇이 설치되나요".
 
-- **teacher (기본)** — airmang/hwpx-plugins, chrisryugj/kordoc, ZZombie04/hwpx_new, ZZombie04/pptx_maker(한국어 발표 자료 엔진), microsoft/markitdown, microsoft/playwright, Firecrawl(웹사이트 내용 수집, 키 없이), Perplexity(최신 검색, `PERPLEXITY_API_KEY`가 있을 때만), revfactory/harness, revfactory/harness-100 · 크롬 연결(Claude in Chrome)은 설치 뒤 안내
+- **teacher (기본)** — airmang/hwpx-plugins, chrisryugj/kordoc, ZZombie04/hwpx_new, ZZombie04/pptx_maker(한국어 발표 자료 엔진), microsoft/markitdown, microsoft/playwright, Firecrawl(웹사이트 내용 수집, 키 없이), Perplexity(최신 검색, `PERPLEXITY_API_KEY`가 있을 때만), revfactory/harness, revfactory/harness-100, leeandev/stop-slop-ko(한국어 보고서·공문의 "AI 티" 걷어내기) · 크롬 연결(Claude in Chrome)은 설치 뒤 안내
 - **creator** — ui-ux-pro-max-skill, taste-skill, impeccable, claude-video, sprite-gen, instagram-agent-skill(인스타 스킬 13종), Glif(이미지·영상 AI, 로그인 필요), Cinetic(소개·출시 영상 스킬, macOS·Linux·WSL2), Prompt Motion(모션 영상·프롬프트 모음 사이트, 링크) · 수업 영상 스킬(class-video)이 필요할 때 Manim·edge-tts를 설치
 - **dev** — superpowers, andrej-karpathy-skills, caveman, codex-plugin-cc, Agent-Reach, ECC·wshobson/agents·google/skills·claude-mem(목록만 등록)
 - **studio (고급, 예전 날쌤팩)** — Motion Director, Showreel, motion-graphics, REA, After Effects MCP와 Claude 네이티브 플러그인 122개 · 아래 "studio 묶음"
+- **full (고급, 날쌤 환경 그대로)** — 날쌤의 Claude 앱에 켜 둔 플러그인과 커넥터 전부: Anthropic 공식 업무 플러그인 18종, 서비스 연동 플러그인 28종(Canva·Figma·Adobe·Miro·Zoom·Coursera·Airtable·Zapier·금융 데이터 등), stop-slop-ko의 stakeholder-brief·jasoseo, 3D CAD 변환(Windows), 플러그인에 없는 커넥터는 원격 MCP로 연결 · 전체 표는 [docs/full-bundle.md](docs/full-bundle.md)
 
 ## studio 묶음 (고급, 예전 날쌤팩)
 
@@ -91,7 +92,7 @@ macOS·Linux는 `install.sh | sh -s -- <옵션>`, Windows는 같은 이름의 �
 
 | 하고 싶은 것 | macOS·Linux | Windows |
 |---|---|---|
-| 추천 묶음 고르기 | `--profile teacher,creator,studio` / `all`(네 묶음 모두, studio 포함이라 수 GB) | `$env:BUNPIL_PROFILE="teacher,creator";` |
+| 추천 묶음 고르기 | `--profile teacher,creator,studio` / `all`(다섯 묶음 모두, studio 포함이라 수 GB) | `$env:BUNPIL_PROFILE="teacher,creator";` |
 | 분필팩 5종만 | `--bunpil-only` | `$env:BUNPIL_RECS="0";` |
 | Claude Code에만 / Codex에만 | `--claude` / `--codex` | `$env:BUNPIL_ONLY="claude";` / `"codex"` |
 | 없으면 Claude Code·Codex까지 설치 | `--install-claude` / `--install-codex` | `$env:BUNPIL_INSTALL_CLAUDE="1";` / `$env:BUNPIL_INSTALL_CODEX="1";` |

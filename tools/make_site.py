@@ -36,6 +36,7 @@ MARKER = "# @BUNPIL_PRESET@"
 # 사이트의 모든 설치 문장(히어로·설치 시간표·문장 만들기·큰 화면)이 이 한 곳의 문구를 쓴다.
 CHAT_LEAD = "분필팩을 설치해줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행해줘. {wait} 끝나면 설치된 것과 실패한 것을 짧게 알려줘."
 CHAT_WAIT = "5~10분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘."
+CHAT_WAIT_FULL = "플러그인 50여 개를 받아 10분 안팎 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘."
 CHAT_WAIT_STUDIO = "수 GB를 받아 10~30분 걸리니 시간 제한에 걸리지 않게 백그라운드로 실행하고 끝날 때까지 기다려줘."
 CHAT_LEAD_UNINSTALL = "분필팩을 지워줘. 아래 명령을 한 글자도 바꾸지 말고 그대로 실행하고, 지운 것과 그대로 둔 것을 짧게 알려줘."
 
@@ -292,6 +293,14 @@ def qr_svg(url: str) -> str:
             f'<path fill="#14211b" d="{"".join(path)}"/></svg>')
 
 
+def full_counts() -> tuple:
+    """full 묶음의 서비스 연동 플러그인 수와 원격 MCP 수를 설치 스크립트(install.sh)에서 센다."""
+    sh = (ROOT / "install.sh").read_text(encoding="utf-8")
+    partner = re.search(r'^FULL_PARTNER="([^"]*)"', sh, re.M).group(1).split()
+    mcps = re.search(r'^FULL_MCPS="([^"]*)"', sh, re.M | re.S).group(1)
+    return len(partner), len([l for l in mcps.splitlines() if l.count("|") == 2])
+
+
 def site_data(version: str) -> dict:
     plugins = []
     for name in build.ORDER:
@@ -362,12 +371,12 @@ def kind(s: str) -> str:
     return f'<span class="kind">{esc(k)}</span>{esc(extra)}'
 
 
-PROFILE_TITLES = {"teacher": "teacher · 기본", "creator": "creator", "dev": "dev", "studio": "studio"}
+PROFILE_TITLES = {"teacher": "teacher · 기본", "creator": "creator", "dev": "dev", "studio": "studio", "full": "full · 날쌤 환경 전체"}
 
 
 def catalog_html(data: dict) -> str:
     out = []
-    for prof in ("teacher", "creator", "dev", "studio"):
+    for prof in ("teacher", "creator", "dev", "studio", "full"):
         items = [i for i in data["catalog"] if i["profile"] == prof]
         rows = []
         for i in items:
@@ -471,7 +480,7 @@ def main() -> None:
 
     template = (SITE_SRC / "template.html").read_text(encoding="utf-8")
     data = site_data(version)
-    counts = {p: sum(1 for i in data["catalog"] if i["profile"] == p) for p in ("teacher", "creator", "dev", "studio")}
+    counts = {p: sum(1 for i in data["catalog"] if i["profile"] == p) for p in ("teacher", "creator", "dev", "studio", "full")}
     studio_sources, studio_plugins = studio_counts()
     values = {
         "VERSION": version, "DATE": now.strftime("%Y. %m. %d.").replace(". 0", ". "), "SITE": SITE,
@@ -480,9 +489,10 @@ def main() -> None:
         "TOOL_COUNT": str(len(data["catalog"])), "QR_SVG": qr_svg(SITE + "/"),
         "PLUGINS_HTML": plugins_html(data), "CATALOG_HTML": catalog_html(data),
         "COUNT_TEACHER": str(counts["teacher"]), "COUNT_CREATOR": str(counts["creator"]), "COUNT_DEV": str(counts["dev"]),
+        "COUNT_FULL": str(counts["full"]), "FULL_PARTNER_COUNT": str(full_counts()[0]), "FULL_MCP_COUNT": str(full_counts()[1]),
         "STUDIO_SOURCES": str(studio_sources), "STUDIO_PLUGINS": str(studio_plugins),
         "CHAT_LEAD_STD": esc(chat_lead()), "CHAT_LEAD_UNINSTALL": esc(CHAT_LEAD_UNINSTALL),
-        "CHAT_LEAD_JSON": json_js(CHAT_LEAD), "CHAT_WAIT_JSON": json_js(CHAT_WAIT),
+        "CHAT_LEAD_JSON": json_js(CHAT_LEAD), "CHAT_WAIT_JSON": json_js(CHAT_WAIT), "CHAT_WAIT_FULL_JSON": json_js(CHAT_WAIT_FULL),
         "CHAT_WAIT_STUDIO_JSON": json_js(CHAT_WAIT_STUDIO),
     }
     fragment = render(template, values, data)

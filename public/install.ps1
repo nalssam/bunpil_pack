@@ -18,7 +18,7 @@
 #   4) 이미 설치되어 있으면 최신으로 바꾼다 (다시 실행 = 업데이트)
 #
 #  옵션은 환경변수로 준다 (irm | iex 에는 인자를 넘길 수 없다). 값 "1" = 켜기
-#   BUNPIL_PROFILE  teacher | creator | dev | studio | all (쉼표로 여러 개, 기본 teacher)
+#   BUNPIL_PROFILE  teacher | creator | dev | studio | full | all (쉼표로 여러 개, 기본 teacher)
 #   BUNPIL_ONLY     claude | codex                 한쪽에만 설치
 #   BUNPIL_INSTALL_CLAUDE · BUNPIL_INSTALL_CODEX   없으면 Claude Code / Codex CLI까지 설치
 #   BUNPIL_WITH_TOOLS  Node.js·uv·Git이 없으면 함께 설치
@@ -63,6 +63,24 @@ try {
   $perplexityMcp = '@perplexity-ai/mcp-server'
   $firecrawlUrl = 'https://mcp.firecrawl.dev/v2/mcp'   # 키 없이 쓰는 무료 구간(수집·검색·읽기 3종)
   $glifUrl = 'https://glif.app/api/mcp'
+  # full 묶음: 날쌤 Claude 앱(claude.ai)에 켜 둔 플러그인을 공개 마켓플레이스에서 그대로 설치한다
+  $kwpRepo = 'anthropics/knowledge-work-plugins'; $kwpMarket = 'knowledge-work-plugins'
+  $fullWork = @('productivity', 'enterprise-search', 'cowork-plugin-management', 'sales', 'finance', 'data', 'legal', 'marketing', 'customer-support', 'product-management', 'bio-research', 'engineering', 'human-resources', 'design', 'operations', 'small-business', 'brand-voice', 'pdf-viewer')
+  $fullPartner = @('canva', 'figma', 'adobe-for-creativity', 'miro', 'zoom-plugin', 'learn-with-coursera', 'airtable', 'monday-com', 'zapier', 'desktop-commander', 'exa', 'brightdata-plugin', 'searchfit-seo', 'postiz', 'product-tracking-skills', 'base44', 'datadog', 'datarobot-agent-skills', 'unity', 'noibu', 'grasp', 'bigdata-com', 'daloopa', 'lseg', 'sp-global', 'carta-crm', 'carta-investors', 'claude-for-financial-advisors')
+  $fullXSkip = @('product-tracking-skills', 'sp-global')   # Codex가 이름 불일치(plugin.json과 마켓 이름이 다름)로 거부해 Codex에서만 건너뜀
+  # full 묶음: 플러그인에 들어 있지 않은 claude.ai 커넥터(원격 MCP). 이름, 표시이름, 주소
+  $fullMcps = @(
+    @('vercel', '웹 배포·관리 · Vercel', 'https://mcp.vercel.com'),
+    @('supabase', '데이터베이스 · Supabase', 'https://mcp.supabase.com/mcp'),
+    @('cloudflare', 'Cloudflare 개발 플랫폼', 'https://mcp.cloudflare.com/mcp'),
+    @('higgsfield', '이미지·영상 AI · Higgsfield', 'https://mcp.higgsfield.ai/mcp'),
+    @('hyperframes', 'HTML 모션그래픽·애니메이션 슬라이드 · HyperFrames(HeyGen)', 'https://mcp.heygen.com/mcp/hyperframes/'),
+    @('elevenlabs', '음성·나레이션 AI · ElevenLabs', 'https://api.elevenlabs.io/v1/mcp'),
+    @('artlist', '음악·효과음·영상 AI · artlist', 'https://mcp.artlist.io/mcp'),
+    @('playmcp', '카카오 PlayMCP', 'https://playmcp.kakao.com/mcp'),
+    @('windsor-ai', '광고·SNS 성과 데이터 · Windsor.ai', 'https://mcp.windsor.ai/'),
+    @('threejs-viewer', '3D 장면 보기(데모) · Three.js', 'https://example-server.modelcontextprotocol.io/threejs/mcp')
+  )
   $nodeDist = (Opt 'BUNPIL_NODE_DIST' 'NodeDist' 'https://nodejs.org/dist/latest-v24.x').TrimEnd('/')
   $pptxCommit = 'ae3d919005100472805bf39ddab234bd1cf72577'   # ZZombie04/pptx_maker (스튜디오 엔진과 같은 커밋)
   $bunpilHome = Opt 'BUNPIL_HOME' 'Home' (Join-Path $HOME '.bunpil')
@@ -82,10 +100,10 @@ try {
   $profiles = ($profiles -replace '\s', '').ToLower()   # 공백·대소문자 차이는 무시
   if ((Opt 'BUNPIL_NALSSAM' 'Nalssam' '0') -eq '1') { $profiles = $profiles + ',studio' }
   if ((',' + $profiles + ',') -match ',nalssam,') { $profiles = $profiles + ',teacher,studio' }   # 예전 nalssam = 분필팩 기본(teacher) + 날쌤팩
-  if ((',' + $profiles + ',') -match ',all,') { $profiles = 'teacher,creator,dev,studio' }
+  if ((',' + $profiles + ',') -match ',all,') { $profiles = 'teacher,creator,dev,studio,full' }
   $profileList = @(); $badProfiles = @()
   foreach ($t in @($profiles.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
-    if (@('teacher', 'creator', 'dev', 'studio') -contains $t) { if ($profileList -notcontains $t) { $profileList += $t } }
+    if (@('teacher', 'creator', 'dev', 'studio', 'full') -contains $t) { if ($profileList -notcontains $t) { $profileList += $t } }
     elseif ($t -ne 'nalssam' -and $t -ne 'all') { $badProfiles += $t }
   }
   if ($profileList.Count -eq 0) { $profileList = @('teacher') }
@@ -564,6 +582,51 @@ try {
     elseif (Run 'codex' @('plugin', 'marketplace', 'add', $repoName)) { Ok "$label — 목록 등록(/plugins에서 골라 설치)" }
     else { Fail "$label — 목록 등록 실패" }
   }
+  # 한 마켓에서 여러 개를 한 번에(목록은 한 번만 갱신)
+  function CPlugins([string]$repoName, [string]$m, [string]$title, [string[]]$names) {
+    if (-not $st.hasGit) { Skip "$title — $gitSkip"; return }
+    if (CHasMarket $m) { if (-not (Run 'claude' @('plugin', 'marketplace', 'update', $m))) { Warn "$title — 목록 갱신 실패(지금 목록 유지)" } }
+    elseif (-not (Run 'claude' @('plugin', 'marketplace', 'add', $repoName))) { Fail "$title — 목록 등록 실패 (claude plugin marketplace add $repoName)"; return }
+    $list = Capture 'claude' @('plugin', 'list')
+    foreach ($n in $names) {
+      $id = "$n@$m"
+      if ($list -match ('(?m)^\s*>\s+' + [regex]::Escape($id) + '\s*$')) {
+        if (Run 'claude' @('plugin', 'update', $id)) { Ok "$title · $n — 최신 확인" } else { Warn "$title · $n — 업데이트 확인 실패(지금 버전 유지)" }
+      }
+      elseif (Run 'claude' @('plugin', 'install', $id, '-y')) { Ok "$title · $n" }
+      else { Fail "$title · $n — 설치 실패 (claude plugin install $id)" }
+    }
+  }
+  function XPlugins([string]$repoName, [string]$m, [string]$title, [string[]]$names) {
+    if (-not $st.hasGit) { Skip "$title — $gitSkip"; return }
+    if (XHasMarket $m) { if (-not (Run 'codex' @('plugin', 'marketplace', 'upgrade', $m))) { Warn "$title — 목록 갱신 실패(지금 목록 유지)" } }
+    elseif (-not (Run 'codex' @('plugin', 'marketplace', 'add', $repoName))) { Fail "$title — 목록 등록 실패 (codex plugin marketplace add $repoName)"; return }
+    foreach ($n in $names) {
+      if ($fullXSkip -contains $n) { Skip "$title · $n — Codex에서는 원 저장소의 이름 표기 문제로 설치되지 않아 건너뜀(Claude에는 설치)"; continue }
+      if (Run 'codex' @('plugin', 'add', "$n@$m")) { Ok "$title · $n" } else { Fail "$title · $n — 설치 실패 (codex plugin add $n@$m)" }
+    }
+  }
+  # Codex의 "codex mcp add --url"은 OAuth 서버면 그 자리에서 로그인 창을 띄우고 기다리므로, 설정 파일에 직접 적는다
+  function XMcpUrl([string]$name, [string]$label, [string]$url) {
+    if (Run 'codex' @('mcp', 'get', $name)) { Ok "$label — 이미 연결됨"; return }
+    $codexHome = $env:CODEX_HOME; if (-not $codexHome) { $codexHome = Join-Path $HOME '.codex' }
+    $cfg = Join-Path $codexHome 'config.toml'
+    try {
+      New-Item -ItemType Directory -Force -Path $codexHome | Out-Null
+      $pre = ''
+      if ((Test-Path $cfg) -and ((Get-Item $cfg).Length -gt 0)) {
+        $raw = [IO.File]::ReadAllText($cfg)
+        if (-not $raw.EndsWith("`n")) { $pre = "`n" }
+      }
+      [IO.File]::AppendAllText($cfg, ($pre + "`n[mcp_servers.$name]`nurl = `"$url`"`n"), (New-Object Text.UTF8Encoding $false))
+    } catch { Warn "$label — 설정 파일에 쓰지 못함" }
+    if (Run 'codex' @('mcp', 'get', $name)) { Ok $label } else { Fail "$label — MCP 등록 실패 ($cfg 확인)" }
+  }
+  function FullMcps([string]$hostName) {
+    foreach ($e in $fullMcps) {
+      if ($hostName -eq 'codex') { XMcpUrl $e[0] ($e[1] + '(MCP)') $e[2] } else { McpHttp $hostName $e[0] ($e[1] + '(MCP)') $e[2] }
+    }
+  }
   function SkillsAdd([string]$repoName, [string]$agent, [string]$label) {
     if (-not $st.hasNpx) { Skip "$label — Node.js가 없어 건너뜀"; return }
     if (-not $st.hasGit) { Skip "$label — $gitSkip"; return }
@@ -712,6 +775,7 @@ try {
       if ($st.hasUvx) { McpAdd 'claude' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp'); WarmMarkitdown }
       else { Skip '파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀' }
       CPlugin 'revfactory/harness' 'harness@harness-marketplace' '하네스 팩토리 · revfactory/harness'
+      CPlugin 'leeandev/stop-slop-ko' 'stop-slop-ko@stop-slop-ko' '한국어 문서 AI 티 걷어내기 · stop-slop-ko'
     }
     if (InProfile 'creator') {
       Write-Host '  [creator] 웹·디자인·영상·인스타' -ForegroundColor DarkGray
@@ -740,6 +804,15 @@ try {
       CMarket 'google/skills' 'google-plugins' 'Google Cloud 스킬 · google/skills'
       CMarket 'thedotmack/claude-mem' 'thedotmack' '세션 기억 · claude-mem'
     }
+    if (InProfile 'full') {
+      Write-Host '  [full] 날쌤 Claude 앱의 플러그인·커넥터 전부 — 50여 종이라 몇 분 걸립니다. 계정이 있어야 쓰는 것도 들어 있습니다' -ForegroundColor DarkGray
+      CPlugins $kwpRepo $kwpMarket '업무 플러그인(Anthropic)' $fullWork
+      CPlugins $kwpRepo $kwpMarket '서비스 연동 플러그인' $fullPartner
+      CPlugins 'leeandev/stop-slop-ko' 'stop-slop-ko' '한국어 글쓰기' @('stakeholder-brief', 'jasoseo')
+      if ($isWin) { CPlugin 'contentasoftware/contentasoft-cad-converter-plugin' 'contentasoft-cad-converter@contentasoft-cad-converter-plugin' '3D CAD 변환 · contentasoft-cad-converter' }
+      else { Skip '3D CAD 변환 · contentasoft-cad-converter — Windows 전용이라 건너뜀' }
+      FullMcps 'claude'
+    }
   }
   function RecsCodex {
     if (InProfile 'teacher') {
@@ -757,6 +830,7 @@ try {
       if ($st.hasUvx) { McpAdd 'codex' 'markitdown' '파일 → 텍스트 변환(MCP) · microsoft/markitdown' @('uvx', 'markitdown-mcp'); WarmMarkitdown }
       else { Skip '파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀' }
       SkillsAdd 'revfactory/harness' 'codex' '하네스 팩토리 · revfactory/harness'
+      XPlugin 'leeandev/stop-slop-ko' 'stop-slop-ko@stop-slop-ko' '한국어 문서 AI 티 걷어내기 · stop-slop-ko'
     }
     if (InProfile 'creator') {
       Write-Host '  [creator] 웹·디자인·영상·인스타' -ForegroundColor DarkGray
@@ -781,6 +855,13 @@ try {
       XMarket 'wshobson/agents' 'claude-code-workflows' '개발 워크플로 모음 · wshobson/agents'
       XMarket 'google/skills' 'google-plugins' 'Google Cloud 스킬 · google/skills'
       XMarket 'thedotmack/claude-mem' 'claude-mem-local' '세션 기억 · claude-mem'
+    }
+    if (InProfile 'full') {
+      Write-Host '  [full] 날쌤 Claude 앱의 플러그인·커넥터 전부 — 50여 종이라 몇 분 걸립니다. 계정이 있어야 쓰는 것도 들어 있습니다' -ForegroundColor DarkGray
+      XPlugins $kwpRepo $kwpMarket '업무 플러그인(Anthropic)' $fullWork
+      XPlugins $kwpRepo $kwpMarket '서비스 연동 플러그인' $fullPartner
+      XPlugins 'leeandev/stop-slop-ko' 'stop-slop-ko' '한국어 글쓰기' @('stakeholder-brief', 'jasoseo')
+      FullMcps 'codex'
     }
   }
 
@@ -847,6 +928,10 @@ try {
   if ($recs -and -not $st.hasGit) {
     if ($isWin) { Say '  Git을 설치하면 건너뛴 추천 도구도 설치됩니다:  winget install --id Git.Git -e   (설치 후 새 창에서 같은 명령 다시 실행)' }
     else { Say '  Git을 설치하면 건너뛴 추천 도구도 설치됩니다. 설치 후 같은 명령을 다시 실행하세요.' }
+  }
+  if ($recs -and (InProfile 'full')) {
+    Say '  full 묶음: 각 서비스는 처음 쓸 때 로그인합니다(Claude는 /mcp, Codex는 codex mcp login <이름>). 계정이 없는 플러그인은 꺼 두어도 됩니다.'
+    Say '         Gmail·Google 문서·Microsoft 365는 공용 연결 주소가 없어 Claude 앱 설정 → 커넥터에서 켜세요. 목록: https://github.com/nalssam/bunpil_pack/blob/main/docs/full-bundle.md'
   }
   Say "  업데이트는 같은 명령을 다시 실행하면 됩니다. 자세한 안내: $site"
   Say ''

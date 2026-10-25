@@ -1029,6 +1029,18 @@ curl -fsSL {{SITE}}/codex.sh | sh</code><button class="copy" type="button">복�
         <p class="muted small">계정이 따로 필요한 것: 나레이션(ElevenLabs), 영상 음성 인식(Gemini 등), Google Cloud 데이터 플러그인, Adobe After Effects. 설치가 끝난 것과 계정이 연결된 것은 다릅니다.</p>
         <button class="btn btn-ghost bpick" type="button" data-pick-bundle="studio" aria-pressed="false">설치 문장에 넣기</button>
       </article>
+      <article class="bundle sheet adv" data-bundle="full">
+        <header><h3>full</h3><span class="badge adv">고급 · 날쌤 환경 그대로</span></header>
+        <p class="sum">날쌤의 Claude 앱에 켜 둔 플러그인과 커넥터를 모두</p>
+        <ul>
+          <li>Anthropic 공식 업무 플러그인 18종(생산성, 디자인, 데이터, 마케팅, 법무, 인사 등)</li>
+          <li>서비스 연동 플러그인 {{FULL_PARTNER_COUNT}}종(Canva, Figma, Adobe, Miro, Zoom, Coursera, Airtable, Zapier, 금융 데이터 등)</li>
+          <li>플러그인에 없는 커넥터 {{FULL_MCP_COUNT}}개를 원격 MCP로 연결(처음 쓸 때 로그인)</li>
+        </ul>
+        <p class="meta">플러그인·커넥터 <b>50여 개</b> · 10분 안팎<br>Windows · macOS · Linux</p>
+        <p class="muted small">서비스 계정이 있어야 실제로 쓰입니다(금융·기업용 서비스 포함). 설치만으로 연결되지는 않고, 처음 쓸 때 각 서비스에 로그인합니다. Gmail, Google 문서, Microsoft 365처럼 Claude 앱 전용인 커넥터는 앱 설정의 커넥터에서 켭니다.</p>
+        <button class="btn btn-ghost bpick" type="button" data-pick-bundle="full" aria-pressed="false">설치 문장에 넣기</button>
+      </article>
     </div>
     <ul class="bundles-notes">
       <li>묶음에 든 도구는 <a href="#contents">설치되는 것</a>의 표에서 하나씩 볼 수 있습니다.</li>
@@ -1061,6 +1073,7 @@ curl -fsSL {{SITE}}/codex.sh | sh</code><button class="copy" type="button">복�
           <label class="opt"><input type="checkbox" id="b-p-creator" value="creator"> <span><b>creator</b> 웹·디자인·영상·인스타 자료</span></label>
           <label class="opt"><input type="checkbox" id="b-p-dev" value="dev"> <span><b>dev</b> 개발자용(큰 모음은 목록만 등록)</span></label>
           <label class="opt"><input type="checkbox" id="b-p-studio" value="studio"> <span><b>studio</b> 영상·모션·발표·분석·개발 도구 전체(예전 날쌤팩, 수 GB)</span></label>
+          <label class="opt"><input type="checkbox" id="b-p-full" value="full"> <span><b>full</b> 날쌤 Claude 앱의 플러그인·커넥터 전부(계정이 필요한 것 포함)</span></label>
         </fieldset>
         <fieldset><legend>옵션</legend>
           <label class="opt"><input type="checkbox" id="b-install" checked> <span>설치에 쓰는 Claude Code·Codex 명령이 없으면 함께 설치 <span class="muted small">(앱만 쓴다면 켜 두세요)</span></span></label>
@@ -1273,6 +1286,7 @@ curl -fsSL {{SITE}}/uninstall.sh | sh</code><button class="copy" type="button">�
   var LEAD = {{CHAT_LEAD_JSON}};
   var WAIT = {{CHAT_WAIT_JSON}};
   var WAIT_STUDIO = {{CHAT_WAIT_STUDIO_JSON}};
+  var WAIT_FULL = {{CHAT_WAIT_FULL_JSON}};
   var body = document.body;
 
   var store = {
@@ -1312,7 +1326,7 @@ curl -fsSL {{SITE}}/uninstall.sh | sh</code><button class="copy" type="button">�
   }
 
   /* 채팅창에 붙여넣을 설치 문장 = 안내 한 문단 + 명령 한 줄. Windows 명령은 powershell -Command 로 감싸 PowerShell·cmd·Git Bash 어디서 실행돼도 같다 */
-  function lead(studio) { return LEAD.replace("{wait}", studio ? WAIT_STUDIO : WAIT); }
+  function lead(studio, full) { return LEAD.replace("{wait}", studio ? WAIT_STUDIO : (full ? WAIT_FULL : WAIT)); }
   function chatCmd(host, os) {
     return os === "win" ? 'powershell -NoProfile -Command "irm ' + SITE + "/" + host + '.ps1 | iex"' : "curl -fsSL " + SITE + "/" + host + ".sh | sh";
   }
@@ -1450,7 +1464,7 @@ curl -fsSL {{SITE}}/uninstall.sh | sh</code><button class="copy" type="button">�
   document.querySelectorAll("[data-steps]").forEach(setupSteps);
 
   /* 설치 문장 만들기 */
-  var PROFILES = ["teacher", "creator", "dev", "studio"];
+  var PROFILES = ["teacher", "creator", "dev", "studio", "full"];
   function val(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ""; }
   function checked(id) { var el = document.getElementById(id); return !!(el && el.checked); }
   function syncBundles() {
@@ -1465,7 +1479,7 @@ curl -fsSL {{SITE}}/uninstall.sh | sh</code><button class="copy" type="button">�
     var host = val("b-host"), os = val("b-os");
     var profiles = PROFILES.filter(function (p) { return checked("b-p-" + p); });
     var inst = checked("b-install"), tools = checked("b-tools"), nohwpx = checked("b-nohwpx");
-    var studio = profiles.indexOf("studio") >= 0;
+    var studio = profiles.indexOf("studio") >= 0, full = profiles.indexOf("full") >= 0;
     /* teacher 묶음만, 기본 옵션이면 사이트의 짧은 설치 주소(claude·codex)와 같다 */
     var preset = (host === "claude" || host === "codex") && profiles.join(",") === "teacher" && inst && tools && !nohwpx;
     var notes = [], term, chat;
@@ -1499,13 +1513,14 @@ curl -fsSL {{SITE}}/uninstall.sh | sh</code><button class="copy" type="button">�
     }
     document.getElementById("b-pr").textContent = os === "win" ? "PS>" : "%";
     document.getElementById("b-cmd").textContent = term;
-    document.getElementById("b-chat").textContent = lead(studio && os === "mac") + "\n" + chat;
+    document.getElementById("b-chat").textContent = lead(studio && os === "mac", full) + "\n" + chat;
     if (!profiles.length) notes.push("추천 도구 없이 분필팩 5종만 설치합니다.");
     else notes.push("묶음: " + profiles.join(" + ") + (profiles.indexOf("dev") >= 0 ? " (dev의 큰 모음은 목록만 등록하고 골라 설치)" : ""));
     if (host === "both") notes.push(inst ? "Claude Code와 Codex 모두에 설치하고, 없는 쪽은 새로 설치합니다." : "컴퓨터에서 찾은 Claude Code·Codex에만 설치합니다.");
     if (!tools) notes.push("Node.js·uv·Git이 없으면 일부 추천 도구는 건너뜁니다.");
     if (studio && os === "mac") notes.push("studio(수 GB, 10~30분)도 설치합니다. Claude Code가 있으면 네이티브 플러그인까지 설치하고, 겹치는 도구는 studio의 고정 버전을 씁니다.");
     if (studio && os === "win") notes.push("studio는 Windows에서 바로 설치되지 않습니다. 나머지를 설치한 뒤 화면에 나오는 WSL2 Ubuntu 안내를 따르세요. Ubuntu 터미널에서는 curl -fsSL " + SITE + "/install.sh | sh -s -- --profile studio --install-claude 를 실행합니다(Codex를 쓰면 --install-codex).");
+    if (full) notes.push("full은 플러그인·커넥터 50여 종을 설치해 10분 안팎 걸립니다. 각 서비스는 처음 쓸 때 로그인해야 하고, 계정이 없는 서비스는 꺼 두어도 됩니다(입력창 옆 + → Plugins → Manage plugins).");
     if (os === "win") notes.push("① 문장 속 명령은 PowerShell·명령 프롬프트·Git Bash 어디서 실행돼도 됩니다. ② 명령은 PowerShell 전용입니다(끝의 Remove-Item은 이 창에 남은 설정값을 지웁니다).");
     var ul = document.getElementById("b-notes"); ul.innerHTML = "";
     notes.forEach(function (n) { var li = document.createElement("li"); li.textContent = n; ul.appendChild(li); });

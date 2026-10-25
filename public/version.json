@@ -1,7 +1,7 @@
 {
   "name": "nalssam's 분필팩",
-  "version": "0.6.0",
-  "date": "2026-10-18",
+  "version": "0.7.0",
+  "date": "2026-10-25",
   "site": "https://nalssam-bunpil.vercel.app",
   "repo": "nalssam/bunpil_pack",
   "plugins": [
@@ -15,27 +15,27 @@
   "files": {
     "VERSION": {
       "bytes": 6,
-      "sha256": "97a5d6e540a6120d09c39ddb667e0e8e2bac7fcc2ffef813b82e08fd60365bce"
+      "sha256": "967d9afb101346667166f2e76e81910bc190488d7d41d50ca0072e9d92f00e32"
     },
     "app/bunpil-builder.zip": {
-      "bytes": 28012,
-      "sha256": "1eb1491ce9489731d59644f9290c3a5fc007ab539c49c64f7265037b71583f8b"
+      "bytes": 28011,
+      "sha256": "35ccb4601516c33d58b1ba05dd85644884d89875cf7be799aa873fec45efa7ac"
     },
     "app/bunpil-class.zip": {
       "bytes": 58132,
-      "sha256": "235719fc263561ce35575c580fb14c0b90a735b57620f5a39237c054fa1d8213"
+      "sha256": "db7eb30118e13638f6c2c8b119c950fac8e2a907f37a838e574cc0ad79def2d0"
     },
     "app/bunpil-connect.zip": {
       "bytes": 7407,
-      "sha256": "8bf5fa5caafb450ed64dd2e94f164720121393fde097b6888263078053f0400c"
+      "sha256": "5a6926e295d3b77e4836273ab43595afc492786640a6813ca3ed4850cb6fc367"
     },
     "app/bunpil-school.zip": {
       "bytes": 41307,
-      "sha256": "dd03f97029b7a4367df0060ca8c6d8eb8669b71fb465f790a84b740fd3b0ffa5"
+      "sha256": "d9ac33ad48842c1967d61012736a8d6dc07759cc4b95050b6f1ca0f4eca9464b"
     },
     "app/bunpil-start.zip": {
       "bytes": 16080,
-      "sha256": "fd303e0568ff492659013ab72b40ed94372e1f0779fceb996d92a39732e6b990"
+      "sha256": "5caf7d3a0a62e29295f51e5bafa053e278e6d2a41221823df770db27ccd9d8c7"
     },
     "app/skills/checkup.zip": {
       "bytes": 2768,
@@ -122,36 +122,36 @@
       "sha256": "97299bce750a27933ee0a1cbdb89eac1315e83d621bb744645663935020a4ba7"
     },
     "bunpil-pack.zip": {
-      "bytes": 442136,
-      "sha256": "32ea9696b34cd1302c53b3d6e7b0233edde40552e488e3744db49250794ba0cd"
+      "bytes": 448359,
+      "sha256": "5f0651e0240ec948d33f806d483617b01bb30f6d6d0bdff449a315b168fe5d02"
     },
     "claude.ps1": {
-      "bytes": 56648,
-      "sha256": "78577a79c7f577726c3f7d61fd72c395f7ee7e5c7a71d0b0cf939d0b7d01f018"
+      "bytes": 64164,
+      "sha256": "a342edf43783185fed4ae824121d82d6a70cfb19956448b23a17c5ae20d91be8"
     },
     "claude.sh": {
-      "bytes": 50918,
-      "sha256": "35653a9e8c524db88bc03224ffb601c9ba1630127e0f97f6cad71e8370d217f8"
+      "bytes": 58028,
+      "sha256": "b635995d459f4f6f2b36d328f89d983e471783d38e148ad10eb7e76182fbca5e"
     },
     "codex.ps1": {
-      "bytes": 56643,
-      "sha256": "87d1c6e5e7577d744b5bb20170c16c17038f2a3a711a965016904e11d329d7a2"
+      "bytes": 64159,
+      "sha256": "8d25e25bbb9f3c92447e19d68e39b81e11dfcbe3932507cc7aeafe9389b676cd"
     },
     "codex.sh": {
-      "bytes": 50913,
-      "sha256": "58bb4f4297cf5c30f8ddccea6f577fe99ea1cf61b1f6cd2f3d0f01b35736b7d0"
+      "bytes": 58023,
+      "sha256": "731bd24127f897f9d6d50e2ae22922798104ff89cdc7c3c8a2c5ebc0b78182fe"
     },
     "favicon.svg": {
       "bytes": 347,
       "sha256": "b75b8def082deb4485201470a9e23b51583b3a9803ce6aef899446d2f0cc58cf"
     },
     "install.ps1": {
-      "bytes": 56527,
-      "sha256": "8fe9089aecea877a913b31fdefb3e605d246146f660ae49425d3241b39d8cfa0"
+      "bytes": 64043,
+      "sha256": "882b7ad300a322d4c6bd7eaa4eb861f3820bf0fcb0765a29b0f8c7633052f4d6"
     },
     "install.sh": {
-      "bytes": 50759,
-      "sha256": "bac87daa87321cc6413674b29402728db03d1d93668bad2022114cdafec4d59b"
+      "bytes": 57869,
+      "sha256": "1c3dc6571562c8c6fa5b671ff20c59d35b72d5f23be31030f9164fbcde1c27b7"
     },
     "og.jpg": {
       "bytes": 150155,
@@ -162,12 +162,12 @@
       "sha256": "16ceb5ee3e0dc13aa9adf31a3ebbe45a1d965b8c2b9f72eaf84e5911e140ed95"
     },
     "uninstall.ps1": {
-      "bytes": 56553,
-      "sha256": "d64800681a4f21d40d4160ae26bb3821e1b73472dcb65033b14ed65c30c46840"
+      "bytes": 64069,
+      "sha256": "88762090d58ebe4674624d27149c3c1a9f6d42725af859e7c551138045575b55"
     },
     "uninstall.sh": {
-      "bytes": 50799,
-      "sha256": "dd671855c3a22bf7e1e371639fcbfc183faa22276c6e247dc5c7a1e5540f3942"
+      "bytes": 57909,
+      "sha256": "b82364c140a4f820ffec83245c9e3ec452a0f7f9a4fda314683ea11f38c1a1a4"
     }
   }
 }

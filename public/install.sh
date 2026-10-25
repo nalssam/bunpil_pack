@@ -20,7 +20,7 @@
 #  관리자 권한(sudo)이 필요 없다.
 #
 #  옵션
-#   --profile teacher|creator|dev|studio|all   추천 묶음(쉼표로 여러 개, 기본 teacher). all = 넷 다
+#   --profile teacher|creator|dev|studio|full|all   추천 묶음(쉼표로 여러 개, 기본 teacher). all = 다섯 다
 #   --claude | --codex                  한쪽에만 설치
 #   --install-claude | --install-codex  없으면 Claude Code / Codex CLI까지 설치
 #   --with-tools                        Node.js·uv가 없으면 함께 설치 (brew 또는 공식 배포본)
@@ -55,6 +55,22 @@ PLAYWRIGHT_MCP="@playwright/mcp@latest"
 PERPLEXITY_MCP="@perplexity-ai/mcp-server"
 FIRECRAWL_URL="https://mcp.firecrawl.dev/v2/mcp"      # 키 없이 쓰는 무료 구간(수집·검색·읽기 3종)
 GLIF_URL="https://glif.app/api/mcp"
+# full 묶음: 날쌤 Claude 앱(claude.ai)에 켜 둔 플러그인을 공개 마켓플레이스에서 그대로 설치한다
+KWP_REPO="anthropics/knowledge-work-plugins"; KWP_MARKET="knowledge-work-plugins"
+FULL_WORK="productivity enterprise-search cowork-plugin-management sales finance data legal marketing customer-support product-management bio-research engineering human-resources design operations small-business brand-voice pdf-viewer"
+FULL_PARTNER="canva figma adobe-for-creativity miro zoom-plugin learn-with-coursera airtable monday-com zapier desktop-commander exa brightdata-plugin searchfit-seo postiz product-tracking-skills base44 datadog datarobot-agent-skills unity noibu grasp bigdata-com daloopa lseg sp-global carta-crm carta-investors claude-for-financial-advisors"
+FULL_X_SKIP="product-tracking-skills sp-global"   # Codex가 이름 불일치(plugin.json과 마켓 이름이 다름)로 거부해 Codex에서만 건너뜀
+# full 묶음: 플러그인에 들어 있지 않은 claude.ai 커넥터(원격 MCP). 한 줄에 이름|표시이름|주소
+FULL_MCPS="vercel|웹 배포·관리 · Vercel|https://mcp.vercel.com
+supabase|데이터베이스 · Supabase|https://mcp.supabase.com/mcp
+cloudflare|Cloudflare 개발 플랫폼|https://mcp.cloudflare.com/mcp
+higgsfield|이미지·영상 AI · Higgsfield|https://mcp.higgsfield.ai/mcp
+hyperframes|HTML 모션그래픽·애니메이션 슬라이드 · HyperFrames(HeyGen)|https://mcp.heygen.com/mcp/hyperframes/
+elevenlabs|음성·나레이션 AI · ElevenLabs|https://api.elevenlabs.io/v1/mcp
+artlist|음악·효과음·영상 AI · artlist|https://mcp.artlist.io/mcp
+playmcp|카카오 PlayMCP|https://playmcp.kakao.com/mcp
+windsor-ai|광고·SNS 성과 데이터 · Windsor.ai|https://mcp.windsor.ai/
+threejs-viewer|3D 장면 보기(데모) · Three.js|https://example-server.modelcontextprotocol.io/threejs/mcp"
 NODE_DIST="${BUNPIL_NODE_DIST:-https://nodejs.org/dist/latest-v24.x}"
 PPTX_COMMIT="ae3d919005100472805bf39ddab234bd1cf72577"   # ZZombie04/pptx_maker (스튜디오 엔진과 같은 커밋)
 STUDIO_ROOT="${NALSSAM_PACK_ROOT:-$HOME/.local/share/nalssam-pack}"   # 스튜디오 설치 기록 폴더. 예전 날쌤팩과 같은 자리라 이미 설치한 분의 환경이 이어진다
@@ -78,12 +94,13 @@ case "${BUNPIL_ONLY:-}" in claude) want_codex=0 ;; codex) want_claude=0 ;; esac
 usage() {
   cat <<'EOF'
 분필팩 설치 옵션
-  --profile teacher|creator|dev|studio|all   추천 묶음(기본 teacher, 쉼표로 여러 개)
+  --profile teacher|creator|dev|studio|full|all   추천 묶음(기본 teacher, 쉼표로 여러 개)
   --claude | --codex                  한쪽에만 설치
   --install-claude | --install-codex  Claude Code / Codex CLI까지 설치
   --with-tools                        Node.js·uv도 설치
   --bunpil-only  --no-hwpx  --ask  --uninstall
 묶음: teacher 한글·문서·자동화 / creator 웹·디자인·영상 / dev 개발자용 / studio 영상·모션·분석 도구(수 GB, 10~30분)
+      full 날쌤 Claude 앱의 플러그인·커넥터 전부(업무·디자인·금융·개발 등 50여 종, 계정이 필요한 것 포함)
 EOF
 }
 while [ $# -gt 0 ]; do
@@ -109,12 +126,12 @@ done
 profiles=$(printf '%s' "$profiles" | tr -d ' \t' | tr 'A-Z' 'a-z')   # 공백·대소문자 차이는 무시
 [ "$legacy_studio" = 1 ] && profiles="$profiles,studio"
 case ",$profiles," in *,nalssam,*) profiles="$profiles,teacher,studio" ;; esac   # 예전 nalssam = 분필팩 기본(teacher) + 날쌤팩
-case ",$profiles," in *,all,*) profiles="teacher,creator,dev,studio" ;; esac
+case ",$profiles," in *,all,*) profiles="teacher,creator,dev,studio,full" ;; esac
 bad_profiles=""; good_profiles=""
 set -f
 for t in $(printf '%s' "$profiles" | tr ',' ' '); do
   case "$t" in
-    teacher|creator|dev|studio) case ",$good_profiles," in *",$t,"*) ;; *) good_profiles="${good_profiles:+$good_profiles,}$t" ;; esac ;;
+    teacher|creator|dev|studio|full) case ",$good_profiles," in *",$t,"*) ;; *) good_profiles="${good_profiles:+$good_profiles,}$t" ;; esac ;;
     nalssam|all) ;;
     *) bad_profiles="$bad_profiles $t" ;;
   esac
@@ -420,6 +437,44 @@ x_market() {
   elif codex plugin marketplace add "$1" >/dev/null 2>&1; then ok "$3 — 목록 등록(/plugins에서 골라 설치)"
   else fail "$3 — 목록 등록 실패"; fi
 }
+c_plugins() {  # c_plugins <저장소> <마켓> <제목> <플러그인 이름...> — 한 마켓에서 여러 개를 한 번에(목록은 한 번만 갱신)
+  cp_repo="$1"; cp_m="$2"; cp_t="$3"; shift 3
+  if [ "$HAS_GIT" = 0 ]; then skip "$cp_t — $GIT_SKIP"; return; fi
+  if c_has_market "$cp_m"; then claude plugin marketplace update "$cp_m" >/dev/null 2>&1 || warn "$cp_t — 목록 갱신 실패(지금 목록 유지)"
+  elif ! claude plugin marketplace add "$cp_repo" >/dev/null 2>&1; then fail "$cp_t — 목록 등록 실패 (claude plugin marketplace add $cp_repo)"; return; fi
+  cp_list=$(claude plugin list 2>/dev/null)
+  for cp_p in "$@"; do
+    if printf '%s\n' "$cp_list" | grep -qE "^[[:space:]]*> $cp_p@$cp_m\$"; then
+      if claude plugin update "$cp_p@$cp_m" >/dev/null 2>&1; then ok "$cp_t · $cp_p — 최신 확인"; else warn "$cp_t · $cp_p — 업데이트 확인 실패(지금 버전 유지)"; fi
+    elif claude plugin install "$cp_p@$cp_m" -y >/dev/null 2>&1; then ok "$cp_t · $cp_p"
+    else fail "$cp_t · $cp_p — 설치 실패 (claude plugin install $cp_p@$cp_m)"; fi
+  done
+}
+x_plugins() {  # x_plugins <저장소> <마켓> <제목> <플러그인 이름...> — Codex용
+  cp_repo="$1"; cp_m="$2"; cp_t="$3"; shift 3
+  if [ "$HAS_GIT" = 0 ]; then skip "$cp_t — $GIT_SKIP"; return; fi
+  if x_has_market "$cp_m"; then codex plugin marketplace upgrade "$cp_m" >/dev/null 2>&1 || warn "$cp_t — 목록 갱신 실패(지금 목록 유지)"
+  elif ! codex plugin marketplace add "$cp_repo" >/dev/null 2>&1; then fail "$cp_t — 목록 등록 실패 (codex plugin marketplace add $cp_repo)"; return; fi
+  for cp_p in "$@"; do
+    case " $FULL_X_SKIP " in *" $cp_p "*) skip "$cp_t · $cp_p — Codex에서는 원 저장소의 이름 표기 문제로 설치되지 않아 건너뜀(Claude에는 설치)"; continue ;; esac
+    if codex plugin add "$cp_p@$cp_m" >/dev/null 2>&1; then ok "$cp_t · $cp_p"; else fail "$cp_t · $cp_p — 설치 실패 (codex plugin add $cp_p@$cp_m)"; fi
+  done
+}
+x_mcp_url() {  # x_mcp_url <이름> <표시이름> <주소> — Codex의 "codex mcp add --url"은 OAuth 서버면 그 자리에서 로그인 창을 띄우고 기다리므로, 설정 파일에 직접 적는다
+  if codex mcp get "$1" >/dev/null 2>&1; then ok "$2 — 이미 연결됨"; return; fi
+  xm_cfg="${CODEX_HOME:-$HOME/.codex}/config.toml"
+  mkdir -p "$(dirname "$xm_cfg")" 2>/dev/null
+  { [ -s "$xm_cfg" ] && [ -n "$(tail -c 1 "$xm_cfg")" ] && printf '\n'; printf '\n[mcp_servers.%s]\nurl = "%s"\n' "$1" "$3"; } >> "$xm_cfg" 2>/dev/null
+  if codex mcp get "$1" >/dev/null 2>&1; then ok "$2"; else fail "$2 — MCP 등록 실패 ($xm_cfg 확인)"; fi
+}
+full_mcps() {  # full_mcps <claude|codex> — FULL_MCPS 목록을 원격 MCP로 등록(로그인은 처음 쓸 때)
+  printf '%s\n' "$FULL_MCPS" > "$BUNPIL_HOME/.full-mcps.$$"
+  while IFS='|' read -r fm_name fm_label fm_url; do
+    [ -n "$fm_name" ] && [ -n "$fm_url" ] || continue
+    if [ "$1" = codex ]; then x_mcp_url "$fm_name" "$fm_label(MCP)" "$fm_url"; else mcp_http "$1" "$fm_name" "$fm_label(MCP)" "$fm_url"; fi
+  done < "$BUNPIL_HOME/.full-mcps.$$"
+  rm -f "$BUNPIL_HOME/.full-mcps.$$"
+}
 skills_add() { # skills_add <저장소> <claude-code|codex> <표시이름>
   if in_studio "$1"; then skip "$3 — $STUDIO_SKIP"; return; fi
   if [ "$HAS_NPX" = 0 ]; then skip "$3 — Node.js가 없어 건너뜀"; return; fi
@@ -607,6 +662,7 @@ recs_claude() {
     if [ "$HAS_UVX" = 1 ]; then mcp_add claude markitdown "파일 → 텍스트 변환(MCP) · microsoft/markitdown" uvx markitdown-mcp; warm_markitdown
     else skip "파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀"; fi
     c_plugin revfactory/harness harness@harness-marketplace "하네스 팩토리 · revfactory/harness"
+    c_plugin leeandev/stop-slop-ko stop-slop-ko@stop-slop-ko "한국어 문서 AI 티 걷어내기 · stop-slop-ko"
   fi
   if in_profile creator; then
     say "  ${D}[creator] 웹·디자인·영상·인스타${N}"
@@ -634,6 +690,16 @@ recs_claude() {
     c_market google/skills google-plugins "Google Cloud 스킬 · google/skills"
     c_market thedotmack/claude-mem thedotmack "세션 기억 · claude-mem"
   fi
+  if in_profile full; then
+    say "  ${D}[full] 날쌤 Claude 앱의 플러그인·커넥터 전부 — 50여 종이라 몇 분 걸립니다. 계정이 있어야 쓰는 것도 들어 있습니다${N}"
+    # shellcheck disable=SC2086
+    c_plugins "$KWP_REPO" "$KWP_MARKET" "업무 플러그인(Anthropic)" $FULL_WORK
+    # shellcheck disable=SC2086
+    c_plugins "$KWP_REPO" "$KWP_MARKET" "서비스 연동 플러그인" $FULL_PARTNER
+    c_plugins leeandev/stop-slop-ko stop-slop-ko "한국어 글쓰기" stakeholder-brief jasoseo
+    skip "3D CAD 변환 · contentasoft-cad-converter — Windows 전용이라 건너뜀"
+    full_mcps claude
+  fi
 }
 recs_codex() {
   if in_profile teacher; then
@@ -648,6 +714,7 @@ recs_codex() {
     if [ "$HAS_UVX" = 1 ]; then mcp_add codex markitdown "파일 → 텍스트 변환(MCP) · microsoft/markitdown" uvx markitdown-mcp; warm_markitdown
     else skip "파일 → 텍스트 변환(markitdown) — uv가 없어 건너뜀"; fi
     skills_add revfactory/harness codex "하네스 팩토리 · revfactory/harness"
+    x_plugin leeandev/stop-slop-ko stop-slop-ko@stop-slop-ko "한국어 문서 AI 티 걷어내기 · stop-slop-ko"
   fi
   if in_profile creator; then
     say "  ${D}[creator] 웹·디자인·영상·인스타${N}"
@@ -671,6 +738,15 @@ recs_codex() {
     x_market wshobson/agents claude-code-workflows "개발 워크플로 모음 · wshobson/agents"
     x_market google/skills google-plugins "Google Cloud 스킬 · google/skills"
     x_market thedotmack/claude-mem claude-mem-local "세션 기억 · claude-mem"
+  fi
+  if in_profile full; then
+    say "  ${D}[full] 날쌤 Claude 앱의 플러그인·커넥터 전부 — 50여 종이라 몇 분 걸립니다. 계정이 있어야 쓰는 것도 들어 있습니다${N}"
+    # shellcheck disable=SC2086
+    x_plugins "$KWP_REPO" "$KWP_MARKET" "업무 플러그인(Anthropic)" $FULL_WORK
+    # shellcheck disable=SC2086
+    x_plugins "$KWP_REPO" "$KWP_MARKET" "서비스 연동 플러그인" $FULL_PARTNER
+    x_plugins leeandev/stop-slop-ko stop-slop-ko "한국어 글쓰기" stakeholder-brief jasoseo
+    full_mcps codex
   fi
 }
 
@@ -743,6 +819,10 @@ fi
 if [ "$studio" = 1 ] && [ -f "$STUDIO_ROOT/state.json" ]; then
   say "  스튜디오 점검: 새 대화에서 \"스튜디오 설치 점검해줘\" (터미널은  nalssam-pack doctor --verify-mcp) · 설치 기록 $STUDIO_ROOT/report.json"
   say "         계정이 필요한 것(ElevenLabs·Gemini·Google Cloud·After Effects 등)은 각자 연결해야 합니다."
+fi
+if [ "$recs" = 1 ] && in_profile full; then
+  say "  full 묶음: 각 서비스는 처음 쓸 때 로그인합니다(Claude는 /mcp, Codex는 codex mcp login <이름>). 계정이 없는 플러그인은 꺼 두어도 됩니다."
+  say "         Gmail·Google 문서·Microsoft 365는 공용 연결 주소가 없어 Claude 앱 설정 → 커넥터에서 켜세요. 목록: https://github.com/nalssam/bunpil_pack/blob/main/docs/full-bundle.md"
 fi
 say "  업데이트는 같은 명령을 다시 실행하면 됩니다. 자세한 안내: $SITE"
 say ""

@@ -1,5 +1,12 @@
 # 변경 기록
 
+## 0.7.0 — 2026-10-25
+- **full 묶음 추가 (날쌤 환경 그대로)**: 날쌤의 Claude 앱에 켜 둔 플러그인·커넥터를 한 번에 설치한다. Anthropic 공식 업무 플러그인 18종과 서비스 연동 플러그인 28종(anthropics/knowledge-work-plugins), stakeholder-brief·jasoseo, 3D CAD 변환(Windows), 플러그인에 없는 커넥터 10개(원격 MCP). 목록은 docs/full-bundle.md
+- Gmail·Google 문서·Microsoft 365·Expedia처럼 공용 연결 주소가 없는 커넥터는 설치하지 않고 Claude 앱에서 켜도록 안내
+- Codex에서는 product-tracking-skills·sp-global을 건너뜀(원 저장소의 plugin.json 이름이 마켓 이름과 달라 Codex가 거부)
+- teacher 묶음에 **stop-slop-ko**(leeandev/stop-slop-ko, MIT) 추가: 한국어 보고서·공문·메일의 "AI 티"(줄표, 가운뎃점 나열, 번역투)를 걷어낸다
+- `--profile all`은 이제 teacher + creator + dev + studio + full
+
 ## 0.6.0 — 2026-10-18
 - 독립 검토 반영: Windows→WSL2 studio 명령에 `--install-claude`(WSL 안에 Claude Code가 없어 실패하던 문제), Git·bash가 없어 studio를 못 깔면 "설치 완료"가 아니라 실패로 표시, `--bunpil-only`와 함께인 옛 `--nalssam`도 studio 설치, `--profile` 값의 공백·대소문자 차이 무시, 예전 `--profile nalssam`은 teacher+studio(예전과 같게), `--uninstall`이 `nalssam-*` Claude MCP 연결도 해제, 설치 만들기에서 OS·호스트 직접 선택이 상단 토글에 덮이던 문제, studio가 PATH 앞에 둔 python·node와 재설치 시 꺼 둔 플러그인 재활성 안내
 - **날쌤팩을 분필팩 안으로 합침**: 따로 배포하던 날쌤팩(nalssam/nalssam-pack v1.0.1, MIT)의 설치 엔진을 `studio/` 폴더로 가져와 **studio 묶음**으로 만듦. 이제 저장소·설치 명령·웹사이트가 `nalssam/bunpil_pack` 하나. `--profile studio`를 쓰고, 옛 `--nalssam` · `BUNPIL_NALSSAM=1` · `--profile nalssam`은 같은 뜻으로 계속 받아들임. 이미 설치한 환경과 이어지도록 명령 이름(`nalssam-pack`)과 설치 기록 폴더(`~/.local/share/nalssam-pack`)는 그대로 둠

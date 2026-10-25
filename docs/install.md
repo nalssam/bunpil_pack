@@ -91,9 +91,9 @@ Chat·Cowork만 쓰거나 학교 PC에서 명령 실행이 막혀 있을 때의 
 
 분필팩 5종은 인터넷 없이도 설치되고, 추천 도구는 인터넷이 필요합니다. 학교망에서 내려받기가 막힐 때 USB로 옮겨 설치하는 용도로도 씁니다.
 
-## F. 묶음 더하기 (creator · dev · studio)
+## F. 묶음 더하기 (creator · dev · studio · full)
 
-기본은 teacher 묶음입니다. 웹·디자인·영상·인스타 자료를 만들 creator, 개발자용 dev, 영상·모션그래픽·발표 자료까지 쓰는 studio를 더하려면 사이트의 **설치 문장 만들기**에서 묶음을 골라 바뀐 문장을 붙여넣습니다. 터미널에서는 `--profile`(Windows는 환경변수 `BUNPIL_PROFILE`)을 씁니다. 옵션 전체 표는 [README](../README.md#옵션)에 있습니다.
+기본은 teacher 묶음입니다. 웹·디자인·영상·인스타 자료를 만들 creator, 개발자용 dev, 영상·모션그래픽·발표 자료까지 쓰는 studio, 날쌤의 Claude 앱 플러그인·커넥터를 모두 담은 full([목록](full-bundle.md))을 더하려면 사이트의 **설치 문장 만들기**에서 묶음을 골라 바뀐 문장을 붙여넣습니다. 터미널에서는 `--profile`(Windows는 환경변수 `BUNPIL_PROFILE`)을 씁니다. 옵션 전체 표는 [README](../README.md#옵션)에 있습니다.
 
 ```bash
 curl -fsSL https://nalssam-bunpil.vercel.app/claude.sh | sh -s -- --profile teacher,creator
