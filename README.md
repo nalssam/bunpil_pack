@@ -62,7 +62,7 @@ Chat·Cowork만 쓰거나 명령 실행이 막힌 PC에서는 Claude 앱 → **�
 | 플러그인 | 하는 일 | 스킬 |
 |---|---|---|
 | **분필 시작 팩** `bunpil-start` | 내 맞춤 지침 만들기, 학생 개인정보 가드, 설치 점검 | setup · privacy-guard · checkup |
-| **분필 수업자료 팩** `bunpil-class` | 수준별 학습지, 지도안, 수업 슬라이드, 수업 영상, 페이퍼크래프트, 컬러링 도안, 루브릭 | worksheet · lesson-plan · class-slides · class-video · papercraft · coloring · rubric |
+| **분필 수업자료 팩** `bunpil-class` | 수준별 학습지, 지도안, 수업 슬라이드, 날쌤 스타일 연수 PPT(대본 포함), 수업 영상, 페이퍼크래프트, 컬러링 도안, 루브릭 | worksheet · lesson-plan · class-slides · nalssam-pptx · class-video · papercraft · coloring · rubric |
 | **분필 학교업무 팩** `bunpil-school` | 공문 처리 하네스, 가정통신문, 품의 산출내역, 학부모 설문 분석, 한글 문서·기안문 | gongmun · newsletter · pumui · parent-survey · hwpx-doc |
 | **분필 하네스빌더 팩** `bunpil-builder` | 나만의 스킬 만들기, 실수를 규칙으로, 스킬 시험, 동료와 나누기, 하네스 예시 100종 가져오기 | skill-maker · harness-fix · eval-run · share-skill · harness-gallery |
 | **분필 커넥터 팩** `bunpil-connect` | 노션·패들렛·캔바 연결 | connect |
@@ -110,7 +110,7 @@ macOS·Linux는 `install.sh | sh -s -- <옵션>`, Windows는 같은 이름의 �
 
 | 기능 | Claude Chat(웹·앱) | Cowork | Claude Code(앱 Code 탭·터미널) | Codex(ChatGPT 앱·터미널) |
 |---|---|---|---|---|
-| 분필팩 스킬 21종 | ○ | ○ | ○ | ○ |
+| 분필팩 스킬 22종 | ○ | ○ | ○ | ○ |
 | 개인정보 자동 점검(훅) | × (지침으로 대신) | ○ | ○ | 훅 신뢰 후 ○ |
 | 공문 처리 서브에이전트 | × (순서대로 처리) | ○ | ○ | × (순서대로 처리) |
 | 노션·패들렛·캔바 | 커넥터 연결 후 ○ | 커넥터 연결 후 ○ | 입력창 옆 + → Connectors·`/mcp` 로그인 후 ○ | `codex mcp login` 후 ○ |

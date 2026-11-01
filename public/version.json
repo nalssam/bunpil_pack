@@ -1,7 +1,7 @@
 {
   "name": "nalssam's 분필팩",
-  "version": "0.7.0",
-  "date": "2026-10-25",
+  "version": "0.7.1",
+  "date": "2026-11-01",
   "site": "https://nalssam-bunpil.vercel.app",
   "repo": "nalssam/bunpil_pack",
   "plugins": [
@@ -11,39 +11,39 @@
     "bunpil-school",
     "bunpil-start"
   ],
-  "skills": 21,
+  "skills": 22,
   "files": {
     "VERSION": {
       "bytes": 6,
-      "sha256": "967d9afb101346667166f2e76e81910bc190488d7d41d50ca0072e9d92f00e32"
+      "sha256": "902311c7bb38fa1658ff403def6158ee7378fe9d6e2e284fa1c38735c31bd30b"
     },
     "app/bunpil-builder.zip": {
       "bytes": 28011,
-      "sha256": "35ccb4601516c33d58b1ba05dd85644884d89875cf7be799aa873fec45efa7ac"
+      "sha256": "a4031ee4d7a4b550dd73c4fa1d551b0c5887d2a898f07eff6c56a7607d78b03d"
     },
     "app/bunpil-class.zip": {
-      "bytes": 58132,
-      "sha256": "db7eb30118e13638f6c2c8b119c950fac8e2a907f37a838e574cc0ad79def2d0"
+      "bytes": 86123,
+      "sha256": "188f79c8a575759a75262a9edf9015ebf7ba108f36fda504b33ed47406b37942"
     },
     "app/bunpil-connect.zip": {
-      "bytes": 7407,
-      "sha256": "5a6926e295d3b77e4836273ab43595afc492786640a6813ca3ed4850cb6fc367"
+      "bytes": 7408,
+      "sha256": "1e88eb94a3871e916ae24812431cc7bfd03f8841ac60420017556ebebccc68ba"
     },
     "app/bunpil-school.zip": {
       "bytes": 41307,
-      "sha256": "d9ac33ad48842c1967d61012736a8d6dc07759cc4b95050b6f1ca0f4eca9464b"
+      "sha256": "225131ea70f380e479631fd7c009c113e5ee124c20b2cbbd81b7b205c2749801"
     },
     "app/bunpil-start.zip": {
-      "bytes": 16080,
-      "sha256": "5caf7d3a0a62e29295f51e5bafa053e278e6d2a41221823df770db27ccd9d8c7"
+      "bytes": 16087,
+      "sha256": "557d3a5f523ff64c9919c0e0c0737abe91d288df78bde9b0536b9a9882675b68"
     },
     "app/skills/checkup.zip": {
-      "bytes": 2768,
-      "sha256": "5fc4aa7b21cb8936ced548ad64d659a39e04aa7bb9f1283e22184461d3814b47"
+      "bytes": 2775,
+      "sha256": "7e8d35f0b695ea87d29b9d026d1489774259f13da77c184badb6ef95a0d8c3be"
     },
     "app/skills/class-slides.zip": {
-      "bytes": 7256,
-      "sha256": "ee6743142273d6034678f19b2e106480585978546d129014dea33d22d8fea5ec"
+      "bytes": 7279,
+      "sha256": "7be3cefb0cecddbd8f2b96b67eec302fcfa5746fa9f0ce39d2df348179432239"
     },
     "app/skills/class-video.zip": {
       "bytes": 4560,
@@ -80,6 +80,10 @@
     "app/skills/lesson-plan.zip": {
       "bytes": 7024,
       "sha256": "1a6047597df3bd988bdff619e8cf289a5773d1754e257827e805dd74e7d070c8"
+    },
+    "app/skills/nalssam-pptx.zip": {
+      "bytes": 27553,
+      "sha256": "95a81b08b7a74c870b8709318bf1d199f8c3d1e60c8952d3fc1fea2ba1742132"
     },
     "app/skills/newsletter.zip": {
       "bytes": 6346,
@@ -122,8 +126,8 @@
       "sha256": "97299bce750a27933ee0a1cbdb89eac1315e83d621bb744645663935020a4ba7"
     },
     "bunpil-pack.zip": {
-      "bytes": 448359,
-      "sha256": "5f0651e0240ec948d33f806d483617b01bb30f6d6d0bdff449a315b168fe5d02"
+      "bytes": 505489,
+      "sha256": "ab47259ac2f3b6a88a6f0c7f518a189ee56fc784e920d99e97a5b5a66768dabb"
     },
     "claude.ps1": {
       "bytes": 64164,

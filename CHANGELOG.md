@@ -1,5 +1,10 @@
 # 변경 기록
 
+## 0.7.1 — 2026-11-01
+- 수업자료 팩에 **nalssam-pptx**(날쌤 스타일 연수 PPT) 스킬 추가: 「AI Agent 시대, 교실은 어떻게 달라지는가?」 덱의 모양을 python-pptx로 그대로 재현한다. 웜 오프화이트·네이비·틸·코랄, Pretendard 전체 임베드, 장표 유형 13가지, 대본은 메모란, 자동 점검(qa.py)과 렌더링 모아보기(render_check.py), 기존 덱 문구만 바꾸기(edit_helpers.py) 포함
+- 강사 소개는 작업 폴더의 지침 파일(setup으로 만든 것)을 쓰고, 날쌤 본인 덱일 때만 날쌤 프로필을 쓴다
+- class-slides는 학생 수업용, nalssam-pptx는 교사 연수·강의용으로 나눔. 분필팩 스킬 22종
+
 ## 0.7.0 — 2026-10-25
 - **full 묶음 추가 (날쌤 환경 그대로)**: 날쌤의 Claude 앱에 켜 둔 플러그인·커넥터를 한 번에 설치한다. Anthropic 공식 업무 플러그인 18종과 서비스 연동 플러그인 28종(anthropics/knowledge-work-plugins), stakeholder-brief·jasoseo, 3D CAD 변환(Windows), 플러그인에 없는 커넥터 10개(원격 MCP). 목록은 docs/full-bundle.md
 - Gmail·Google 문서·Microsoft 365·Expedia처럼 공용 연결 주소가 없는 커넥터는 설치하지 않고 Claude 앱에서 켜도록 안내
