@@ -133,6 +133,9 @@
     return '(function(){'
       + 'var N=window.__LIVE_SLIDE__=' + slide + ';'
       + 'function say(a,n){try{parent.postMessage({liveHtml:1,action:a,n:n},"*")}catch(e){}}'
+      // PowerPoint 의 웹 화면(WebView2)은 틀 안에도 window.chrome.webview 를 넣어 준다. 덱이 쓸 일이 없는 통로이므로 지운다.
+      // (실제 PowerPoint 에서 재 본 결과 틀 안에서는 Office 기능이 연결되지 않았지만, 통로 자체를 남겨 두지 않는다.)
+      + 'try{var C=window.chrome;if(C&&C.webview){try{delete C.webview}catch(e){}if(C.webview){Object.defineProperty(C,"webview",{configurable:false,writable:false,value:undefined})}}}catch(e){}'
       + 'var L=window.liveSlide={index:N,keys:true,next:function(){say("next")},prev:function(){say("prev")},'
       + 'first:function(){say("first")},last:function(){say("last")},goTo:function(n){say("goto",n)}};'
       // 저장소 대역: getItem/setItem 과 localStorage.이름 두 가지 쓰임을 한 곳에 모은다(Proxy 가 없으면 메서드만).
@@ -164,7 +167,9 @@
       + 'var H=window.history;if(H){["pushState","replaceState"].forEach(function(f){var o=H[f];if(typeof o!=="function")return;'
       + 'H[f]=function(){try{return o.apply(H,arguments)}catch(e){}}})}'
       + 'document.addEventListener("DOMContentLoaded",function(){say("ready")});'
-      + 'window.addEventListener("load",function(){say("loaded")});'
+      // 추가 기능 페이지가 "아직 덱이 떠 있나?" 하고 물으면 대답한다(다른 주소로 가 버린 틀을 알아채는 데 쓴다).
+      // 덱이나 덱이 불러온 스크립트가 load 알림을 막아도 대답할 수 있게, 맨 먼저 캡처 단계로 듣는다.
+      + 'window.addEventListener("message",function(e){var d=e.data;if(e.source===parent&&d&&d.liveHtml===1&&d.ask==="alive"){say("alive",d.id)}},true);'
       // 화면 크기 다시 알리기: PowerPoint 가 슬라이드의 웹 화면을 숨긴 채 만들거나 크기를 나중에 정하면, 덱이 처음 읽은 창 크기가
       // 틀릴 수 있고 resize 알림도 오지 않을 때가 있다(실제 PowerPoint 에서 한 장이 아주 작게 그려진 일이 있었다).
       // 다 열린 뒤 두 번, 다시 보일 때, 그리고 창 크기가 알림 없이 바뀐 것을 알아챘을 때 resize 를 한 번 더 알린다.
@@ -282,6 +287,7 @@
     view.onload = reveal;
     clearTimeout(revealTimer);
     revealTimer = setTimeout(reveal, 3000);   // 바깥 자원이 늦어도 화면은 보여 준다
+    restores = 0;
     view.srcdoc = inject(state.html, state.slide);
   }
 
@@ -368,24 +374,30 @@
     try { window.open(url, '_blank', 'noopener'); } catch (e2) { /* 막혀 있으면 그대로 둔다 */ }
   }
   /* 덱이 틀 안에서 다른 주소로 가 버리면(가로채지 못한 링크·form·location 변경) 슬라이드가 하얗게 빈다.
-     틀이 새로 떴는데 덱의 "loaded" 알림이 없으면 덱을 다시 넣는다(그 장은 처음 상태로 돌아간다). */
-  var deckLoaded = false, restoreTimer = null, restores = 0;
+     틀이 새로 뜰 때마다 "덱이 떠 있나?" 하고 묻고, 대답이 없으면 덱을 다시 넣는다(그 장은 처음 상태로 돌아간다).
+     되풀이해 넣는 일이 없도록 한 번 그린 덱은 많아야 세 번만 다시 넣는다. */
+  var pingId = 0, ponged = 0, restoreTimer = null, restores = 0;
+  function ping() {
+    try { view.contentWindow.postMessage({ liveHtml: 1, ask: 'alive', id: pingId }, '*'); } catch (e) { /* 틀이 아직 없다 */ }
+  }
   view.addEventListener('load', function () {
-    if (deckLoaded) { deckLoaded = false; return; }
+    var mine = ++pingId;
     clearTimeout(restoreTimer);
+    ping();
+    setTimeout(function () { if (mine === pingId && ponged !== mine) { ping(); } }, 500);      // 덱이 잠깐 바빴을 수 있다
     restoreTimer = setTimeout(function () {
-      if (deckLoaded) { deckLoaded = false; return; }
-      if (state.html && modern() && view.style.visibility !== 'hidden' && restores < 30) {
+      if (mine !== pingId || ponged === mine) { return; }
+      if (state.html && modern() && view.style.visibility !== 'hidden' && restores < 3) {
         restores++;
         view.srcdoc = inject(state.html, state.slide);
       }
-    }, 600);
+    }, 1500);
   });
   window.addEventListener('message', function (e) {
     var d = e.data;
     if (e.source !== view.contentWindow || !d || d.liveHtml !== 1 || typeof d.action !== 'string') { return; }
     if (d.action === 'ready') { reveal(); return; }
-    if (d.action === 'loaded') { deckLoaded = true; return; }
+    if (d.action === 'alive') { if (d.n === pingId) { ponged = pingId; } return; }
     if (d.action === 'open') { openLink(d.n); return; }
     go(d.action, d.n);
   });
