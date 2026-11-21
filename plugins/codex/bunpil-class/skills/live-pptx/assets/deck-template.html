@@ -458,6 +458,8 @@
     else if (L) { if (step > 0) { L.next(); } else { L.prev(); } }
   }
   window.addEventListener('resize', fit); fit(); show(cur);
+  // 창 크기가 늦게 정해지는 경우(숨긴 채 만들어진 화면 등)에 대비해 다 열린 뒤에도 몇 번 다시 맞춘다.
+  window.addEventListener('load', fit); setTimeout(fit, 300); setTimeout(fit, 1500);
   if (pv) { pv.onclick = function () { turn(-1); }; }
   if (nx) { nx.onclick = function () { turn(1); }; }
   if (rs) {

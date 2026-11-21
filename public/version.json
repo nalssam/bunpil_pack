@@ -19,23 +19,23 @@
     },
     "app/bunpil-builder.zip": {
       "bytes": 28011,
-      "sha256": "783fda8f5f7c83db3389a39ed1a723f5520a5e4cad29504cd4bf7c57687d6397"
+      "sha256": "aea06d19b4bce4fcb7df2bb273dead74ec4dd1f4c10105d461cb160959a355b9"
     },
     "app/bunpil-class.zip": {
-      "bytes": 148125,
-      "sha256": "d3b15a9d4e5c7b2dafa5e063127c36764683d4cb15ce3e204c211a914c9adbe6"
+      "bytes": 148219,
+      "sha256": "30215a85751108e34ecf2c7eb26d45528e56ba3cd37ea5801e3120b919e65e36"
     },
     "app/bunpil-connect.zip": {
       "bytes": 7407,
-      "sha256": "0ef2f23d3693d90f73f81400837938a6e0565c9eb873cb215bfaf12dad677500"
+      "sha256": "4dfefcc29212dda831b73a6a71ab9bd25627ed1ffb7fdb7d833664c65cbed9e2"
     },
     "app/bunpil-school.zip": {
       "bytes": 41307,
-      "sha256": "e38f86c614f1b7423666d799e3ff38c43ce87758ec6b949584820f8cde04d1d6"
+      "sha256": "862072a4545d8ba22fad2842f0d544e98d4a06d9449db849895bb0e3508f181c"
     },
     "app/bunpil-start.zip": {
       "bytes": 16091,
-      "sha256": "70d31fd29f0def092fa23acdd7f8767f2f02718eaba6d05771c2c5932a3319d0"
+      "sha256": "3f0e0d3195e0d254ab1b4d430e44949e7e8bebb8a9cdc4c0eb78efe166b56dba"
     },
     "app/skills/checkup.zip": {
       "bytes": 2780,
@@ -82,8 +82,8 @@
       "sha256": "8f653744f7c79b5f6e8bf70cc078c9e3e647bcf52ac46a65a1b03b21db0b2f46"
     },
     "app/skills/live-pptx.zip": {
-      "bytes": 61559,
-      "sha256": "ef3c6d1735a1de93a12c6ff6034b1f9bb43fdf22be52d0c3ecd7d99b63a0cd0c"
+      "bytes": 61653,
+      "sha256": "ca7553a783d539670b9279fe07f034cbea09ddc9178891fc546afc02984dec17"
     },
     "app/skills/nalssam-pptx.zip": {
       "bytes": 27584,
@@ -130,8 +130,8 @@
       "sha256": "6f55d6e0604680a2c860067cf59e0eece5e99d4d236a8bd4dd4760298797145d"
     },
     "bunpil-pack.zip": {
-      "bytes": 630435,
-      "sha256": "7308076fc998331c55a049e31be3582668b4dc035bfaa66e6bbafe27f1823246"
+      "bytes": 630623,
+      "sha256": "c9f58fed05a4f01d577d91890c69198ad285bb8dcb3d96dd4de89805f2695d84"
     },
     "claude.ps1": {
       "bytes": 64164,
@@ -162,8 +162,8 @@
       "sha256": "1c3dc6571562c8c6fa5b671ff20c59d35b72d5f23be31030f9164fbcde1c27b7"
     },
     "live-html/app.html": {
-      "bytes": 30529,
-      "sha256": "287be69e6ffed8838c5a10db803917134e3272ba9a937986e8e18efdd0c54196"
+      "bytes": 31625,
+      "sha256": "f7cef1772e428be5724ea751da6b4ee5debc3250d0a9d2f9080dfdfb3d6e9cf7"
     },
     "live-html/icon-32.png": {
       "bytes": 272,

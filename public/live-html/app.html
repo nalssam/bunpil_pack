@@ -165,6 +165,15 @@
       + 'H[f]=function(){try{return o.apply(H,arguments)}catch(e){}}})}'
       + 'document.addEventListener("DOMContentLoaded",function(){say("ready")});'
       + 'window.addEventListener("load",function(){say("loaded")});'
+      // 화면 크기 다시 알리기: PowerPoint 가 슬라이드의 웹 화면을 숨긴 채 만들거나 크기를 나중에 정하면, 덱이 처음 읽은 창 크기가
+      // 틀릴 수 있고 resize 알림도 오지 않을 때가 있다(실제 PowerPoint 에서 한 장이 아주 작게 그려진 일이 있었다).
+      // 다 열린 뒤 두 번, 다시 보일 때, 그리고 창 크기가 알림 없이 바뀐 것을 알아챘을 때 resize 를 한 번 더 알린다.
+      + 'function nudge(){try{var ev=document.createEvent("Event");ev.initEvent("resize",false,false);window.dispatchEvent(ev)}catch(x){}}'
+      + 'var vw=window.innerWidth,vh=window.innerHeight;'
+      + 'window.addEventListener("resize",function(){vw=window.innerWidth;vh=window.innerHeight},true);'
+      + 'setInterval(function(){if(window.innerWidth!==vw||window.innerHeight!==vh){nudge()}},400);'
+      + 'window.addEventListener("load",function(){setTimeout(nudge,60);setTimeout(nudge,700)});'
+      + 'document.addEventListener("visibilitychange",function(){if(!document.hidden){setTimeout(nudge,60)}});'
       // 링크: 누른 곳에서 위로 올라가며 <a>·<area> 를 찾는다(SVG 안의 <a>, 그림자 DOM 안의 <a> 도 찾도록 composedPath 와 localName 으로).
       + 'function anchor(e){var p=e.composedPath?e.composedPath():null,i,x;if(p){for(i=0;i<p.length;i++){x=p[i];'
       + 'if(x&&x.nodeType===1&&/^(a|area)$/i.test(x.localName||""))return x}return null}'
