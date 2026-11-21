@@ -1,7 +1,7 @@
 {
   "name": "nalssam's 분필팩",
-  "version": "0.7.1",
-  "date": "2026-11-01",
+  "version": "0.8.0",
+  "date": "2026-11-21",
   "site": "https://nalssam-bunpil.vercel.app",
   "repo": "nalssam/bunpil_pack",
   "plugins": [
@@ -11,123 +11,127 @@
     "bunpil-school",
     "bunpil-start"
   ],
-  "skills": 22,
+  "skills": 23,
   "files": {
     "VERSION": {
       "bytes": 6,
-      "sha256": "902311c7bb38fa1658ff403def6158ee7378fe9d6e2e284fa1c38735c31bd30b"
+      "sha256": "a66780da23103beaf12432b418508966b31a2a3a787f9468a5b6cdaa8667c1ef"
     },
     "app/bunpil-builder.zip": {
       "bytes": 28011,
-      "sha256": "a4031ee4d7a4b550dd73c4fa1d551b0c5887d2a898f07eff6c56a7607d78b03d"
+      "sha256": "cdab6fe145c11e3dbea2e86badd1d1c73d55527a366530cf8fa5d71892e6d423"
     },
     "app/bunpil-class.zip": {
-      "bytes": 86123,
-      "sha256": "188f79c8a575759a75262a9edf9015ebf7ba108f36fda504b33ed47406b37942"
+      "bytes": 148413,
+      "sha256": "3935e42597b907a1816747d0de70455df51fa631b08a7cb2216725e6a655212c"
     },
     "app/bunpil-connect.zip": {
-      "bytes": 7408,
-      "sha256": "1e88eb94a3871e916ae24812431cc7bfd03f8841ac60420017556ebebccc68ba"
+      "bytes": 7407,
+      "sha256": "3d10c3104a3055231476a8d25b862bb6f638fe86800cc719c4048605d1e62ca8"
     },
     "app/bunpil-school.zip": {
       "bytes": 41307,
-      "sha256": "225131ea70f380e479631fd7c009c113e5ee124c20b2cbbd81b7b205c2749801"
+      "sha256": "b19634013f2d5a70c3ac8d25ed38633c4af82e4b8002802557b8b141b87d4363"
     },
     "app/bunpil-start.zip": {
-      "bytes": 16087,
-      "sha256": "557d3a5f523ff64c9919c0e0c0737abe91d288df78bde9b0536b9a9882675b68"
+      "bytes": 16091,
+      "sha256": "ef88df195cc99f240ca15763cc2d968bdfeb823b6a45b8fe433c6fb3bcc24407"
     },
     "app/skills/checkup.zip": {
-      "bytes": 2775,
-      "sha256": "7e8d35f0b695ea87d29b9d026d1489774259f13da77c184badb6ef95a0d8c3be"
+      "bytes": 2780,
+      "sha256": "f2bd5c842e72f16154ec992539d41ddd4e2b6ea363c74dc0b67869daaf8d4121"
     },
     "app/skills/class-slides.zip": {
-      "bytes": 7279,
-      "sha256": "7be3cefb0cecddbd8f2b96b67eec302fcfa5746fa9f0ce39d2df348179432239"
+      "bytes": 7328,
+      "sha256": "adb4235b2ef54eac5dba8f71ec62629945c48b865d9cffe9778b61f729a82842"
     },
     "app/skills/class-video.zip": {
       "bytes": 4560,
-      "sha256": "dcac1c88cb1547939952b455d19e5522389f135f76defeebfee0d824326f1a33"
+      "sha256": "f82c2def778210fb1ee1bbb47a1898e8c9bdb43af9319c4bb5f0b9765ee9ca64"
     },
     "app/skills/coloring.zip": {
       "bytes": 7946,
-      "sha256": "54d6557f180ac6a9c9a57a30ef29700ad85274a9936cb438ac4297de7eae5ff1"
+      "sha256": "936115f028aaf5c3012eac417756ca4ed9a925217bfa2f9a446c0c19e1ca8440"
     },
     "app/skills/connect.zip": {
       "bytes": 6510,
-      "sha256": "60e463f9187db5c3526f6023c5463e6d217a923e22b875c8fe6265ba8717ef1b"
+      "sha256": "70ac0139c7ce06e9558613c6caed4724b2e1ac9c971885a244035b5559ab2263"
     },
     "app/skills/eval-run.zip": {
       "bytes": 3696,
-      "sha256": "ef92e15573fdbff273722d7917e3ed9c3c9ced9010a0f805db80ec892ff707e8"
+      "sha256": "2490f0770093457bd8808b8220755b0e9d8e26744a50874676e8aae5d6dfddcd"
     },
     "app/skills/gongmun.zip": {
       "bytes": 8829,
-      "sha256": "fac675c6a3d3b4d39fd766c4b71c5a52766d94e7cd43fc825f3d4992159552a6"
+      "sha256": "07942f856ad0c30673163d1f96c4ffdd4ac534d5d35504f1a0a3afff22e4af4a"
     },
     "app/skills/harness-fix.zip": {
       "bytes": 3526,
-      "sha256": "e4472fc294bf78f08c909a2ce095bed2f5ba9b498a480ab8d8ca8b83ad8971bb"
+      "sha256": "767a563597b6d7e8c46be80ab7426174ca3a6d42deaa394e3e990af1c92732c0"
     },
     "app/skills/harness-gallery.zip": {
       "bytes": 3927,
-      "sha256": "605f24baf1bc5e8819cc5e280661838d64161e530fdf21e94ebd4ca5e4aebaf3"
+      "sha256": "63f586adc7eb802a573b6b9292d085032745c557e48df7890b6bcf8208f4c769"
     },
     "app/skills/hwpx-doc.zip": {
       "bytes": 4936,
-      "sha256": "660b945e0139c7f6c34c63ee2e8712a99cbbd4c0eed0a20ff794396dedb4332b"
+      "sha256": "b0fc6586e37dc6dca3eaf8a7f7215a6ff8cd065935f9892e7076788fbc2047a4"
     },
     "app/skills/lesson-plan.zip": {
       "bytes": 7024,
-      "sha256": "1a6047597df3bd988bdff619e8cf289a5773d1754e257827e805dd74e7d070c8"
+      "sha256": "8f653744f7c79b5f6e8bf70cc078c9e3e647bcf52ac46a65a1b03b21db0b2f46"
+    },
+    "app/skills/live-pptx.zip": {
+      "bytes": 61847,
+      "sha256": "978ca11cb2c560f3415dcff7854be1533c86be69580c3782893ac3047b846fd0"
     },
     "app/skills/nalssam-pptx.zip": {
-      "bytes": 27553,
-      "sha256": "95a81b08b7a74c870b8709318bf1d199f8c3d1e60c8952d3fc1fea2ba1742132"
+      "bytes": 27584,
+      "sha256": "15fbfeb1796f94fd7c7920f4a4e506c3a6dba2a868d6d137776dd748d253540c"
     },
     "app/skills/newsletter.zip": {
       "bytes": 6346,
-      "sha256": "9eb3d393789227436df09aa68e116dc6654357656f4da39c2d69edc6094dba6f"
+      "sha256": "ba2d9e639a2cd295c995924fa978245dd8d818107922d1dea803d385c9ca552b"
     },
     "app/skills/papercraft.zip": {
       "bytes": 14079,
-      "sha256": "fd3b1ba33edbfeb859c17a96c011e0d28d30cae854f6ec725736c5c6b1ec45f2"
+      "sha256": "74d03b0e56043de636972ab1239dd11e30d1de3d3cb48e8a590590c7b5c4f43c"
     },
     "app/skills/parent-survey.zip": {
       "bytes": 5048,
-      "sha256": "ca9422390d42e0311e5233eb2df55b1570ab0ea41c1f94a1f9fd9c883382f00a"
+      "sha256": "4301bc957cbff4fe4d806b393f969f0a6b31042d5aab836a858cb537852bb291"
     },
     "app/skills/privacy-guard.zip": {
       "bytes": 3778,
-      "sha256": "5581b299a941274b2440c4127362711c5819b71aa1cabb87fe53c675e40cd41b"
+      "sha256": "920f9335bd5b739959ae94c5e7f5561de560543d4915ef7b91ad2badadb22241"
     },
     "app/skills/pumui.zip": {
       "bytes": 6778,
-      "sha256": "bdfc6b6d2fe1c0a821b4ca38e210af54c1f3428fd80927694029333de9480200"
+      "sha256": "52a1416ac4df366f39e09e240bc43d18a0bea4a95f0b96585440089ed98c1e51"
     },
     "app/skills/rubric.zip": {
       "bytes": 7692,
-      "sha256": "e991a747ba91b52b83cb1f12b177d457b046aa31dee0816cb1cd49667017af67"
+      "sha256": "c30a52beddd6e51e9cfe4b86c5b1717c0b82e69541b033d5ba173e8a5ef72c2a"
     },
     "app/skills/setup.zip": {
       "bytes": 4091,
-      "sha256": "8ff5cada8b8165459f57b0e518195858f90a3d88d7924c8f255509109fdaf513"
+      "sha256": "e8e6dc48f3d20521e54597bd4ba7f0f097530fdceb133074da1799853c38fc79"
     },
     "app/skills/share-skill.zip": {
       "bytes": 4686,
-      "sha256": "a73602d25ecea95b5cc52c0da0f0d39e428de0a855173f5b1912e0b95d214e49"
+      "sha256": "3e57a016dc4764eb2311e17cde0dcbbc00b0a105e58b01b710162d00e5568f0b"
     },
     "app/skills/skill-maker.zip": {
       "bytes": 7682,
-      "sha256": "e3a00762a95fdb5b739d67d240e542d9e62cb1fba58815c41df261032bcd1f81"
+      "sha256": "b01ad59e12cd43a675f33b1b792a1a303f5e9958750626b92906a8e012e6d1a1"
     },
     "app/skills/worksheet.zip": {
       "bytes": 8066,
-      "sha256": "97299bce750a27933ee0a1cbdb89eac1315e83d621bb744645663935020a4ba7"
+      "sha256": "6f55d6e0604680a2c860067cf59e0eece5e99d4d236a8bd4dd4760298797145d"
     },
     "bunpil-pack.zip": {
-      "bytes": 505489,
-      "sha256": "ab47259ac2f3b6a88a6f0c7f518a189ee56fc784e920d99e97a5b5a66768dabb"
+      "bytes": 631011,
+      "sha256": "010eceba1e3c9cceb13edcdbaffce71bd40e3a26e18ca911668a7aa196275278"
     },
     "claude.ps1": {
       "bytes": 64164,
@@ -156,6 +160,42 @@
     "install.sh": {
       "bytes": 57869,
       "sha256": "1c3dc6571562c8c6fa5b671ff20c59d35b72d5f23be31030f9164fbcde1c27b7"
+    },
+    "live-html/app.html": {
+      "bytes": 32957,
+      "sha256": "00f25b8a417f87634b14cc28ea42eaf3f20aa4650e159bdb71073f98469e884d"
+    },
+    "live-html/icon-32.png": {
+      "bytes": 272,
+      "sha256": "2b449b5bd0251c3d00d7f26e61fd5bd53c7d5f28a4f1aa19f92423fae1f71b23"
+    },
+    "live-html/icon-64.png": {
+      "bytes": 506,
+      "sha256": "9b1c2f5edfd8b671cbc8ceb3838c06a8e74e3f85b31b90a6e188a1e4a193b549"
+    },
+    "live-html/icon-80.png": {
+      "bytes": 630,
+      "sha256": "622fff4d69891436551fdd61d1a2652a5c254c7914367b0dcf58f6e20dd86b2e"
+    },
+    "live-html/index.html": {
+      "bytes": 15973,
+      "sha256": "70835e0220f913b1049ea652f9f2144fee4ca7373cf3830ffb5bbebfa8283687"
+    },
+    "live-html/manifest.xml": {
+      "bytes": 1097,
+      "sha256": "87d22c12f4081fc2f07d9ffcb8a67a83c152782f3b3ec37964cd86a8287658ce"
+    },
+    "live-html/register.ps1": {
+      "bytes": 2068,
+      "sha256": "856322c0da9dffafb9dfda9fe8a7ce33f294967ab34bc11ae0a7c99758d19f1a"
+    },
+    "live-html/register.sh": {
+      "bytes": 3250,
+      "sha256": "df2894620f7363f47dbb4a074ec937c1978d7b66a1ff658efaa33717bc1fd9f6"
+    },
+    "live-html/unregister.ps1": {
+      "bytes": 548,
+      "sha256": "2361bcd8b16a2f1d896d11476d55045b87253d9022c5b19e83971d6892ff2010"
     },
     "og.jpg": {
       "bytes": 150155,

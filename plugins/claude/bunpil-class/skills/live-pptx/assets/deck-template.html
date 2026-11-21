@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>크기가 같은 분수 · 5학년 수학</title>
+<!--
+  살아있는 PPT 시작 틀 (분필팩 live-pptx) — 본보기 수업: 5학년 수학 "크기가 같은 분수"
+  - 슬라이드 하나 = class 가 slide 인 section 하나. 적힌 순서대로 PowerPoint 슬라이드가 된다.
+  - 화면은 1920×1080 기준으로 그린다. 창 크기에 맞춰 통째로 줄어들고 커진다.
+  - 화면의 글자는 PowerPoint 에서 고칠 수 없다. 이름·날짜처럼 나중에 손으로 채울 자리를 남기지 않는다.
+    고칠 때는 이 파일을 고쳐서 다시 변환한다.
+  - 발표자 노트(교사 발문, 정답)는 section 의 data-notes="..." 에 쓴다. PowerPoint 메모란으로 들어간다.
+    정답은 누르기 전 첫 화면에 보이지 않게 하고, 정답표는 노트에 적는다.
+  - 글꼴·그림·스크립트를 바깥 주소에서 불러오지 않는다(학교망에서 막히거나 느릴 수 있다).
+    그래도 PowerPoint 안에서 화면이 뜨려면 인터넷이 있어야 한다.
+  - 슬라이드끼리는 값을 주고받지 못한다(장마다 따로 실행된다). 한 활동은 한 장에서 끝낸다.
+  - 한 장에 학생 활동은 하나만 둔다. 타이머·번호 뽑기 같은 교사 도구는 그 활동 옆에 함께 둘 수 있다(5번째 장).
+  - PowerPoint 는 파일을 열어 둔 동안 장마다 눌러 둔 상태를 그대로 둔다.
+    오른쪽 아래 ↺ 단추가 지금 보는 장을 처음 상태로 되돌린다.
+    브라우저에서 그냥 열었을 때는 ↺ 를 누르면 모든 장이 처음 상태가 된다(돌아가던 타이머도 멈춘다).
+  - 글자는 30px 이상, 단추는 크게, 정답·오답은 색과 함께 기호나 글자로도 알린다.
+    한글이 낱말 중간에서 끊기지 않게 body 의 word-break:keep-all 을 지우지 않는다.
+  - 분수는 <span class="fr">1/2</span> 처럼 쓰면 세로 분수로 보인다. 작은 글줄에 넣어도 30px 아래로는 줄지 않는다.
+  - 부품(카드·슬라이더·퀴즈·타이머·번호 뽑기·체크)을 뺄 때는 그 HTML 과 아래 "부품별 동작"의 같은 덩어리를 함께 지운다.
+  - 맨 아래 "공통 스크립트"와 #stage · #nav 는 한 묶음이다. 지우지 않는다.
+-->
+<style>
+  :root{
+    --bg:#FBFAF6; --ink:#132C3D; --teal:#18766B; --gray:#586875; --coral:#D9734E;
+    --line:#E4DFD3; --card:#FFFFFF; --soft:#E3F0EC; --paper:#F3F0E8; --warm:#FBE9E2;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);overflow:hidden;line-height:1.4;
+    word-break:keep-all;overflow-wrap:break-word;   /* 한글이 낱말 중간에서 끊기지 않게. 지우지 않는다 */
+    font-family:"Pretendard","Pretendard Variable","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+  #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0;background:var(--bg)}
+  .slide{position:absolute;inset:0;padding:76px 110px 120px;display:none;flex-direction:column}
+  .slide.on{display:flex}
+  .kicker{font-size:30px;font-weight:700;color:var(--teal);letter-spacing:.02em}
+  h1{font-size:118px;line-height:1.14;font-weight:800;letter-spacing:-.03em;text-wrap:balance}
+  h2{font-size:66px;line-height:1.2;font-weight:800;letter-spacing:-.025em;margin-top:18px;text-wrap:balance}
+  h1 em,h2 em{font-style:normal;color:var(--teal)}
+  .sub{font-size:36px;line-height:1.5;color:var(--gray);margin-top:22px}
+  .body{flex:1;min-height:0;display:flex;gap:40px;margin-top:40px}
+  .body.col{flex-direction:column;gap:22px}
+  .card{background:var(--card);border:2px solid var(--line);border-radius:26px;padding:38px}
+  .band{background:var(--soft);border-radius:18px;padding:22px 32px;font-size:34px;font-weight:700;color:var(--teal);margin:26px 0 22px}
+  /* 아래 띠: 왼쪽은 안내 글(.foot), 오른쪽은 넘김 단추(#nav) 자리 */
+  .foot{position:absolute;left:110px;right:420px;bottom:0;height:120px;display:flex;align-items:center;font-size:30px;line-height:1.3;color:var(--gray)}
+  button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+  .btn{background:var(--ink);color:#fff;font-size:32px;font-weight:700;padding:22px 40px;border-radius:999px;white-space:nowrap}
+  .btn.teal{background:var(--teal)} .btn.line{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 3px var(--ink)}
+  .btn:active{transform:scale(.97)}
+  button:focus-visible,input:focus-visible{outline:5px solid var(--coral);outline-offset:4px}
+
+  /* 세로 분수: <span class="fr">1/2</span> 또는 스크립트의 fr(1, 2). 글자로는 "1/2" 그대로 남는다.
+     크기는 둘레 글자의 0.8배이고, 30px 아래로는 줄지 않는다 */
+  .fr{display:inline-flex;flex-direction:column;align-items:stretch;text-align:center;vertical-align:middle;position:relative;
+      font-size:.8em;font-size:max(.8em,30px);line-height:1.12;margin:0 .1em;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .fr>span{padding:0 .16em}
+  .fr>span:first-child{border-bottom:.09em solid currentColor;padding-bottom:.04em}
+  .fr>span:last-child{padding-top:.04em}
+  .fr>.sl{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%)}
+  .nb{white-space:nowrap}
+
+  /* 1 표지 */
+  #cover{justify-content:space-between;padding-bottom:150px}
+  .flow{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:16px;counter-reset:flow;font-size:30px;font-weight:700}
+  .flow li{counter-increment:flow;display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);
+           border-radius:999px;padding:12px 30px 12px 12px}
+  .flow li::before{content:counter(flow);flex:none;width:50px;height:50px;border-radius:50%;background:var(--teal);color:#fff;
+                   display:grid;place-items:center}
+
+  /* 2 뒤집는 카드 */
+  .flips{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+  .flip{position:relative;border-radius:26px;border:2px solid var(--line);background:var(--card);padding:36px 36px 96px;
+        display:flex;flex-direction:column;justify-content:center;text-align:center;transition:background .25s,border-color .25s}
+  .flip .q{font-size:44px;font-weight:800;line-height:1.35;text-wrap:balance}
+  .flip .a{font-size:44px;line-height:1.45;color:var(--ink);display:none;text-wrap:balance}
+  .flip .tip{position:absolute;left:0;right:0;bottom:30px;font-size:30px;font-weight:700;color:var(--teal)}
+  .flip.open{background:var(--soft);border-color:var(--teal);padding-bottom:36px}
+  .flip.open .q{font-size:38px;color:var(--teal);margin-bottom:26px}
+  .flip.open .a{display:block} .flip.open .tip{display:none}
+
+  /* 3 조작 활동: 분수 막대 */
+  .ctrl{width:600px;display:flex;flex-direction:column;justify-content:center;gap:56px}
+  .ctrl label{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;font-size:44px;font-weight:800;line-height:1.2}
+  .ctrl label small{display:block;font-size:30px;font-weight:400;color:var(--gray);margin-top:6px}
+  .ctrl label b{font-size:76px;line-height:1;color:var(--teal);font-variant-numeric:tabular-nums}
+  /* 슬라이더: 손가락으로도 잡히게 높이 64px, 손잡이 56px */
+  input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:64px;margin:10px 0 0;background:transparent;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:20px;border-radius:10px;background:#C5CED0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:56px;height:56px;margin-top:-18px;border-radius:50%;
+    background:var(--teal);border:5px solid #fff;box-shadow:0 2px 10px rgba(19,44,61,.4)}
+  input[type=range]::-moz-range-track{height:20px;border-radius:10px;background:#C5CED0}
+  input[type=range]::-moz-range-thumb{width:46px;height:46px;border-radius:50%;background:var(--teal);border:5px solid #fff;box-shadow:0 2px 10px rgba(19,44,61,.4)}
+  #bar{flex:1;display:flex;flex-direction:column;justify-content:center;gap:36px}
+  .pair{display:flex;align-items:center;gap:30px}
+  .lab{flex:none;width:170px;text-align:center;font-size:30px;font-weight:700;color:var(--gray)}
+  .lab .fr,#frac{font-size:76px;font-weight:800;line-height:1;color:var(--ink)}
+  .lab .fr{display:flex;width:-moz-fit-content;width:fit-content;margin:8px auto 0}
+  #frac,#frac .fr{color:var(--teal)}
+  .strip{flex:1;display:flex;height:124px;border:3px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--card)}
+  .strip i{flex:1;border-right:3px solid var(--ink);transition:background .2s}
+  .strip i:last-child{border-right:0} .strip i.fill{background:var(--teal)}
+  #barText{min-height:96px;display:flex;align-items:center;justify-content:center;gap:.3em;border-radius:18px;padding:8px 24px;
+           font-size:38px;font-weight:700;color:var(--gray);background:var(--paper)}
+  #bar.same #barText{background:var(--soft);color:var(--teal)}
+
+  /* 4 퀴즈 */
+  .opts{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:24px}
+  .opt{background:var(--card);border:2px solid var(--line);border-radius:26px;padding:20px 36px;font-size:56px;font-weight:700;
+       text-align:left;display:flex;align-items:center;gap:30px;transition:border-color .2s,background .2s}
+  .opt .k{flex:none;width:76px;height:76px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-size:40px;font-weight:800}
+  .opt .fr{font-size:1em}
+  .opt.ok{background:var(--soft);border-color:var(--teal)} .opt.ok .k{background:var(--teal);color:#fff}
+  .opt.no{background:var(--warm);border-color:var(--coral);animation:shake .35s} .opt.no .k{background:var(--coral);color:#fff}
+  .opts.done .opt{cursor:default}
+  /* 정답·오답은 색과 함께 ○ ✕ 표시로도 알린다 */
+  .opt .mk{flex:none;margin-left:auto;width:64px;height:64px;position:relative;display:none}
+  .opt.ok .mk,.opt.no .mk{display:block}
+  .opt.ok .mk{border:10px solid var(--teal);border-radius:50%}
+  .opt.no .mk::before,.opt.no .mk::after{content:"";position:absolute;left:50%;top:50%;width:72px;height:10px;margin:-5px 0 0 -36px;
+    border-radius:5px;background:var(--coral);transform:rotate(45deg)}
+  .opt.no .mk::after{transform:rotate(-45deg)}
+  @keyframes shake{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+  /* "다음 문제" 단추는 왼쪽에 둔다. 오른쪽 아래 넘김 단추(→)와 헷갈려 잘못 누르지 않게 */
+  .ans{display:flex;align-items:center;gap:36px;min-height:96px}
+  #fb{flex:1;min-width:0;font-size:38px;font-weight:700;line-height:1.3}
+  #fb.ok{color:var(--teal)}
+  #nextq{flex:none;min-width:280px}
+
+  /* 5 타이머와 번호 뽑기 */
+  .tool{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center}
+  .tool h3{font-size:34px;font-weight:700;color:var(--gray)}
+  #clock{font-size:200px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+  #clock.end{color:var(--coral)}
+  #pick{font-size:150px;font-weight:800;line-height:1.2;min-height:200px;color:var(--teal);font-variant-numeric:tabular-nums}
+  .row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center}
+  .row>.btn{min-width:150px}
+  .step{display:flex;align-items:center;gap:14px;font-size:32px;font-weight:700;margin-left:16px}
+  .step>span{min-width:176px}
+  .step .btn{width:76px;height:76px;padding:0;font-size:44px;line-height:1}
+
+  /* 6 정리 */
+  .checks{flex:1;display:flex;flex-direction:column;gap:22px;justify-content:center}
+  .check{display:flex;align-items:center;gap:28px;font-size:42px;font-weight:700;line-height:1.3;text-align:left;padding:26px 34px;
+         border:2px solid var(--line);border-radius:22px;background:var(--card)}
+  .check .k{flex:none;width:62px;height:62px;border-radius:14px;border:3px solid var(--ink);display:grid;place-items:center}
+  .check.on{background:var(--soft);border-color:var(--teal)} .check.on .k{background:var(--teal);border-color:var(--teal)}
+  .check.on .k::after{content:"";width:16px;height:30px;margin-top:-6px;border:solid #fff;border-width:0 7px 7px 0;transform:rotate(45deg)}
+
+  /* 넘김 단추와 "처음 상태로" 단추. PowerPoint 안에서도 보인다 */
+  #nav{position:absolute;right:110px;bottom:24px;display:flex;align-items:center;gap:14px;z-index:9}
+  #nav button{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:#fff}
+  #nav svg{pointer-events:none}
+  #nav #rs{width:60px;height:60px;margin-right:24px;background:var(--card);color:var(--gray);box-shadow:inset 0 0 0 3px var(--gray)}
+  #nav button:active{transform:scale(.94)}
+  #nav button:disabled{opacity:.3;cursor:default}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media print{body{overflow:visible}#stage{position:static;transform:none!important;width:auto;height:auto}
+    .slide{position:relative;display:flex;height:1080px;page-break-after:always}#nav{display:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <section class="slide" id="cover" data-notes="인사하고 오늘 배울 내용을 한 문장으로 말한다. &quot;분모와 분자가 달라도 크기가 같은 분수가 있다.&quot; 아래 순서를 짚으며 오늘 할 일을 알려 준다. 넘길 때는 오른쪽 아래 → 단추나 키보드의 → 키를 쓴다.">
+    <div class="kicker">5학년 수학 · 약분과 통분</div>
+    <div>
+      <h1><em>크기가 같은 분수</em>를<br>찾아봐요</h1>
+      <p class="sub">분모와 분자가 달라도 크기가 같은 분수가 있습니다. 화면을 직접 눌러 보면서 알아봅니다.</p>
+    </div>
+    <ol class="flow" aria-label="오늘의 순서">
+      <li>생각 열기</li><li>막대로 탐구</li><li>확인 문제</li><li>모둠 활동</li><li>정리</li>
+    </ol>
+    <div class="foot">넘길 때는 오른쪽 아래 → 단추나 키보드의 → 키를 누릅니다.</div>
+  </section>
+
+  <section class="slide" id="think" data-notes="카드를 누르기 전에 학생들이 먼저 말해 보게 한 뒤 하나씩 눌러 답을 연다. 답: ① 전체를 똑같이 4로 나눈 것 중의 1 ② 넓이가 같다(1/2 = 2/4) ③ 있다(3/6). ③은 다음 장에서 막대로 확인한다.">
+    <div class="kicker">생각 열기</div>
+    <h2>먼저 생각해 보고, <em>눌러서</em> 확인해요</h2>
+    <div class="body">
+      <div class="flips">
+        <button class="flip"><span class="q"><span class="fr">1/4</span>은 전체를 똑같이 몇으로 나눈 것 중의 몇일까요?</span><span class="a">전체를 똑같이 <b>4</b>로 나눈 것 중의 <b>1</b>입니다.</span><span class="tip">눌러서 확인</span></button>
+        <button class="flip"><span class="q">색종이 한 장의 <span class="fr">1/2</span>과 <span class="fr">2/4</span> 중 어느 쪽이 더 넓을까요?</span><span class="a">넓이가 <b>같습니다.</b><br><span class="fr">1/2</span> = <span class="fr">2/4</span></span><span class="tip">눌러서 확인</span></button>
+        <button class="flip"><span class="q">분모가 6인 분수 중에 <span class="fr">1/2</span>과 크기가 같은 분수가 있을까요?</span><span class="a"><b>있습니다.</b><br>다음 장에서 막대로 찾아봐요.</span><span class="tip">눌러서 확인</span></button>
+      </div>
+    </div>
+    <div class="foot">카드를 누르면 답이 열리고, 다시 누르면 닫힙니다.</div>
+  </section>
+
+  <section class="slide" id="explore" data-notes="분모와 분자를 바꿔 가며 아래 막대의 색칠한 길이가 위 막대(1/2)와 같아지는 때를 찾게 한다. 찾을 수 있는 분수: 2/4, 3/6, 4/8, 5/10, 6/12. &quot;분모와 분자가 각각 몇 배가 되었나요?&quot; 하고 물어, 분모와 분자에 같은 수를 곱했다는 점을 학생이 말하게 한다. 분모가 3, 5, 7처럼 홀수일 때는 왜 만들 수 없는지도 물어본다.">
+    <div class="kicker">막대로 탐구</div>
+    <h2><span class="fr">1/2</span>과 <em>크기가 같은 분수</em>를 막대로 찾아요</h2>
+    <div class="body">
+      <div class="ctrl">
+        <div><label for="den"><span>분모<small>전체를 몇 칸으로 나눌까요?</small></span><b id="denV">4</b></label><input type="range" id="den" min="2" max="12" value="4"></div>
+        <div><label for="num"><span>분자<small>몇 칸을 색칠할까요?</small></span><b id="numV">1</b></label><input type="range" id="num" min="0" max="4" value="1"></div>
+      </div>
+      <div class="card" id="bar">
+        <div class="pair"><div class="lab">기준<span class="fr">1/2</span></div><div class="strip"><i class="fill"></i><i></i></div></div>
+        <div class="pair"><div class="lab">만든 분수<div id="frac">1/4</div></div><div class="strip" id="strip"></div></div>
+        <div id="barText" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="foot">동그란 손잡이를 끌거나 줄을 눌러서 수를 바꿉니다.</div>
+  </section>
+
+  <section class="slide" id="quiz" data-notes="한 문제씩 푼다. 보기를 누르기 전에 손을 들어 고르게 하고, 왜 그런지 말하게 한다. 틀린 보기를 눌러도 다시 고를 수 있다. 정답을 누르면 보기 아래에 해설이 나온다. 정답: 1번 B(2/4) · 2번 C(6/10) · 3번 A(9)">
+    <div class="kicker">확인 문제 <span id="qn"></span></div>
+    <h2 id="q">확인 문제</h2>
+    <div class="body col">
+      <div class="opts" id="opts"></div>
+      <div class="ans"><button class="btn teal" id="nextq">다음 문제</button><div id="fb" role="status" aria-live="polite"></div></div>
+    </div>
+    <div class="foot">보기를 눌러 답을 고릅니다. 틀리면 다시 고를 수 있습니다.</div>
+  </section>
+
+  <section class="slide" id="tools" data-notes="모둠별로 2/3와 크기가 같은 분수를 3개 찾아 종이에 막대 그림으로 나타낸다. 예: 4/6, 6/9, 8/12(분모와 분자에 2, 3, 4를 곱한다). 타이머로 시간을 재고, 끝나면 번호를 뽑아 발표할 사람을 정한다. 인원은 − + 단추로 맞춘다. 번호만 뽑고 학생 이름은 넣지 않는다.">
+    <div class="kicker">모둠 활동</div>
+    <h2><span class="fr">2/3</span>와 크기가 같은 분수를 <em>3개</em> 찾아 그려 봐요</h2>
+    <!-- 활동은 하나(위 제목)다. 아래 두 칸은 그 활동에 쓰는 교사 도구(타이머, 번호 뽑기)다. 안 쓰는 도구는 칸과 스크립트 덩어리를 함께 지운다. -->
+    <div class="body">
+      <div class="card tool">
+        <h3 id="tmsg">활동 시간</h3>
+        <div id="clock">03:00</div>
+        <div class="row">
+          <button class="btn teal" id="tgo">시작</button>
+          <button class="btn line" data-t="60">1분</button><button class="btn line" data-t="180">3분</button><button class="btn line" data-t="300">5분</button>
+        </div>
+      </div>
+      <div class="card tool">
+        <h3>발표할 번호</h3>
+        <div id="pick">?</div>
+        <div class="row">
+          <button class="btn teal" id="roll">뽑기</button>
+          <div class="step"><button class="btn line" id="less" aria-label="인원 한 명 줄이기">−</button><span>인원 <b id="nmax">25</b>명</span><button class="btn line" id="more" aria-label="인원 한 명 늘리기">+</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">시간을 고르고 시작을 누릅니다. 뽑기를 누르면 발표할 번호가 나옵니다.</div>
+  </section>
+
+  <section class="slide" id="wrap" data-notes="학생들과 함께 한 줄씩 읽고 눌러 가며 확인한다. 세 번째는 한 명이 막대 그림으로 설명해 보게 한다. 다음 시간에는 분모와 분자를 같은 수로 나누어 분수를 간단하게 나타내는 약분을 배운다고 알려 준다.">
+    <div class="kicker">정리</div>
+    <h2>오늘 배운 것을 <em>함께</em> 확인해요</h2>
+    <div class="body">
+      <div class="checks">
+        <button class="check"><span class="k"></span><span>분모와 분자가 달라도 크기가 같은 분수가 있습니다</span></button>
+        <button class="check"><span class="k"></span><span>분모와 분자에 0이 아닌 같은 수를 곱하면 크기가 같은 분수가 됩니다</span></button>
+        <button class="check"><span class="k"></span><span>크기가 같은 분수를 막대 그림으로 설명할 수 있습니다</span></button>
+      </div>
+    </div>
+    <div class="band" id="done" role="status" aria-live="polite">모두 확인하면 오늘 수업 끝!</div>
+    <div class="foot">다음 시간: 약분 — 분수를 간단하게 나타내기</div>
+  </section>
+
+  <div id="nav">
+    <button type="button" id="rs" aria-label="처음 상태로" title="처음 상태로 되돌리기"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+    <button type="button" id="pv" aria-label="이전 슬라이드" title="이전 슬라이드"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>
+    <button type="button" id="nx" aria-label="다음 슬라이드" title="다음 슬라이드"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></button>
+  </div>
+</div>
+
+<script>
+/* ───────── 부품별 동작 (내용에 맞게 고친다) ─────────
+   부품마다 part('선택자', …) 한 덩어리다. 그 선택자가 화면(HTML)에 없으면 덩어리를 건너뛰므로,
+   부품을 뺄 때는 HTML 과 여기의 덩어리를 함께 지우면 된다. 한 덩어리가 고장 나도 다른 덩어리는 돌아간다. */
+(function () {
+  function $(s) { return document.querySelector(s); }
+  function all(s) { return [].slice.call(document.querySelectorAll(s)); }
+  function tap(sel, fn) { var el = $(sel); if (el) { el.onclick = fn; } }   // 그 단추가 있을 때만 누름 동작을 건다
+  function part(sel, fn) {
+    if (!$(sel)) { return; }
+    try { fn(); } catch (e) {                    // 오류는 숨기지 않는다. 어느 부품인지 붙여서 다시 알린다(변환기가 고장 난 줄 번호와 함께 보여 준다)
+      try { e.message = '부품 ' + sel + ' - ' + e.message; } catch (x) { /* 그대로 둔다 */ }
+      if (window.reportError) { window.reportError(e); } else { setTimeout(function () { throw e; }, 0); }
+    }
+  }
+
+  // 세로 분수. fr(1, 2) 는 화면에 세로로 보이고, 글자로는 "1/2" 로 남는다.
+  function fr(n, d) {
+    return '<span class="fr" role="img" aria-label="' + d + '분의 ' + n + '"><span>' + n + '</span><span class="sl">/</span><span>' + d + '</span></span>';
+  }
+  function glue(root) {                         // 분수 바로 뒤에 붙은 글자(조사·문장 부호)가 다음 줄로 떨어지지 않게 묶는다
+    [].slice.call(root.querySelectorAll('.fr')).forEach(function (el) {
+      var t = el.nextSibling, m = t && t.nodeType === 3 && /^\S+/.exec(t.nodeValue), box;
+      if (!m || el.parentNode.className === 'nb') { return; }
+      box = document.createElement('span'); box.className = 'nb';
+      el.parentNode.insertBefore(box, el);
+      box.appendChild(el); box.appendChild(document.createTextNode(m[0]));
+      t.nodeValue = t.nodeValue.slice(m[0].length);
+    });
+  }
+  function put(el, html) { el.innerHTML = html; glue(el); }   // 분수가 든 글을 넣을 때 쓴다
+  all('.fr').forEach(function (el) {            // HTML 에 <span class="fr">1/2</span> 로 적은 것을 세로 분수로 바꾼다
+    var m = /^\s*([^\/\s]+)\s*\/\s*([^\/\s]+)\s*$/.exec(el.textContent);
+    if (m && !el.children.length) { el.outerHTML = fr(m[1], m[2]); }
+  });
+  glue(document);
+
+  // 2 뒤집는 카드
+  part('.flip', function () {
+    all('.flip').forEach(function (c) {
+      c.setAttribute('aria-expanded', 'false');
+      c.onclick = function () { c.setAttribute('aria-expanded', c.classList.toggle('open') ? 'true' : 'false'); };
+    });
+  });
+
+  // 3 분수 막대: 분모·분자를 바꾸면 아래 막대가 달라지고, 기준(1/2)과 색칠한 크기가 같은지 알려 준다
+  part('#den', function () {
+    var den = $('#den'), num = $('#num');
+    function bar() {
+      var d = +den.value, n = Math.min(+num.value, d), i, cell, same = n * 2 === d && d > 2;
+      num.max = d; num.value = n;
+      $('#denV').textContent = d; $('#numV').textContent = n; $('#frac').innerHTML = fr(n, d);
+      var s = $('#strip'); s.innerHTML = '';
+      for (i = 0; i < d; i++) { cell = document.createElement('i'); if (i < n) { cell.className = 'fill'; } s.appendChild(cell); }
+      $('#bar').classList.toggle('same', same);
+      put($('#barText'), n === 0 ? '아직 한 칸도 색칠하지 않았어요.'
+        : same ? '색칠한 부분의 크기가 같아요. ' + fr(1, 2) + ' = ' + fr(n, d)
+        : n * 2 === d ? '기준과 똑같은 분수예요. 분모를 바꿔 보세요.' : '색칠한 부분의 크기가 달라요.');
+    }
+    den.oninput = num.oninput = bar; bar();
+  });
+
+  // 4 퀴즈: 문제를 QS 에 적는다. a 는 정답 보기의 순서(0부터). q·o·why 는 HTML 로 들어간다(분수는 fr(분자, 분모), 부등호 < 는 &lt;).
+  //   정답을 바꾸면 이 장 data-notes 의 정답표도 함께 고친다.
+  part('#opts', function () {
+    var QS = [
+      { q: fr(1, 2) + '과 크기가 같은 분수는 어느 것일까요?', o: [fr(2, 3), fr(2, 4), fr(1, 4), fr(3, 5)], a: 1,
+        why: '분모와 분자에 똑같이 2를 곱하면 ' + fr(2, 4) + '입니다.' },
+      { q: fr(3, 5) + '과 크기가 같은 분수는 어느 것일까요?', o: [fr(5, 7), fr(3, 10), fr(6, 10), fr(6, 8)], a: 2,
+        why: '분모와 분자에 똑같이 2를 곱하면 ' + fr(6, 10) + '입니다.' },
+      { q: fr(3, 4) + ' = ' + fr('□', 12) + '에서 □ 안에 알맞은 수는 무엇일까요?', o: ['9', '6', '8', '10'], a: 0,
+        why: '분모에 3을 곱해 12가 되었으니, 분자에도 3을 곱해 9입니다.' }
+    ], qi = 0, solved = false;
+    QS.forEach(function (Q, i) {
+      if (!(Q.a >= 0 && Q.a < Q.o.length)) { throw new Error('퀴즈 ' + (i + 1) + '번: 정답 순서(a)가 보기 범위를 벗어났다'); }
+    });
+    function quiz() {
+      var Q = QS[qi], box = $('#opts'), fb = $('#fb');
+      solved = false;
+      if ($('#qn')) { $('#qn').textContent = '· ' + QS.length + '문제 중 ' + (qi + 1) + '번'; }
+      if ($('#nextq')) { $('#nextq').textContent = qi === QS.length - 1 ? '처음 문제로' : '다음 문제'; }
+      put($('#q'), Q.q);
+      fb.className = ''; fb.textContent = '';
+      box.className = 'opts'; box.innerHTML = '';
+      Q.o.forEach(function (t, i) {
+        var b = document.createElement('button'); b.className = 'opt';
+        put(b, '<span class="k">' + 'ABCD'.charAt(i) + '</span><span>' + t + '</span><span class="mk"></span>');
+        b.onclick = function () {
+          if (solved) { return; }                 // 정답을 맞힌 뒤에는 다른 보기를 눌러도 바뀌지 않는다
+          if (i === Q.a) {
+            solved = true; b.classList.add('ok'); box.classList.add('done');
+            fb.className = 'ok'; put(fb, '정답! ' + Q.why);
+          } else {
+            b.classList.remove('no'); void b.offsetWidth; b.classList.add('no');
+            fb.className = 'no'; fb.textContent = '다시 생각해 볼까요?';
+          }
+        };
+        box.appendChild(b);
+      });
+    }
+    tap('#nextq', function () { qi = (qi + 1) % QS.length; quiz(); });
+    quiz();
+  });
+
+  // 5-1 타이머: data-t 는 초. 남은 시간은 끝나는 시각에서 지금 시각을 빼서 셈한다(화면이 잠깐 멈춰도 시간이 밀리지 않게)
+  part('#clock', function () {
+    var clock = $('#clock'), go = $('#tgo'), msg = $('#tmsg'), preset = 180, left = preset, end = 0, tid = null;
+    function draw() {
+      var m = Math.floor(left / 60), s = left % 60;
+      clock.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      clock.classList.toggle('end', left === 0);
+      if (msg) { msg.textContent = left === 0 ? '시간이 다 됐어요' : '활동 시간'; }
+    }
+    function stop() { clearInterval(tid); tid = null; go.textContent = '시작'; }
+    function tick() { left = Math.max(0, Math.ceil((end - Date.now()) / 1000)); draw(); if (left === 0) { stop(); } }
+    go.onclick = function () {
+      if (tid) { stop(); return; }
+      if (left === 0) { left = preset; draw(); }
+      end = Date.now() + left * 1000; go.textContent = '멈춤'; tid = setInterval(tick, 250);
+    };
+    all('[data-t]').forEach(function (b) {
+      b.onclick = function () { stop(); left = preset = +b.getAttribute('data-t'); draw(); };
+    });
+    draw();
+  });
+
+  // 5-2 번호 뽑기: 번호만 뽑는다. 학생 이름은 넣지 않는다
+  part('#pick', function () {
+    var el = $('#pick'), nmax = 25, tid = null;
+    function size(n) { nmax = Math.max(2, Math.min(40, n)); if ($('#nmax')) { $('#nmax').textContent = nmax; } }
+    function one() { return 1 + Math.floor(Math.random() * nmax); }
+    tap('#roll', function () {
+      var n = 0;
+      clearInterval(tid);
+      tid = setInterval(function () {
+        el.textContent = one();
+        if (++n > 14) { clearInterval(tid); el.textContent = one() + '번'; }
+      }, 60);
+    });
+    tap('#less', function () { size(nmax - 1); });
+    tap('#more', function () { size(nmax + 1); });
+  });
+
+  // 6 정리 체크
+  part('.check', function () {
+    var list = all('.check'), done = $('#done');
+    list.forEach(function (c) {
+      c.setAttribute('aria-pressed', 'false');
+      c.onclick = function () {
+        c.setAttribute('aria-pressed', c.classList.toggle('on') ? 'true' : 'false');
+        var n = all('.check.on').length;
+        if (done) { done.textContent = n === list.length ? '모두 확인했어요. 오늘 수업 끝!' : list.length + '개 중 ' + n + '개를 확인했어요.'; }
+      };
+    });
+  });
+})();
+</script>
+
+<script>
+/* ───────── 공통 스크립트 (지우지 않는다) ─────────
+   PowerPoint 안에서는 window.__LIVE_SLIDE__ (1부터)가 들어오고, 그 번호의 슬라이드만 보여 준다.
+   오른쪽 아래 ← → 단추는 PowerPoint 안에서는 PowerPoint 의 슬라이드를 넘기고, 브라우저에서 그냥 열면 이 파일의 장을 넘긴다.
+   브라우저에서는 ← → 키로도 넘긴다(PowerPoint 안에서는 추가 기능이 키를 PowerPoint 로 전해 준다).
+   ↺ 단추는 화면을 다시 불러와 처음 상태로 되돌린다. PowerPoint 안에서는 지금 보는 장만 처음 상태가 된다.
+   브라우저에서 그냥 열었을 때는 모든 장이 처음 상태가 되고(돌아가던 타이머도 멈춘다) 보던 장이 다시 열린다. */
+(function () {
+  var slides = [].slice.call(document.querySelectorAll('section.slide'));
+  var embedded = typeof window.__LIVE_SLIDE__ === 'number';
+  var cur = embedded ? window.__LIVE_SLIDE__ : (parseInt((location.hash || '').slice(1), 10) || 1);
+  var stage = document.getElementById('stage');
+  var pv = document.getElementById('pv'), nx = document.getElementById('nx'), rs = document.getElementById('rs');
+  if (embedded) { document.body.classList.add('embedded'); }
+  function show(n) {
+    cur = Math.max(1, Math.min(slides.length, n));
+    slides.forEach(function (s, i) { s.classList.toggle('on', i === cur - 1); });
+    if (embedded) { return; }
+    if (pv) { pv.disabled = cur === 1; }
+    if (nx) { nx.disabled = cur === slides.length; }
+    if (location.hash !== '#' + cur) {            // 보던 장을 주소에 적어 둔다(새로 고쳐도 그 장이 다시 열린다)
+      try { history.replaceState(null, '', '#' + cur); } catch (e) { location.hash = cur; }
+    }
+  }
+  function fit() {
+    var k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = 'scale(' + k + ') translate(-50%,-50%)';
+  }
+  function turn(step) {
+    var L = window.liveSlide;
+    if (!embedded) { show(cur + step); }
+    else if (L) { if (step > 0) { L.next(); } else { L.prev(); } }
+  }
+  window.addEventListener('resize', fit); fit(); show(cur);
+  // 창 크기가 늦게 정해지는 경우(숨긴 채 만들어진 화면 등)에 대비해 다 열린 뒤에도 몇 번 다시 맞춘다.
+  window.addEventListener('load', fit); setTimeout(fit, 300); setTimeout(fit, 1500);
+  if (pv) { pv.onclick = function () { turn(-1); }; }
+  if (nx) { nx.onclick = function () { turn(1); }; }
+  if (rs) {
+    rs.title = embedded ? '이 장을 처음 상태로 되돌리기' : '모든 장을 처음 상태로 되돌리기';
+    rs.onclick = function () { location.reload(); };
+  }
+
+  // 슬라이더·체크 상자·선택 상자를 마우스나 손가락으로 만진 뒤에는 키보드를 돌려놓는다(← → 키로 다시 넘길 수 있게).
+  // 키보드로 만질 때와 글자 입력칸은 그대로 둔다.
+  var pointer = false;
+  function giveBack(e) {
+    var t = e.target || {}, g = (t.tagName || '').toUpperCase();
+    if (!pointer || !t.blur) { return; }
+    if ((g === 'SELECT' && e.type === 'change') || (g === 'INPUT' && /^(range|checkbox|radio)$/.test(t.type))) { t.blur(); }
+  }
+  document.addEventListener('pointerdown', function () { pointer = true; }, true);
+  document.addEventListener('keydown', function () { pointer = false; }, true);
+  document.addEventListener('change', giveBack, true);
+  document.addEventListener('click', giveBack, true);
+
+  if (!embedded) {
+    window.addEventListener('hashchange', function () {
+      var n = parseInt((location.hash || '').slice(1), 10);
+      if (n && n !== cur) { show(n); }
+    });
+    window.addEventListener('keydown', function (e) {
+      var t = e.target || {}, g = (t.tagName || '').toUpperCase();
+      if (e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey) { return; }
+      if (g === 'INPUT' || g === 'TEXTAREA' || g === 'SELECT' || t.isContentEditable) { return; }
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { show(cur + 1); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(cur - 1); }
+    });
+  }
+})();
+</script>
+</body>
+</html>

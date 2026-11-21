@@ -60,6 +60,7 @@ SKILLS = {
     "lesson-plan": ("수업 지도안", "5학년 사회 '조선의 건국' 40분 지도안 써줘"),
     "class-slides": ("수업 슬라이드", "이 지도안으로 수업 슬라이드 만들어줘"),
     "nalssam-pptx": ("날쌤 스타일 연수 PPT", "날쌤 스타일로 교원연수 발표 자료 만들어줘. 50분, 대본은 메모란에"),
+    "live-pptx": ("살아있는 PPT", "분수 수업을 눌러 보는 살아있는 PPT로 만들어줘"),
     "class-video": ("수업 영상", "분수의 덧셈을 설명하는 1분 영상 만들어줘"),
     "papercraft": ("페이퍼크래프트 도안", "태양계 행성 페이퍼크래프트 도안 만들어줘"),
     "coloring": ("컬러링 도안", "가을 주제 컬러링 도안 만들어줘"),
@@ -270,6 +271,35 @@ def copy_app_zips() -> dict:
     return plugins
 
 
+LIVE_SRC = SITE_SRC / "live-html"
+LIVE_MANIFEST = build.SRC / "bunpil-class" / "skills" / "live-pptx" / "assets" / "manifest.xml"
+
+
+def copy_live_html() -> list:
+    """살아있는 PPT(live-pptx)의 PowerPoint 추가 기능 페이지를 public/live-html 에 놓는다.
+    PowerPoint 는 manifest.xml 에 적힌 주소(SITE/live-html/app.html)에서 이 페이지를 불러온다.
+    등록 스크립트(.ps1·.sh)는 'irm | iex', 'curl | sh' 로 읽히므로 설치 스크립트와 같은 줄바꿈 규칙을 쓴다."""
+    dst = PUBLIC / "live-html"
+    dst.mkdir(parents=True, exist_ok=True)
+    made = []
+    for f in sorted(LIVE_SRC.iterdir()):
+        if not f.is_file():
+            continue
+        if f.suffix == ".ps1":
+            data = crlf(lf(f.read_text(encoding="utf-8-sig"))).encode("utf-8")
+        elif f.suffix in (".sh", ".html", ".xml"):
+            data = lf(f.read_text(encoding="utf-8")).encode("utf-8")
+        else:
+            data = f.read_bytes()
+        write(dst / f.name, data)
+        made.append(f.name)
+    manifest = lf(LIVE_MANIFEST.read_text(encoding="utf-8"))
+    assert f"{SITE}/live-html/app.html" in manifest, "live-pptx manifest.xml 의 주소가 사이트 주소와 다르다"
+    write(dst / "manifest.xml", manifest.encode("utf-8"))
+    made.append("manifest.xml")
+    return made
+
+
 def qr_svg(url: str) -> str:
     try:
         import segno  # type: ignore
@@ -445,6 +475,10 @@ def vercel_json() -> dict:
     nocache = {"key": "Cache-Control", "value": "public, max-age=0, must-revalidate"}
     headers = [{"source": p, "headers": [{"key": "Content-Type", "value": "text/plain; charset=utf-8"}, nocache]}
                for p in text_files]
+    # 살아있는 PPT 추가 기능: 고친 페이지가 바로 반영되게 캐시하지 않고, 등록 스크립트는 글자로 내려 준다
+    headers.append({"source": "/live-html/(.*)", "headers": [nocache]})
+    for p in ("/live-html/register.ps1", "/live-html/unregister.ps1", "/live-html/register.sh"):
+        headers.append({"source": p, "headers": [{"key": "Content-Type", "value": "text/plain; charset=utf-8"}, nocache]})
     headers.append({"source": "/bunpil-pack.zip", "headers": [nocache]})
     headers.append({"source": "/version.json", "headers": [nocache, {"key": "Access-Control-Allow-Origin", "value": "*"}]})
     return {"$schema": "https://openapi.vercel.sh/vercel.json", "framework": None, "outputDirectory": "public",
@@ -467,6 +501,7 @@ def main() -> None:
     write(PUBLIC / "VERSION", (version + "\n").encode())
     for asset in sorted((SITE_SRC / "assets").glob("*")) if (SITE_SRC / "assets").exists() else []:
         shutil.copy2(asset, PUBLIC / asset.name)
+    copy_live_html()
     write(PUBLIC / "robots.txt", b"User-agent: *\nAllow: /\n")
 
     files = {}

@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Live HTML</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#fff;font-family:"Malgun Gothic","Apple SD Gothic Neo","Segoe UI",sans-serif}
+  #poster{position:absolute;left:0;top:0;width:100%;height:100%;border:0;display:none;object-fit:contain}
+  #view{position:absolute;left:0;top:0;border:0;background:#fff;visibility:hidden}
+  #panel{position:absolute;left:0;top:0;right:0;bottom:0;display:none;background:#f4f1ea;color:#1d1b16;text-align:center;overflow:auto}
+  #panel .in{max-width:560px;margin:0 auto;padding:6% 24px}
+  #panel h1{font-size:22px;margin:0 0 12px}
+  #panel p{font-size:14px;margin:0 0 14px;color:#5f5a50;line-height:1.6}
+  #panel .row{margin:10px 0;font-size:14px}
+  #panel input[type=number]{width:64px;padding:7px;font-size:14px}
+  .btn{display:inline-block;background:#1d1b16;color:#fff;border:0;border-radius:999px;padding:10px 20px;font-size:14px;font-family:inherit;cursor:pointer;margin:4px}
+  .btn.line{background:transparent;color:#1d1b16;border:1px solid #1d1b16}
+  #msg{font-size:13px;color:#c2452d;min-height:18px}
+  #note{position:absolute;left:0;right:0;bottom:0;display:none;background:#1d1b16;color:#fff;font-size:13px;line-height:1.5;padding:8px 14px;text-align:center}
+  #gear{position:absolute;left:4px;top:4px;width:24px;height:24px;border-radius:50%;border:0;background:#1d1b16;color:#fff;font-size:13px;line-height:24px;padding:0;cursor:pointer;opacity:0;display:none}
+  body.edit #gear{display:block}
+  body.edit:hover #gear{opacity:.45}
+  body.edit #gear:hover,body.edit #gear:focus{opacity:1}
+</style>
+</head>
+<body>
+<img id="poster" alt="">
+<iframe id="view" title="Live HTML" sandbox="allow-scripts allow-forms"
+        allow="autoplay; fullscreen"></iframe>
+<button id="gear" type="button" title="HTML 바꾸기" aria-label="HTML 바꾸기">&#9881;</button>
+<div id="note"></div>
+
+<div id="panel"><div class="in">
+  <h1>Live HTML</h1>
+  <p id="lead">이 슬라이드에서 실행할 HTML 파일을 고르세요. HTML은 프레젠테이션 파일 안에 저장되고, 어디로도 전송되지 않습니다.</p>
+  <div class="row">
+    <button id="pick" type="button" class="btn">HTML 파일 고르기</button>
+    <input id="file" type="file" accept=".html,.htm,text/html" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px">
+  </div>
+  <div class="row"><label for="slideNo">이 슬라이드에 보여 줄 화면 번호(HTML의 몇 번째 장)</label> <input id="slideNo" type="number" min="1" max="9999" value="1"></div>
+  <div class="row"><button id="apply" type="button" class="btn line" style="display:none">번호만 바꾸기</button>
+    <button id="cancel" type="button" class="btn line" style="display:none">닫기</button></div>
+  <div id="msg" role="status" aria-live="polite"></div>
+</div></div>
+
+<script>
+/* Live HTML — PowerPoint 콘텐츠 추가 기능.
+   프레젠테이션 파일 안(추가 기능 설정값)에 저장된 HTML을 꺼내 격리된 프레임에서 실행한다.
+   이 페이지는 서버로 아무것도 보내지 않는다. 구형 웹뷰에서도 안내가 뜨도록 이 페이지의 코드는 ES5 문법만 쓴다.
+   설정값: html(문자열) · slide(1부터) · width · height · poster(작은 미리보기 data URI) · v(형식 번호, 지금 1) */
+(function () {
+  'use strict';
+  var view = document.getElementById('view');
+  var poster = document.getElementById('poster');
+  var panel = document.getElementById('panel');
+  var note = document.getElementById('note');
+  var msg = document.getElementById('msg');
+  var gear = document.getElementById('gear');
+  var pick = document.getElementById('pick');
+  var fileInput = document.getElementById('file');
+  var slideNo = document.getElementById('slideNo');
+  var applyBtn = document.getElementById('apply');
+  var cancelBtn = document.getElementById('cancel');
+  var state = { html: '', slide: 1, w: 1920, h: 1080, poster: '', v: 1 };
+  var settings = null;
+  var inOffice = false;
+  var started = false;
+  var currentView = 'edit';
+  var panelOpen = false;
+  var revealTimer = null;
+  var lastNav = 0;
+  var lastOpen = 0;
+  var lastUrl = '';
+  var MAX_CHARS = 3000000;   // 변환기와 같은 셈법으로 잰 크기: 영문·숫자·기호는 1, 한글 같은 그 밖의 글자는 6
+  var MAX_SLIDE = 9999;
+  var NAV_GAP = 150;         // 덱이 보내는 넘김 요청은 이 시간(ms)에 한 번만 받는다
+  var OPEN_GAP = 1000;       // 같은 바깥 주소는 이 시간(ms)에 한 번만 연다
+  var SUPPORTED = 1;
+  var TOO_BIG = 'HTML이 너무 큽니다(약 3MB까지, 한글이 많으면 더 작아야 합니다). 큰 그림이나 글꼴을 줄여 주세요.';
+  var LEGACY_NOTE = '이 PowerPoint의 웹 엔진이 오래되어 HTML을 실행할 수 없습니다. Microsoft 365 또는 Office 2021 이상에서 열어 주세요.';
+
+  function num(v, fallback, min, max) {
+    var n = parseInt(v, 10);
+    if (isNaN(n) || n < min || n > max) { return fallback; }
+    return n;
+  }
+
+  function fit() {
+    var W = window.innerWidth, H = window.innerHeight;
+    var k = Math.min(W / state.w, H / state.h);
+    view.style.width = state.w + 'px';
+    view.style.height = state.h + 'px';
+    var t = 'translate(' + (W - state.w * k) / 2 + 'px,' + (H - state.h * k) / 2 + 'px) scale(' + k + ')';
+    view.style.transformOrigin = '0 0';
+    view.style.webkitTransform = t;
+    view.style.transform = t;
+  }
+  window.addEventListener('resize', fit);
+
+  function modern() {
+    // IE11(Trident)·구형 Edge 웹뷰(Office 2016·2019 등)는 srcdoc 이 없고 최신 문법을 실행하지 못한다.
+    var ua = navigator.userAgent || '';
+    return ('srcdoc' in document.createElement('iframe')) && !document.documentMode &&
+      ua.indexOf('Trident') === -1 && ua.indexOf('Edge/') === -1;
+  }
+
+  // 미리보기 그림은 작은 내장 그림(data URI)만 받는다. 바깥 주소나 다른 형식은 버린다.
+  function okPoster(p) {
+    return (typeof p === 'string' && /^data:image\/(png|jpeg|jpg|webp);base64,/i.test(p)) ? p : '';
+  }
+
+  // 덱이 보이기 시작하면 미리보기 그림은 치운다(배경이 비치는 덱 뒤에 처음 화면이 남아 보이지 않게).
+  function reveal() { clearTimeout(revealTimer); view.style.visibility = 'visible'; poster.style.display = 'none'; }
+  function showNote(text) { note.textContent = text; note.style.display = text ? 'block' : 'none'; }
+
+  /* 덱 안으로 끼워 넣는 스크립트(덱보다 먼저 실행된다).
+     - 슬라이드 번호(window.__LIVE_SLIDE__)와 window.liveSlide(next·prev·first·last·goTo·keys)를 준다.
+     - 격리된 틀에서는 막혀 있는 것들을 덱이 멈추지 않게 메운다:
+       localStorage·sessionStorage(이 슬라이드가 떠 있는 동안만 기억), 쿠키(빈 값), alert(화면 안 알림), confirm(예), prompt(기본값),
+       window.open(바깥 주소면 컴퓨터의 브라우저로 열고 null 을 돌려준다), href="javascript:…" 링크(그 코드를 실행).
+     - 링크는 덱을 다른 문서로 바꾸지 못한다: "#" 링크는 브라우저에서처럼 그 자리에서 움직이고(location.hash 를 바꾸므로
+       hashchange 와 :target 도 그대로 동작한다), 바깥 주소(http·https)는 컴퓨터의 브라우저로 열고,
+       따로 떨어진 파일을 가리키는 링크는 아무 일도 하지 않는다(누르면 화면이 하얗게 비는 일을 막는다).
+       덱이 스스로 처리한(preventDefault) 링크는 건드리지 않는다. 덱의 처리가 먼저 끝나도록 window 에서 맨 나중에 듣는다.
+     - 덱이 쓰지 않는 넘김 키(→ ← PageDown PageUp)를 PowerPoint 로 돌려보낸다. 보낼지는 덱의 키 처리가 모두 끝난 뒤에 정한다
+       (덱이 preventDefault 했거나 liveSlide.keys 가 false 면 보내지 않는다). 글자 입력란에서는 PageDown·PageUp 만,
+       동영상·소리 조절 막대에서는 아무것도 보내지 않는다. */
+  function bridgeSource(slide) {
+    return '(function(){'
+      + 'var N=window.__LIVE_SLIDE__=' + slide + ';'
+      + 'function say(a,n){try{parent.postMessage({liveHtml:1,action:a,n:n},"*")}catch(e){}}'
+      // PowerPoint 의 웹 화면(WebView2)은 틀 안에도 window.chrome.webview 를 넣어 준다. 덱이 쓸 일이 없는 통로이므로 지운다.
+      // (실제 PowerPoint 에서 재 본 결과 틀 안에서는 Office 기능이 연결되지 않았지만, 통로 자체를 남겨 두지 않는다.)
+      + 'try{var C=window.chrome;if(C&&C.webview){try{delete C.webview}catch(e){}if(C.webview){Object.defineProperty(C,"webview",{configurable:false,writable:false,value:undefined})}}}catch(e){}'
+      + 'var L=window.liveSlide={index:N,keys:true,next:function(){say("next")},prev:function(){say("prev")},'
+      + 'first:function(){say("first")},last:function(){say("last")},goTo:function(n){say("goto",n)}};'
+      // 저장소 대역: getItem/setItem 과 localStorage.이름 두 가지 쓰임을 한 곳에 모은다(Proxy 가 없으면 메서드만).
+      + 'function mem(){var d={},own=Object.prototype.hasOwnProperty,api={getItem:function(k){k=String(k);return own.call(d,k)?d[k]:null},'
+      + 'setItem:function(k,v){d[String(k)]=String(v)},removeItem:function(k){delete d[String(k)]},clear:function(){d={}},'
+      + 'key:function(i){var a=Object.keys(d);return i<a.length?a[i]:null}};'
+      + 'Object.defineProperty(api,"length",{configurable:true,get:function(){return Object.keys(d).length}});'
+      + 'if(typeof Proxy!=="function")return api;'
+      + 'return new Proxy(api,{get:function(t,k){if(typeof k!=="string"||k in t)return t[k];return own.call(d,k)?d[k]:undefined},'
+      + 'set:function(t,k,v){if(typeof k==="string"&&!(k in t)){d[k]=String(v)}return true},'
+      + 'deleteProperty:function(t,k){if(typeof k==="string"){delete d[k]}return true},'
+      + 'has:function(t,k){return k in t||(typeof k==="string"&&own.call(d,k))},'
+      + 'ownKeys:function(){return Object.keys(d)},'
+      + 'getOwnPropertyDescriptor:function(t,k){return typeof k==="string"&&own.call(d,k)?{value:d[k],writable:true,enumerable:true,configurable:true}:undefined}})}'
+      + 'function fill(n){var ok=false;try{ok=!!window[n]}catch(e){}'
+      + 'if(!ok){try{Object.defineProperty(window,n,{configurable:true,value:mem()})}catch(e){}}}'
+      + 'fill("localStorage");fill("sessionStorage");'
+      + 'try{document.cookie}catch(e){try{Object.defineProperty(document,"cookie",{configurable:true,get:function(){return ""},set:function(){}})}catch(e2){}}'
+      + 'function toast(t){var el=document.createElement("div");el.setAttribute("role","alert");'
+      + 'el.style.cssText="position:fixed;left:50%;top:7%;transform:translateX(-50%);max-width:78%;background:#132C3D;color:#fff;'
+      + 'font:700 34px/1.4 \'Malgun Gothic\',\'Apple SD Gothic Neo\',sans-serif;padding:22px 36px;border-radius:18px;z-index:2147483647;'
+      + 'box-shadow:0 10px 40px rgba(0,0,0,.35);white-space:pre-wrap;text-align:center";'
+      + 'el.textContent=t;(document.body||document.documentElement).appendChild(el);'
+      + 'setTimeout(function(){if(el.parentNode){el.parentNode.removeChild(el)}},2800)}'
+      + 'window.alert=function(m){toast(m===undefined?"":String(m))};'
+      + 'window.confirm=function(){return true};'
+      + 'window.prompt=function(m,d){return d===undefined?null:String(d)};'
+      + 'try{window.open=function(u){try{var a=document.createElement("a");a.href=String(u);if(/^https?:/i.test(a.href)){say("open",a.href)}}catch(e){}return null}}catch(e){}'
+      + 'var H=window.history;if(H){["pushState","replaceState"].forEach(function(f){var o=H[f];if(typeof o!=="function")return;'
+      + 'H[f]=function(){try{return o.apply(H,arguments)}catch(e){}}})}'
+      + 'document.addEventListener("DOMContentLoaded",function(){say("ready")});'
+      // 추가 기능 페이지가 "아직 덱이 떠 있나?" 하고 물으면 대답한다(다른 주소로 가 버린 틀을 알아채는 데 쓴다).
+      // 덱이나 덱이 불러온 스크립트가 load 알림을 막아도 대답할 수 있게, 맨 먼저 캡처 단계로 듣는다.
+      + 'window.addEventListener("message",function(e){var d=e.data;if(e.source===parent&&d&&d.liveHtml===1&&d.ask==="alive"){say("alive",d.id)}},true);'
+      // 화면 크기 다시 알리기: PowerPoint 가 슬라이드의 웹 화면을 숨긴 채 만들거나 크기를 나중에 정하면, 덱이 처음 읽은 창 크기가
+      // 틀릴 수 있고 resize 알림도 오지 않을 때가 있다(실제 PowerPoint 에서 한 장이 아주 작게 그려진 일이 있었다).
+      // 다 열린 뒤 두 번, 다시 보일 때, 그리고 창 크기가 알림 없이 바뀐 것을 알아챘을 때 resize 를 한 번 더 알린다.
+      + 'function nudge(){try{var ev=document.createEvent("Event");ev.initEvent("resize",false,false);window.dispatchEvent(ev)}catch(x){}}'
+      + 'var vw=window.innerWidth,vh=window.innerHeight;'
+      + 'window.addEventListener("resize",function(){vw=window.innerWidth;vh=window.innerHeight},true);'
+      + 'setInterval(function(){if(window.innerWidth!==vw||window.innerHeight!==vh){nudge()}},400);'
+      + 'window.addEventListener("load",function(){setTimeout(nudge,60);setTimeout(nudge,700)});'
+      + 'document.addEventListener("visibilitychange",function(){if(!document.hidden){setTimeout(nudge,60)}});'
+      // 링크: 누른 곳에서 위로 올라가며 <a>·<area> 를 찾는다(SVG 안의 <a>, 그림자 DOM 안의 <a> 도 찾도록 composedPath 와 localName 으로).
+      + 'function anchor(e){var p=e.composedPath?e.composedPath():null,i,x;if(p){for(i=0;i<p.length;i++){x=p[i];'
+      + 'if(x&&x.nodeType===1&&/^(a|area)$/i.test(x.localName||""))return x}return null}'
+      + 'x=e.target;while(x&&x.nodeType===1&&!/^(a|area)$/i.test(x.localName||""))x=x.parentNode;return x&&x.nodeType===1?x:null}'
+      + 'function onClick(e){if(e.defaultPrevented)return;var a=anchor(e);if(!a||!a.getAttribute)return;'
+      + 'var h=a.getAttribute("href");if(h===null)h=a.getAttributeNS?a.getAttributeNS("http://www.w3.org/1999/xlink","href"):null;if(h===null)return;'
+      + 'h=String(h).replace(/^\\s+|\\s+$/g,"");var u=typeof a.href==="string"?a.href:(a.href&&typeof a.href.baseVal==="string"?a.href.baseVal:h);'
+      + 'e.preventDefault();if(h==="")return;'
+      + 'if(h.charAt(0)==="#"){var b0=location.hash;try{location.hash=h}catch(x){}'
+      + 'if(location.hash===b0){var id=h.slice(1);try{id=decodeURIComponent(id)}catch(x2){}'
+      + 'var t=id&&(document.getElementById(id)||document.getElementsByName(id)[0]);'
+      + 'if(t&&t.scrollIntoView){t.scrollIntoView()}else if(!id||id.toLowerCase()==="top"){window.scrollTo(0,0)}}return}'
+      + 'if(/^https?:/i.test(u)){say("open",u);return}'
+      + 'if(/^javascript:/i.test(u)){var c=u.replace(/^javascript:/i,"").replace(/(?:%[0-9a-f]{2})+/gi,function(m){try{return decodeURIComponent(m)}catch(x){return m}});'
+      + 'try{(0,eval)(c)}catch(x3){setTimeout(function(){throw x3},0)}}}'
+      // 덱이 window 에 건 click 처리보다도 나중에 돌도록, 누를 때마다 맨 뒤로 다시 건다.
+      + 'window.addEventListener("click",function(){window.removeEventListener("click",onClick,false);window.addEventListener("click",onClick,false)},true);'
+      + 'window.addEventListener("click",onClick,false);'
+      // 마우스·손가락으로 만진 슬라이더·라디오·체크 상자·목록은 만진 뒤 키보드를 놓아 준다(← → 로 바로 장을 넘길 수 있게).
+      // 키보드로 고른 것(Tab)과 글자 입력란은 그대로 둔다.
+      + 'var byPointer=false;'
+      + 'function loose(el){if(!el||!el.tagName)return false;var g=String(el.tagName).toUpperCase(),y=String(el.type||"").toLowerCase();'
+      + 'return g==="SELECT"||(g==="INPUT"&&/^(range|radio|checkbox)$/.test(y))}'
+      + 'function drop(){if(!byPointer)return;setTimeout(function(){var el=document.activeElement;if(byPointer&&loose(el)){try{el.blur()}catch(x){}}},0)}'
+      + 'window.addEventListener("pointerdown",function(){byPointer=true},true);'
+      + 'window.addEventListener("keydown",function(){byPointer=false},true);'
+      + 'window.addEventListener("pointerup",function(){var el=document.activeElement;if(el&&String(el.tagName).toUpperCase()!=="SELECT")drop()},true);'
+      + 'window.addEventListener("change",drop,true);'
+      + 'window.addEventListener("keydown",function(e){if(e.ctrlKey||e.altKey||e.metaKey||e.isComposing)return;'
+      + 'var k=e.key,p=e.composedPath?e.composedPath():null,t=(p&&p[0])||e.target||{},g=String(t.tagName||"").toUpperCase(),y=String(t.type||"").toLowerCase();'
+      + 'if(g==="VIDEO"||g==="AUDIO")return;'
+      + 'var typing=(g==="TEXTAREA"||g==="SELECT"||t.isContentEditable===true||(g==="INPUT"&&!/^(button|submit|reset|checkbox|image|file|color)$/.test(y))),'
+      + 'a=k==="PageDown"?"next":k==="PageUp"?"prev":typing?"":(k==="ArrowRight"||k==="Right")?"next":(k==="ArrowLeft"||k==="Left")?"prev":"";'
+      + 'if(!a)return;'
+      + 'setTimeout(function(){var W=window.liveSlide;if(e.defaultPrevented||L.keys===false||(W&&W.keys===false))return;say(a)},0)'
+      + '},false);'
+      + '})();';
+  }
+  // 덱에 자기 <base href> 가 있으면 그것을 그대로 둔다(먼저 나온 base 만 쓰이므로 우리 것을 넣으면 덱의 상대 주소가 모두 끊긴다).
+  function bridge(slide, html) {
+    var ownBase = /<base\s[^>]*\bhref\s*=/i.test(html || '');
+    return (ownBase ? '' : '<base href="about:srcdoc">') + '<script>' + bridgeSource(num(slide, 1, 1, MAX_SLIDE)) + '<\/script>';
+  }
+
+  /* 끼워 넣을 자리: 덱의 머리말(공백·주석·doctype·<html …>·<head …>)만 앞에서부터 차례로 읽고, 진짜 <head> 바로 뒤
+     (없으면 <html> 뒤, 그것도 없으면 doctype 뒤나 맨 앞)를 고른다. 문서 전체에서 "<head" 를 찾지 않으므로
+     주석·스크립트 문자열·속성값 속의 "<head>" 나 <header> 에 속지 않는다. */
+  function tagEnd(s, i) {            // i: 태그 이름 바로 뒤. 따옴표로 싼 속성값 속의 > 는 건너뛰고, 태그를 닫는 > 다음 자리를 돌려준다(없으면 -1)
+    var n = s.length, c, q;
+    while (i < n) {
+      c = s.charAt(i);
+      if (c === '>') { return i + 1; }
+      if (c !== '=') { i++; continue; }
+      i++;
+      while (i < n && /[ \t\n\f\r]/.test(s.charAt(i))) { i++; }
+      q = s.charAt(i);
+      if (q === '"' || q === "'") {
+        i = s.indexOf(q, i + 1);
+        if (i < 0) { return -1; }
+        i++;
+      } else {
+        while (i < n && !/[ \t\n\f\r>]/.test(s.charAt(i))) { i++; }
+      }
+    }
+    return -1;
+  }
+  function bridgeSpot(s) {
+    var n = s.length, i = 0, j, t, sawHtml = false;
+    while (i < n) {
+      t = s.charAt(i);
+      if (t === ' ' || t === '\t' || t === '\n' || t === '\f' || t === '\r') { i++; continue; }
+      if (t !== '<') { break; }
+      t = s.substr(i, 10).toLowerCase();
+      if (t.indexOf('<\x21--') === 0) { j = s.indexOf('--\x3e', i + 2); if (j < 0) { break; } i = j + 3; continue; }      // 주석(이 줄에 주석 기호를 그대로 쓰면 이 스크립트 자체가 잘못 읽힐 수 있어 \x 로 적는다)
+      if (!sawHtml && (t.indexOf('<!doctype') === 0 || t.indexOf('<?') === 0)) { j = s.indexOf('>', i); if (j < 0) { break; } i = j + 1; continue; }
+      if (!sawHtml && /^<html[ \t\n\f\r\/>]/.test(t)) { j = tagEnd(s, i + 5); if (j < 0) { break; } i = j; sawHtml = true; continue; }
+      if (/^<head[ \t\n\f\r\/>]/.test(t)) { j = tagEnd(s, i + 5); if (j > 0) { i = j; } }
+      break;
+    }
+    return i;
+  }
+  function inject(html, slide) {
+    if (html.charCodeAt(0) === 0xFEFF) { html = html.slice(1); }      // 파일 맨 앞의 BOM 은 내용이 아니다
+    var at = bridgeSpot(html);
+    return html.slice(0, at) + bridge(slide, html) + html.slice(at);
+  }
+
+  function render() {
+    closePanel();
+    showNote('');
+    if (state.poster) { poster.src = state.poster; poster.style.display = 'block'; }
+    else { poster.style.display = 'none'; }
+    if (!modern()) {                                       // 구형 엔진: HTML 이 아직 없어도 안내부터 띄운다
+      view.style.visibility = 'hidden';
+      showNote(LEGACY_NOTE);
+      return;
+    }
+    if (!state.html) {
+      view.style.visibility = 'hidden';
+      if (currentView === 'edit') { openPanel(); }         // 슬라이드 쇼 중에는 설정 화면을 띄우지 않는다
+      return;
+    }
+    if (state.v > SUPPORTED) { showNote('이 파일은 더 새로운 방식으로 만들어졌습니다. 화면이 이상하면 분필팩을 업데이트해 다시 변환해 주세요.'); }
+    fit();
+    view.style.visibility = 'hidden';
+    view.onload = reveal;
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(reveal, 3000);   // 바깥 자원이 늦어도 화면은 보여 준다
+    restores = 0;
+    view.srcdoc = inject(state.html, state.slide);
+  }
+
+  function openPanel() {
+    msg.textContent = '';
+    slideNo.value = state.slide;
+    cancelBtn.style.display = state.html ? 'inline-block' : 'none';
+    applyBtn.style.display = state.html ? 'inline-block' : 'none';
+    panel.style.display = 'block';
+    panelOpen = true;
+    view.setAttribute('tabindex', '-1');      // 설정 화면이 떠 있는 동안에는 Tab 키가 뒤에 가려진 덱이나 톱니로 들어가지 않게 한다
+    gear.style.visibility = 'hidden';
+    try { pick.focus(); } catch (e) { /* 초점을 못 옮겨도 쓰는 데는 지장이 없다 */ }
+  }
+  function closePanel(backToGear) {
+    panel.style.display = 'none';
+    panelOpen = false;
+    view.removeAttribute('tabindex');
+    gear.style.visibility = '';
+    if (backToGear && currentView === 'edit') { try { gear.focus(); } catch (e) { /* 위와 같다 */ } }
+  }
+
+  function load() {
+    if (settings) {
+      var h = settings.get('html');
+      state.html = (typeof h === 'string') ? h : '';
+      state.slide = num(settings.get('slide'), 1, 1, MAX_SLIDE);
+      state.w = num(settings.get('width'), 1920, 100, 10000);
+      state.h = num(settings.get('height'), 1080, 100, 10000);
+      state.poster = okPoster(settings.get('poster'));
+      state.v = num(settings.get('v'), 1, 1, 1000);
+    }
+    render();
+  }
+
+  function save() {
+    if (!settings) { return; }
+    settings.set('html', state.html);
+    settings.set('slide', state.slide);
+    settings.set('width', state.w);
+    settings.set('height', state.h);
+    settings.set('poster', state.poster || '');
+    settings.set('v', SUPPORTED);
+    settings.saveAsync(function (r) {
+      if (r.status !== 'succeeded') {
+        openPanel();
+        msg.textContent = '프레젠테이션에 저장하지 못했습니다. 파일이 읽기 전용이 아닌지 확인해 주세요. ' + ((r.error && r.error.message) || '');
+      }
+    });
+  }
+
+  /* 덱 → PowerPoint. 덱이 보내는 말은 믿지 않는다: 정해진 네 가지 동작과 1~9999 사이의 정수 번호만 받고,
+     NAV_GAP 안에 거듭 오는 요청은 버린다(덱의 타이머가 슬라이드를 마구 넘기지 못하게). */
+  function go(action, n) {
+    if (!inOffice) { return; }
+    try {
+      var doc = Office.context.document;
+      var map = { next: Office.Index.Next, prev: Office.Index.Previous, first: Office.Index.First, last: Office.Index.Last };
+      var id;
+      if (action === 'goto') {
+        if ((typeof n !== 'number' && typeof n !== 'string') || !/^[0-9]{1,4}$/.test(String(n))) { return; }
+        id = parseInt(n, 10);
+        if (id < 1 || id > MAX_SLIDE) { return; }
+      } else if (Object.prototype.hasOwnProperty.call(map, action)) {
+        id = map[action];
+      } else { return; }
+      var now = new Date().getTime(), since = now - lastNav;
+      if (since >= 0 && since < NAV_GAP) { return; }
+      lastNav = now;
+      doc.goToByIdAsync(id, Office.GoToType.Index, function () {});
+    } catch (e) { /* 이 버전의 PowerPoint 가 지원하지 않으면 조용히 넘어간다 */ }
+  }
+  // 바깥 주소는 http·https 이고 2000자 이하일 때만 컴퓨터의 브라우저로 연다. 사람이 방금 덱을 누르거나 키를 눌렀을 때만 받고
+  // (덱의 타이머가 브라우저 창을 띄우지 못하게), 같은 주소를 OPEN_GAP 안에 거듭 열지 않는다.
+  function openLink(url) {
+    if (typeof url !== 'string' || !/^https?:\/\//i.test(url) || url.length > 2000) { return; }
+    if (navigator.userActivation && !navigator.userActivation.isActive) { return; }
+    var now = new Date().getTime(), since = now - lastOpen;
+    if (url === lastUrl && since >= 0 && since < OPEN_GAP) { return; }
+    lastOpen = now; lastUrl = url;
+    try {
+      if (inOffice && Office.context.ui && Office.context.ui.openBrowserWindow) { Office.context.ui.openBrowserWindow(url); return; }
+    } catch (e) { /* 아래로 */ }
+    try { window.open(url, '_blank', 'noopener'); } catch (e2) { /* 막혀 있으면 그대로 둔다 */ }
+  }
+  /* 덱이 틀 안에서 다른 주소로 가 버리면(가로채지 못한 링크·form·location 변경) 슬라이드가 하얗게 빈다.
+     틀이 새로 뜰 때마다 "덱이 떠 있나?" 하고 묻고, 대답이 없으면 덱을 다시 넣는다(그 장은 처음 상태로 돌아간다).
+     되풀이해 넣는 일이 없도록 한 번 그린 덱은 많아야 세 번만 다시 넣는다. */
+  var pingId = 0, ponged = 0, restoreTimer = null, restores = 0;
+  function ping() {
+    try { view.contentWindow.postMessage({ liveHtml: 1, ask: 'alive', id: pingId }, '*'); } catch (e) { /* 틀이 아직 없다 */ }
+  }
+  view.addEventListener('load', function () {
+    var mine = ++pingId;
+    clearTimeout(restoreTimer);
+    ping();
+    setTimeout(function () { if (mine === pingId && ponged !== mine) { ping(); } }, 500);      // 덱이 잠깐 바빴을 수 있다
+    restoreTimer = setTimeout(function () {
+      if (mine !== pingId || ponged === mine) { return; }
+      if (state.html && modern() && view.style.visibility !== 'hidden' && restores < 3) {
+        restores++;
+        view.srcdoc = inject(state.html, state.slide);
+      }
+    }, 1500);
+  });
+  window.addEventListener('message', function (e) {
+    var d = e.data;
+    if (e.source !== view.contentWindow || !d || d.liveHtml !== 1 || typeof d.action !== 'string') { return; }
+    if (d.action === 'ready') { reveal(); return; }
+    if (d.action === 'alive') { if (d.n === pingId) { ponged = pingId; } return; }
+    if (d.action === 'open') { openLink(d.n); return; }
+    go(d.action, d.n);
+  });
+  // 키보드가 덱이 아니라 이 페이지에 있을 때(여백을 누른 뒤 등)도 넘김 키를 PowerPoint 로 보낸다.
+  // 설정 화면이 떠 있으면 Esc 로 닫는다(HTML 이 아직 없으면 닫을 화면이 없으므로 그대로 둔다).
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (panelOpen && (k === 'Escape' || k === 'Esc')) {
+      if (state.html) { closePanel(true); e.preventDefault(); }
+      return;
+    }
+    if (panelOpen || e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey) { return; }      // 설정 화면이 떠 있는 동안에는 장을 넘기지 않는다
+    var g = ((e.target && e.target.tagName) || '').toUpperCase();
+    if (g === 'INPUT' || g === 'TEXTAREA' || g === 'SELECT') { return; }
+    if (k === 'PageDown' || k === 'ArrowRight' || k === 'Right') { go('next'); }
+    else if (k === 'PageUp' || k === 'ArrowLeft' || k === 'Left') { go('prev'); }
+  });
+
+  function setView(v) {
+    currentView = (v === 'edit') ? 'edit' : 'read';
+    document.body.className = (currentView === 'edit') ? 'edit' : '';
+    if (currentView !== 'edit') { closePanel(); }
+    else if (started && !state.html && modern()) { openPanel(); }
+  }
+
+  /* 파일 고르기. 크기는 변환기(build_live_pptx.py)와 같은 셈법으로 잰다: 설정값은 JSON 글자열로 저장되므로
+     따옴표·역슬래시·줄바꿈은 2, 한글 같은 ASCII 밖 글자는 6(\uXXXX), 나머지는 1 이고 양끝 따옴표 2 가 붙는다. */
+  function weight(s) {
+    var n = s.length, extra = 0, i;
+    for (i = 0; i < n; i++) { if (s.charCodeAt(i) > 127) { extra += 5; } }
+    return JSON.stringify(s).length + extra;
+  }
+  // UTF-8 로 읽어 보고, 맞지 않으면 EUC-KR(CP949)로 읽는다. 둘 다 아니면 예전처럼 UTF-8 로 읽되 깨진 글자는 그대로 둔다.
+  function decode(buf) {
+    var bytes = new Uint8Array(buf);
+    if (bytes.length > 1 && bytes[0] === 0xFF && bytes[1] === 0xFE) { return new TextDecoder('utf-16le').decode(bytes); }
+    if (bytes.length > 1 && bytes[0] === 0xFE && bytes[1] === 0xFF) { return new TextDecoder('utf-16be').decode(bytes); }
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch (e) { /* 아래로 */ }
+    try { return new TextDecoder('euc-kr', { fatal: true }).decode(bytes); } catch (e2) { /* 아래로 */ }
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+  pick.addEventListener('click', function () { fileInput.click(); });
+  fileInput.addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    if (!f) { return; }
+    if (f.size > 2 * MAX_CHARS) { msg.textContent = TOO_BIG; this.value = ''; return; }      // 어떤 글자 표현이든 이 크기면 한도를 넘는다(읽기 전에 거른다)
+    var asBytes = (typeof TextDecoder === 'function' && typeof Uint8Array === 'function');
+    var rd = new FileReader();
+    rd.onload = function () {
+      var text;
+      try { text = asBytes ? decode(rd.result) : String(rd.result); }
+      catch (e) { msg.textContent = '파일을 읽지 못했습니다.'; return; }
+      if (!/\S/.test(text)) { msg.textContent = '내용이 없는 파일입니다. 다른 HTML 파일을 골라 주세요.'; return; }
+      if (weight(text) > MAX_CHARS) { msg.textContent = TOO_BIG; return; }
+      state.html = text;
+      state.poster = '';
+      state.slide = num(slideNo.value, 1, 1, MAX_SLIDE);
+      render(); save();
+    };
+    rd.onerror = function () { msg.textContent = '파일을 읽지 못했습니다.'; };
+    if (asBytes) { rd.readAsArrayBuffer(f); } else { rd.readAsText(f); }
+    this.value = '';                                       // 같은 파일을 다시 골라도 반응하게
+  });
+  applyBtn.addEventListener('click', function () {
+    state.slide = num(slideNo.value, 1, 1, MAX_SLIDE);
+    state.poster = '';                                     // 예전 번호의 미리보기 그림을 남기지 않는다
+    render(); save();
+  });
+  gear.addEventListener('click', function () { openPanel(); });
+  // 키보드로 닫았을 때(e.detail 이 0)만 초점을 톱니로 돌려준다. 마우스로 닫았을 때는 톱니가 덱 위에 도드라져 남지 않게 둔다.
+  cancelBtn.addEventListener('click', function (e) { if (state.html) { closePanel(e && e.detail === 0); } });
+
+  function start(office) {
+    if (started) { return; }
+    inOffice = office;
+    if (office) {
+      try { settings = Office.context.document.settings; } catch (e) { settings = null; }
+      try {
+        Office.context.document.getActiveViewAsync(function (r) { if (r.status === 'succeeded') { setView(r.value); } });
+        Office.context.document.addHandlerAsync(Office.EventType.ActiveViewChanged, function (a) { setView(a.activeView); });
+      } catch (e) { setView('edit'); }
+    } else {
+      document.getElementById('lead').textContent = 'PowerPoint 밖에서 연 미리보기입니다. HTML 파일을 고르면 이 화면에서 실행해 볼 수 있습니다(저장되지 않습니다).';
+      setView('edit');
+    }
+    started = true;
+    load();
+  }
+
+  // 구형 엔진에서는 Office 구성 요소가 끝내 준비되지 않을 수 있으므로 안내부터 띄운다.
+  if (!modern()) { showNote(LEGACY_NOTE); }
+
+  if (window.Office && Office.onReady) {
+    // PowerPoint 안에서는 host 가 채워져 오고, 일반 브라우저에서는 host 없이 곧바로 돌아온다.
+    Office.onReady(function (info) { start(!!(info && info.host)); });
+    setTimeout(function () {
+      if (!started && modern()) { showNote('PowerPoint와 연결하는 데 시간이 걸리고 있습니다. 인터넷 연결을 확인하고, 계속 이러면 슬라이드를 다시 열어 주세요.'); }
+    }, 20000);
+  } else {
+    // office.js 를 불러오지 못했다(인터넷 연결 문제 등). PowerPoint 안인지조차 알 수 없으므로 안내만 띄운다.
+    showNote('Office 구성 요소를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 슬라이드를 다시 열어 주세요.');
+  }
+})();
+</script>
+</body>
+</html>

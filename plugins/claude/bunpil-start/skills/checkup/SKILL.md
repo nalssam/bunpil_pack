@@ -20,7 +20,7 @@ description: "분필 점검, 설치 확인, 잘 깔렸나, 분필팩 상태, 업
    | 플러그인 | 있어야 할 스킬 |
    |---|---|
    | 분필 시작 팩 | setup, privacy-guard, checkup |
-   | 분필 수업자료 팩 | worksheet, lesson-plan, class-slides, nalssam-pptx, class-video, papercraft, coloring, rubric |
+   | 분필 수업자료 팩 | worksheet, lesson-plan, class-slides, nalssam-pptx, live-pptx, class-video, papercraft, coloring, rubric |
    | 분필 학교업무 팩 | gongmun, newsletter, pumui, parent-survey, hwpx-doc |
    | 분필 하네스빌더 팩 | skill-maker, harness-fix, eval-run, share-skill, harness-gallery |
    | 분필 커넥터 팩 | connect |

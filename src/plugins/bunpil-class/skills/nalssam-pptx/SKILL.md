@@ -1,6 +1,6 @@
 ---
 name: nalssam-pptx
-description: "날쌤 스타일 PPT, nalssam_pptx, nalssam-pptx, 날쌤 연수 슬라이드, 연수·강의·원격연수 발표 자료를 날쌤 덱처럼 만들어줘 같은 요청에 쓴다. 교사·교육행정직·교육전문직·디지털 튜터·방과후 강사 연수용 16:9 PPTX를 python-pptx로 직접 조립해 늘 같은 모양(웜 오프화이트 바탕, 네이비·틸·코랄, Pretendard 임베드)으로 만들고, 대본은 슬라이드 메모란에 쓰며, 자동 점검과 렌더링 확인까지 한다. 학생이 보는 교과 수업 PPT는 class-slides, 날쌤 스타일을 요청하지 않은 일반 발표 자료는 pptx-maker를 쓴다."
+description: "날쌤 스타일 PPT, nalssam_pptx, nalssam-pptx, 날쌤 연수 슬라이드, 연수·강의·원격연수 발표 자료를 날쌤 덱처럼 만들어줘 같은 요청에 쓴다. 교사·교육행정직·교육전문직·디지털 튜터·방과후 강사 연수용 16:9 PPTX를 python-pptx로 직접 조립해 늘 같은 모양(웜 오프화이트 바탕, 네이비·틸·코랄, Pretendard 임베드)으로 만들고, 대본은 슬라이드 메모란에 쓰며, 자동 점검과 렌더링 확인까지 한다. 학생이 보는 교과 수업 PPT는 class-slides, 슬라이드 안에서 HTML이 실행되는 살아있는 PPT는 live-pptx, 날쌤 스타일을 요청하지 않은 일반 발표 자료는 pptx-maker를 쓴다."
 ---
 
 # 날쌤 스타일 PPTX (nalssam-pptx)
