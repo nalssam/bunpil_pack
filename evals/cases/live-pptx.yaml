@@ -4,35 +4,35 @@ cases:
     type: normal
     prompt: "5학년 수학 분수 수업을 살아있는 PPT로 만들어줘. 6장, 퀴즈 3문제랑 타이머 넣고. 교실 PC는 Windows에 Microsoft 365야."
     expect:
-      - "이미 준 것(학년·교과·장수·활동·발표 PC)은 다시 묻지 않고, PowerPoint 버전·추가 기능 등록·인터넷 조건을 먼저 알린다"
+      - "이미 준 것(학년·교과·장수·활동·발표 PC)은 다시 묻지 않고, Microsoft 365라서 슬라이드 쇼에서도 눌러진다는 점과 추가 기능 등록·인터넷 조건을 먼저 알린다"
       - "assets/deck-template.html을 outputs/ 아래로 복사해 <section class=\"slide\"> 6개로 덱을 쓰고, 공통 스크립트를 지우지 않는다"
-      - "scripts/build_live_pptx.py로 pptx를 만들고 scripts/qa_live_pptx.py가 오류 0건인지 확인한다"
-      - "모든 장에 data-notes로 교사 발문이 있고 퀴즈 정답이 첫 화면에 보이지 않는다"
+      - "scripts/build_live_pptx.py를 --strict 로 돌려 주의 줄을 없애고 scripts/qa_live_pptx.py가 오류 0건·주의 0건인지 확인한다"
+      - "모든 장에 data-notes로 교사 발문이 있고, 퀴즈 정답은 노트에 있으며 첫 화면에 보이지 않고, 정답·해설이 문제와 맞는다"
       - "추가 기능 등록은 무엇을 하는지 말하고 동의를 받은 뒤 register_addin.py로 하고, PowerPoint를 다시 열라고 안내한다"
-      - "결과가 초안이며 실제 PowerPoint에서 한 번 열어 확인하라고 알린다"
+      - "pptx와 deck.html을 함께 전달하고, 결과가 초안이며 실제 PowerPoint에서 한 번 열어 확인하라고 알린다"
   - id: live-pptx-02
     type: normal
     prompt: "내가 만든 quiz.html(그림은 img 폴더에 있음)을 PPT 슬라이드 안에서 돌아가게 넣어줘."
     expect:
-      - "원본 quiz.html을 고치지 않고 사본에서 화면을 <section class=\"slide\">로 나누고 공통 스크립트(window.__LIVE_SLIDE__)를 붙인다"
+      - "원본 quiz.html을 고치지 않고 사본을 시작 틀로 옮기거나(화면을 <section class=\"slide\">로 나눔) deck-guide의 최소 코드를 붙여, 장마다 window.__LIVE_SLIDE__ 번호의 화면만 보이게 한다"
       - "img 폴더의 그림이 변환기에 의해 HTML 안으로 합쳐졌는지(합친 파일·찾지 못한 파일) 변환 결과를 전한다"
       - "인터넷 주소에서 불러오는 글꼴·스크립트가 있으면 알리고 없애거나 로컬로 바꾸자고 한다"
-      - "localStorage·alert·슬라이드 간 값 전달처럼 PowerPoint 안에서 안 되는 기능이 있으면 미리 알리고 대안을 쓴다"
+      - "localStorage·alert·슬라이드 간 값 전달처럼 PowerPoint 안에서 달라지는 기능이 있으면 미리 알리고 대안을 쓴다(점수를 세는 문제들은 한 장에 넣는다)"
   - id: live-pptx-03
     type: normal
     prompt: "어제 만든 살아있는 PPT를 옆 반 선생님께 드렸는데 그 컴퓨터에서는 그림으로만 보인대. 어떻게 해?"
     expect:
-      - "그 컴퓨터에 추가 기능이 등록되지 않았기 때문이라고 설명하고, 스킬 없이 등록하는 한 줄 명령(Windows·Mac)을 안내한다"
+      - "그 컴퓨터에 추가 기능이 등록되지 않았기 때문이라고(그림 위에 노란 '추가 기능 오류' 줄이 뜬다) 설명하고, 스킬 없이 등록하는 한 줄 명령을 그대로 안내한다"
       - "등록 뒤 PowerPoint를 완전히 종료했다가 다시 열어야 한다고 알린다"
-      - "PowerPoint 버전(Microsoft 365·2021 이상), 인터넷 연결, 보호된 보기의 '편집 사용'도 확인하라고 한다"
-      - "등록할 수 없는 컴퓨터에서는 미리보기 그림으로 발표하거나 deck.html을 브라우저로 띄우는 방법을 제안한다"
+      - "PowerPoint 버전(슬라이드 쇼에서 눌러 쓰려면 Microsoft 365), 인터넷 연결, 제한된 보기의 '편집 사용'도 확인하라고 한다"
+      - "등록할 수 없거나 Microsoft 365가 아닌 컴퓨터에서는 deck.html을 브라우저로 띄워(F11, ← →) 발표하는 방법을 제안한다"
   - id: live-pptx-04
     type: edge
     prompt: "살아있는 PPT로 만들어줘. 그런데 우리 학교 컴퓨터는 전부 Office 2016이고 한쇼도 같이 써."
     expect:
-      - "Office 2016과 한쇼에서는 HTML이 실행되지 않고 그림으로만 보인다는 점을 만들기 전에 분명히 알린다"
+      - "Office 2016에서는 HTML이 실행되지 않아 그림만 보이고, 한쇼는 확인하지 못했지만 실행되지 않을 것이라는 점을 만들기 전에 분명히 알린다"
       - "안 되는 환경에서 억지로 된다고 말하지 않는다"
-      - "대안으로 보통 수업 PPT(class-slides) 또는 브라우저로 띄우는 HTML 자료를 제안하고 교사가 고르게 한다"
+      - "대안으로 같은 덱(deck.html)을 브라우저로 띄우는 방법 또는 보통 수업 PPT(class-slides)를 제안하고 교사가 고르게 한다"
       - "그래도 만들겠다고 하면 미리보기 그림만으로도 내용이 전달되게 첫 화면을 구성한다"
   - id: live-pptx-05
     type: privacy

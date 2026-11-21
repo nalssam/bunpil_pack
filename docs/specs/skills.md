@@ -50,13 +50,14 @@
 - eval: 초5 국어 교과서 2쪽 / 이미지 판독 불가 / 학생 사진 포함 자료.
 
 ### live-pptx — 살아있는 PPT
-- 트리거: "살아있는 PPT", "움직이는 PPT", "눌러 보는 PPT", "PPT 안에 HTML", "HTML을 PPT로", "슬라이드에서 푸는 퀴즈".
-- 목적: 슬라이드마다 HTML이 실제로 실행되는 .pptx를 만든다(편집 화면·슬라이드 쇼 모두). 퀴즈 보기, 슬라이더 조작, 타이머, 번호 뽑기, 뒤집는 카드.
-- 원리: HTML 한 파일(덱)을 pptx 안의 추가 기능 설정값으로 저장하고, 슬라이드마다 "Live HTML" 콘텐츠 추가 기능 틀을 놓는다. 추가 기능 페이지는 분필팩 사이트(`/live-html/app.html`)가 제공하고, 덱은 격리된 틀에서 실행된다. 틀 구조는 Microsoft 개발 도구(office-addin-dev-settings)의 견본과 같다.
-- 흐름: 조건 안내(Microsoft 365·Office 2021 이상, 발표 PC마다 한 번 등록, 인터넷) → 구성안 → `assets/deck-template.html`로 덱 작성 → `scripts/build_live_pptx.py` 변환(로컬 파일 합치기, 미리보기 촬영, 발표자 노트) → `scripts/qa_live_pptx.py` 점검 → 동의 후 `scripts/register_addin.py` 등록 → 교사가 PowerPoint에서 확인.
-- 규칙: 슬라이드 하나 = `<section class="slide">`, 한 장 한 활동(슬라이드 사이 값 전달 없음), 바깥 주소에서 글꼴·스크립트를 불러오지 않음, HTML 약 1.9MB 이하, 번호 뽑기는 번호만(학생 이름 금지). 등록되지 않은 PC·Office 2016/2019·모바일·PDF에서는 미리보기 그림이 보인다.
+- 트리거: "살아있는 PPT", "눌러 보는 PPT", "인터랙티브 PPT", "PPT 안에 HTML", "슬라이드에서 푸는 퀴즈".
+- 목적: 슬라이드마다 HTML이 실제로 실행되는 .pptx를 만든다. 퀴즈 보기, 슬라이더 조작, 타이머, 번호 뽑기, 뒤집는 카드.
+- 원리: HTML 한 파일(덱)을 pptx 안의 추가 기능 설정값으로 저장하고, 슬라이드마다 "Live HTML" 콘텐츠 추가 기능 틀을 놓는다. 추가 기능 페이지는 분필팩 사이트(`/live-html/app.html`)가 제공하고, 덱은 격리된 틀(`sandbox="allow-scripts allow-forms"`)에서 실행된다. 틀 구조는 Microsoft 개발 도구(office-addin-dev-settings)의 견본과 같다.
+- 실제 PowerPoint에서 확인한 범위(Windows, GitHub 러너): Microsoft 365는 편집 화면·슬라이드 쇼 모두 조작됨 / Office LTSC 2021·2024는 편집 화면만 조작되고 슬라이드 쇼는 화면만 / Office 2019 기관 설치판(IE11 엔진)은 미리보기 그림 + 안내 줄 / 창 모드 쇼는 어디서나 화면만. Mac·웹용·낱개 구매판은 미확인. 그래서 pptx와 `deck.html`을 항상 함께 주고, 눌러지지 않는 PC에서는 브라우저 발표를 안내한다. 문서에는 확인한 것만 사실로 쓴다.
+- 흐름: 버전별 차이 안내 → 구성안 → `assets/deck-template.html`로 덱 작성 → `scripts/build_live_pptx.py --strict` 변환(덱 폴더의 파일 합치기, 미리보기 촬영, 발표자 노트) → `scripts/qa_live_pptx.py` 점검 → 브라우저에서 눌러 보기 → 동의 후 `scripts/register_addin.py` 등록(발표 PC가 아니면 한 줄 명령 전달) → 교사가 PowerPoint에서 확인.
+- 규칙: 슬라이드 하나 = `<section class="slide">`, 한 장에 학생 활동 하나(슬라이드 사이 값 전달 없음), 바깥 주소에서 글꼴·스크립트를 불러오지 않음, HTML 저장 크기 3.0MB 이하(4MB까지 동작 확인, 10MB는 실패), 번호 뽑기는 번호만(학생 이름 금지), 정답은 노트에 두고 첫 화면에 보이지 않게.
 - 사이트: `site/live-html/`(추가 기능 페이지, 안내 페이지, 등록 스크립트) → `tools/make_site.py`가 `public/live-html/`로 복사하고 스킬의 `assets/manifest.xml`을 함께 놓는다.
-- 바꾸면 안 되는 것: 추가 기능 ID(`6f2b8c1e-…`), 주소 `/live-html/app.html`, 설정값 이름(`html`·`slide`·`width`·`height`·`poster`). 이미 나눠 준 모든 pptx가 여기에 기대고 있다. `app.html`을 고치면 배포 즉시 모든 파일에 적용되므로 `scripts/test_live_pptx.py`와 실제 PowerPoint 확인을 거친다.
+- 바꾸면 안 되는 것: 추가 기능 ID(`6f2b8c1e-…`), 주소 `/live-html/app.html`, 설정값 이름(`html`·`slide`·`width`·`height`·`poster`·`v`). 이미 나눠 준 모든 pptx가 여기에 기대고 있다. `app.html`을 고치면 배포 즉시 모든 파일에 적용된다. `scripts/test_live_pptx.py`는 변환기와 `app.html`의 약속(설정값 이름, 끼워 넣는 자리, 샌드박스 값)을 견주고 `tools/check.py`가 그 시험을 돌린다. 덱 안에서의 동작은 실제 PowerPoint 확인을 거친다.
 - eval: 초5 분수 6장 / 가진 HTML 변환 / 동료 PC에서 그림만 보임 / Office 2016·한쇼 환경(대안 안내) / 명렬표·사진으로 뽑기 요청.
 
 ### class-video — 수업 영상

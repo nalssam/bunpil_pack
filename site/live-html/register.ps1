@@ -10,9 +10,16 @@
     $key = 'HKCU:\Software\Microsoft\Office\16.0\WEF\Developer'
 
     New-Item -ItemType Directory -Force $dir | Out-Null
-    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest "$site/manifest.xml" -OutFile $manifest -UseBasicParsing
-    if (-not (Select-String -Path $manifest -Pattern $id -Quiet)) { throw "manifest.xml 을 제대로 받지 못했습니다: $manifest" }
+    # TLS 1.2 를 켠다. 이 줄이 막혀 있는 PC(제한된 언어 모드)에서도 등록은 계속한다.
+    try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
+    # 임시 파일로 받아 확인한 뒤에 제자리로 옮긴다(잘못 받은 내용이 쓰던 설정 파일을 덮어쓰지 않게).
+    $tmp = "$manifest.tmp"
+    Invoke-WebRequest "$site/manifest.xml" -OutFile $tmp -UseBasicParsing
+    if (-not (Select-String -LiteralPath $tmp -Pattern $id -SimpleMatch -Quiet)) {
+        Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+        throw "manifest.xml 을 제대로 받지 못했습니다: $site/manifest.xml"
+    }
+    Move-Item -LiteralPath $tmp -Destination $manifest -Force
     if (-not (Test-Path $key)) { New-Item -Path $key -Force | Out-Null }
     Set-ItemProperty -Path $key -Name $id -Value $manifest
 

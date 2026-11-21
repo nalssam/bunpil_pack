@@ -19,23 +19,23 @@
     },
     "app/bunpil-builder.zip": {
       "bytes": 28011,
-      "sha256": "99815700ec80e58662aec02437637ec6cbbaa5bf71ef61fe2a2aaeced344b2b0"
+      "sha256": "783fda8f5f7c83db3389a39ed1a723f5520a5e4cad29504cd4bf7c57687d6397"
     },
     "app/bunpil-class.zip": {
-      "bytes": 119381,
-      "sha256": "146a3011d03bb11bd6ed2133ab53a10cf7403139fdf8b13345a89702cd6ec96f"
+      "bytes": 148125,
+      "sha256": "d3b15a9d4e5c7b2dafa5e063127c36764683d4cb15ce3e204c211a914c9adbe6"
     },
     "app/bunpil-connect.zip": {
       "bytes": 7407,
-      "sha256": "6e663818848ac0e586265e8c1818982f0582f9cd312595753bca65f2aa2d4a99"
+      "sha256": "0ef2f23d3693d90f73f81400837938a6e0565c9eb873cb215bfaf12dad677500"
     },
     "app/bunpil-school.zip": {
       "bytes": 41307,
-      "sha256": "f15b838dac3276a617e6b778e92fb91ec150f9fdecd79c9a058d021d811a0c24"
+      "sha256": "e38f86c614f1b7423666d799e3ff38c43ce87758ec6b949584820f8cde04d1d6"
     },
     "app/bunpil-start.zip": {
       "bytes": 16091,
-      "sha256": "cc1221d8007de444feb5ff1fd28127fa23721d167e4efd3befa30970afa60c9b"
+      "sha256": "70d31fd29f0def092fa23acdd7f8767f2f02718eaba6d05771c2c5932a3319d0"
     },
     "app/skills/checkup.zip": {
       "bytes": 2780,
@@ -82,8 +82,8 @@
       "sha256": "8f653744f7c79b5f6e8bf70cc078c9e3e647bcf52ac46a65a1b03b21db0b2f46"
     },
     "app/skills/live-pptx.zip": {
-      "bytes": 32815,
-      "sha256": "770f371f144e5043cb5a58e5195728e4419f7a952b73eee6019dd3b2740b38fd"
+      "bytes": 61559,
+      "sha256": "ef3c6d1735a1de93a12c6ff6034b1f9bb43fdf22be52d0c3ecd7d99b63a0cd0c"
     },
     "app/skills/nalssam-pptx.zip": {
       "bytes": 27584,
@@ -130,8 +130,8 @@
       "sha256": "6f55d6e0604680a2c860067cf59e0eece5e99d4d236a8bd4dd4760298797145d"
     },
     "bunpil-pack.zip": {
-      "bytes": 572947,
-      "sha256": "951bcf7041c1cf2bbbd76933d376efa1d99a20aaa9c60046b4fee1ba88395e57"
+      "bytes": 630435,
+      "sha256": "7308076fc998331c55a049e31be3582668b4dc035bfaa66e6bbafe27f1823246"
     },
     "claude.ps1": {
       "bytes": 64164,
@@ -162,8 +162,8 @@
       "sha256": "1c3dc6571562c8c6fa5b671ff20c59d35b72d5f23be31030f9164fbcde1c27b7"
     },
     "live-html/app.html": {
-      "bytes": 11899,
-      "sha256": "fde1aed2a7beacb7fba3030a4449cff212d585c12194e1c3b96df4e7f4653a3d"
+      "bytes": 30529,
+      "sha256": "287be69e6ffed8838c5a10db803917134e3272ba9a937986e8e18efdd0c54196"
     },
     "live-html/icon-32.png": {
       "bytes": 272,
@@ -178,20 +178,20 @@
       "sha256": "622fff4d69891436551fdd61d1a2652a5c254c7914367b0dcf58f6e20dd86b2e"
     },
     "live-html/index.html": {
-      "bytes": 7022,
-      "sha256": "36baf2e7c682b05119fffecfef99427ffdbc7c348c2f953f612fe328215e7af3"
+      "bytes": 15973,
+      "sha256": "70835e0220f913b1049ea652f9f2144fee4ca7373cf3830ffb5bbebfa8283687"
     },
     "live-html/manifest.xml": {
       "bytes": 1097,
       "sha256": "87d22c12f4081fc2f07d9ffcb8a67a83c152782f3b3ec37964cd86a8287658ce"
     },
     "live-html/register.ps1": {
-      "bytes": 1596,
-      "sha256": "1705556a92bbb8ac8391f37d57e955871ea6ade0574c49c13aca42e7d3dcf6bb"
+      "bytes": 2068,
+      "sha256": "856322c0da9dffafb9dfda9fe8a7ce33f294967ab34bc11ae0a7c99758d19f1a"
     },
     "live-html/register.sh": {
-      "bytes": 1325,
-      "sha256": "c06023d866c5147fbf8a273ea937ade053f38fd11211781a53cfbbe45d7904d7"
+      "bytes": 3250,
+      "sha256": "df2894620f7363f47dbb4a074ec937c1978d7b66a1ff658efaa33717bc1fd9f6"
     },
     "live-html/unregister.ps1": {
       "bytes": 548,

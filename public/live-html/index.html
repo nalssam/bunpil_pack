@@ -4,91 +4,199 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>살아있는 PPT — Live HTML 추가 기능</title>
-<meta name="description" content="PowerPoint 슬라이드 안에서 HTML이 실행되는 '살아있는 PPT'를 여는 방법. 분필팩 live-pptx 스킬로 만든 파일에 필요한 추가 기능을 한 줄로 등록합니다.">
-<link rel="icon" href="icon-32.png">
+<meta name="description" content="PowerPoint 슬라이드 안에서 HTML이 실행되는 '살아있는 PPT'를 여는 방법. 한 줄로 등록하기, 어느 PowerPoint에서 되는지, 안 될 때 보이는 화면과 할 일, 지우기.">
+<link rel="icon" href="/live-html/icon-32.png">
 <style>
   :root{--bg:#FBFAF6;--ink:#132C3D;--teal:#18766B;--gray:#586875;--line:#E4DFD3;--card:#fff;--soft:#E3F0EC;--coral:#D9734E}
   @media (prefers-color-scheme:dark){:root{--bg:#10202B;--ink:#EEF3F1;--teal:#6FD1C2;--gray:#A6B6BF;--line:#2A3D4A;--card:#172B38;--soft:#1C3A3A;--coral:#F09A78}}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65;
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65;word-break:keep-all;overflow-wrap:anywhere;
     font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
   main{max-width:760px;margin:0 auto;padding:48px 20px 72px}
   .kicker{color:var(--teal);font-weight:700;font-size:14px;letter-spacing:.04em}
   h1{font-size:clamp(30px,6vw,44px);line-height:1.2;letter-spacing:-.02em;margin:8px 0 12px;text-wrap:balance}
-  h2{font-size:22px;margin:44px 0 12px;letter-spacing:-.01em}
+  h2{font-size:22px;margin:44px 0 12px;letter-spacing:-.01em;scroll-margin-top:12px}
+  h2 small{font-size:14px;font-weight:400;color:var(--gray);letter-spacing:0;white-space:nowrap}
   p{margin:0 0 12px} .lead{font-size:18px;color:var(--gray)}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0}
-  .card h3{margin:0 0 8px;font-size:16px}
+  .card h3{margin:0 0 8px;font-size:16px} .card h3:not(:first-child){margin-top:18px}
+  .card>:last-child{margin-bottom:0}
+  .first{border-color:var(--teal);background:var(--soft)}
   .cmd{display:flex;gap:8px;align-items:stretch;margin:8px 0}
   code,pre{font-family:ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace;font-size:13.5px}
-  pre{flex:1;margin:0;background:var(--soft);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:pre}
-  button{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:10px;padding:0 16px;background:var(--ink);color:var(--bg);cursor:pointer;flex:none}
+  pre{flex:1;min-width:0;margin:0;background:var(--soft);border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-all}
+  .first pre,.first code{background:var(--card)}
+  code{background:var(--soft);border-radius:6px;padding:1px 5px;line-height:1}
+  button{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:10px;padding:0 16px;min-height:44px;min-width:76px;background:var(--ink);color:var(--bg);cursor:pointer;flex:none}
   button:focus-visible,a:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
   ol,ul{margin:0 0 12px;padding-left:22px} li{margin:4px 0}
-  .tbl{overflow-x:auto} table{border-collapse:collapse;width:100%;font-size:15px}
-  th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
-  th{color:var(--gray);font-weight:600;white-space:nowrap}
+  table{border-collapse:collapse;width:100%;font-size:15px;margin:0 0 12px}
+  th,td{border-bottom:1px solid var(--line);padding:10px 6px;text-align:left;vertical-align:top}
+  th{color:var(--gray);font-weight:600} th small,td small{display:block;font-weight:400;color:var(--gray);font-size:13px}
+  .yes{color:var(--teal);font-weight:700} .no{color:var(--gray)}
+  .bar{margin:0 0 10px;padding:10px 12px;border-left:5px solid #F2C811;border-radius:6px;background:#FFF4CE;color:#201F1E;font-size:14px;line-height:1.55}
+  .bar.black{border-left-color:#555;background:#1B1B1B;color:#fff}
+  .bar b{font-weight:700}
   a{color:var(--teal)} .muted{color:var(--gray);font-size:14px}
+  .sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  @media (max-width:520px){main{padding:32px 16px 56px} h2{margin-top:36px} .card{padding:16px} .cmd{flex-direction:column}}
 </style>
 </head>
 <body>
 <main>
   <div class="kicker">nalssam's 분필팩 · live-pptx</div>
   <h1>살아있는 PPT를 여는 방법</h1>
-  <p class="lead">슬라이드 안에서 퀴즈를 누르고 슬라이더를 움직일 수 있는 PowerPoint 파일을 받으셨나요? 화면이 그림으로만 보인다면, 이 컴퓨터에 <b>Live HTML 추가 기능</b>을 한 번 등록하면 됩니다.</p>
+  <p class="lead">슬라이드 안에서 퀴즈를 누르고 슬라이더를 움직이는 PowerPoint 파일입니다. 처음 여는 컴퓨터에서는 노란 “추가 기능 오류” 줄이 뜹니다. 고장이 아니라 <b>이 컴퓨터에 아직 등록하지 않았다</b>는 뜻입니다.</p>
 
-  <h2>1. 등록하기 (한 번만)</h2>
+  <div class="card first">
+    <h3>먼저 알아 둘 것</h3>
+    <ul>
+      <li>슬라이드 쇼에서 눌러 쓰려면 <b>Windows의 Microsoft 365</b> PowerPoint가 필요합니다. Office LTSC 2021·2024는 편집 화면에서만 눌러집니다. <a href="#versions">표 보기</a></li>
+      <li>발표할 때 <b>인터넷</b>이 연결되어 있어야 합니다.</li>
+      <li>안 되면 함께 받은 <b>deck.html</b>을 브라우저로 엽니다. <a href="#browser">방법 보기</a></li>
+    </ul>
+  </div>
+
+  <h2 id="register">1. 등록하기 (컴퓨터마다 한 번)</h2>
+  <p class="muted">발표할 컴퓨터에서 이 페이지를 열면 명령을 복사해 붙여넣을 수 있습니다: <code>https://nalssam-bunpil.vercel.app/live-html/</code></p>
   <div class="card">
     <h3>Windows</h3>
-    <p>시작 메뉴에서 <b>PowerShell</b> 또는 <b>명령 프롬프트</b>를 열고 아래 한 줄을 붙여넣어 실행합니다.</p>
+    <p>시작 메뉴에서 <b>PowerShell</b>을 찾아 열고, 아래 한 줄을 붙여넣은 뒤 Enter를 누릅니다.</p>
     <div class="cmd"><pre id="win">powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/live-html/register.ps1 | iex"</pre><button type="button" data-copy="win">복사</button></div>
   </div>
   <div class="card">
     <h3>Mac</h3>
-    <p><b>터미널</b>을 열고 아래 한 줄을 붙여넣어 실행합니다.</p>
+    <p><b>터미널</b>을 열고, 아래 한 줄을 붙여넣은 뒤 Enter를 누릅니다. Mac PowerPoint에서 되는지는 아직 확인하지 못했습니다.</p>
     <div class="cmd"><pre id="mac">curl -fsSL https://nalssam-bunpil.vercel.app/live-html/register.sh | sh</pre><button type="button" data-copy="mac">복사</button></div>
   </div>
-  <p>그다음 <b>PowerPoint를 완전히 종료했다가 다시 열고</b> 파일을 엽니다. 위쪽에 "보호된 보기" 노란 줄이 보이면 <b>편집 사용</b>을 누릅니다.</p>
-  <p class="muted">등록은 현재 사용자 계정에만 적용되고 관리자 권한이 필요 없습니다. 프로그램을 설치하지 않고, 주소가 적힌 작은 설정 파일(<a href="manifest.xml">manifest.xml</a>) 하나를 PowerPoint가 찾을 수 있는 곳에 둡니다.</p>
+  <p>“등록했습니다”라고 나오면 <b>PowerPoint를 완전히 종료했다가 다시 열고</b> 파일을 엽니다. 위쪽에 “제한된 보기” 줄이 보이면 <b>편집 사용</b>을 누릅니다.</p>
+  <p class="muted">현재 사용자 계정에만 등록되고 관리자 권한이 필요 없습니다. 프로그램을 설치하지 않고, 주소가 적힌 작은 설정 파일(<a href="/live-html/manifest.xml">manifest.xml</a>) 하나를 내려받아 둡니다. Windows에서는 그 위치를 레지스트리에 한 줄 적습니다.</p>
 
-  <h2>2. 필요한 것</h2>
+  <h2 id="versions">2. 어느 PowerPoint에서 되나</h2>
+  <table>
+    <tr><th scope="col">PowerPoint</th><th scope="col">편집 화면</th><th scope="col">슬라이드 쇼<small>전체 화면</small></th></tr>
+    <tr><td><b>Microsoft 365</b><small>구독형 16.0.20625</small></td><td class="yes">눌러짐</td><td class="yes">눌러짐</td></tr>
+    <tr><td><b>Office LTSC 2024</b><small>기관용 고정판 16.0.17932</small></td><td class="yes">눌러짐</td><td>화면만 보임</td></tr>
+    <tr><td><b>Office LTSC 2021</b><small>기관용 고정판 16.0.14334</small></td><td class="yes">눌러짐</td><td>화면만 보임</td></tr>
+    <tr><td><b>Office 2019</b><small>볼륨판 16.0.10417</small></td><td class="no">그림과 안내 줄</td><td class="no">그림과 안내 줄</td></tr>
+  </table>
   <ul>
-    <li><b>Microsoft 365</b> 또는 <b>Office 2021 이상</b>의 PowerPoint (Windows·Mac). Office 2016·2019에서는 그림만 보입니다.</li>
-    <li>발표할 때 <b>인터넷 연결</b>.</li>
-    <li>휴대폰·태블릿 앱, 한쇼, 구글 슬라이드, PDF에서는 그림으로 보입니다.</li>
+    <li><b>내 PowerPoint 확인</b>: 파일 → 계정 → “제품 정보”에 “Microsoft 365”라고 나오면 구독형입니다.</li>
+    <li><b>볼륨판</b>: 학교·기관이 한꺼번에 사서 설치한 Office입니다.</li>
+    <li><b>화면만 보임</b>: 편집 화면에서 해 둔 상태 그대로 보이고, 화면 속 단추는 눌러지지 않습니다. 클릭하면 다음 장으로 넘어갈 수 있습니다. LTSC 2024에서는 편집 화면에서 열어 보지 않은 장이 희거나 검게 나올 수 있습니다.</li>
+    <li>창으로 띄우는 쇼와 읽기용 보기에서는 Microsoft 365에서도 화면만 보입니다(LTSC 2021에서는 흰 화면도 있었습니다).</li>
   </ul>
+  <p class="muted">Windows에서, 그래픽 카드가 없는 시험용 컴퓨터로 확인한 결과입니다. 그래픽 카드가 있는 LTSC 컴퓨터에서 달라지는지는 모릅니다. <b>확인하지 못한 것</b>: Mac PowerPoint, 웹용 PowerPoint, 하나씩 따로 산(볼륨판이 아닌) Office 2021·2024, Office 2016, 발표자 보기, 펜·레이저 포인터, 터치 화면·전자칠판, 휴대폰·태블릿, 한쇼, 구글 슬라이드, PDF·인쇄·동영상 내보내기(미리보기 그림으로 나올 것으로 봅니다).</p>
 
-  <h2>3. 그래도 움직이지 않을 때</h2>
-  <div class="tbl"><table>
-    <tr><th>보이는 것</th><th>할 일</th></tr>
-    <tr><td>그림만 보인다</td><td>위 1번을 실행했는지, PowerPoint를 완전히 껐다 켰는지 확인합니다.</td></tr>
-    <tr><td>"추가 기능을 로드할 수 없습니다"</td><td>인터넷 연결을 확인하고 <b>다시 시도</b>를 누릅니다. 학교망이 이 사이트를 막는지 정보 담당 선생님께 확인합니다.</td></tr>
-    <tr><td>"웹 엔진이 오래되어…"</td><td>Microsoft 365 또는 Office 2021 이상이 깔린 컴퓨터에서 엽니다.</td></tr>
-    <tr><td>슬라이드 쇼에서만 빈 화면</td><td>파일 → 옵션 → 고급 → "슬라이드 쇼 하드웨어 그래픽 가속 사용 안 함"을 켭니다.</td></tr>
-    <tr><td>발표자 보기에서 눌리지 않는다</td><td>청중이 보는 화면에서 누릅니다.</td></tr>
-  </table></div>
-
-  <h2>4. 지우기</h2>
+  <h2 id="trouble">3. 이런 화면이 보이면</h2>
   <div class="card">
-    <div class="cmd"><pre id="unwin">powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/live-html/unregister.ps1 | iex"</pre><button type="button" data-copy="unwin">복사</button></div>
-    <div class="cmd"><pre id="unmac">curl -fsSL https://nalssam-bunpil.vercel.app/live-html/register.sh | sh -s -- --remove</pre><button type="button" data-copy="unmac">복사</button></div>
+    <p class="bar"><b>추가 기능 오류</b> — 이 추가 기능은 더 이상 사용할 수 없습니다. 배포 중에 삽입된 추가 기능만 Visual Studio에서 디버깅하는 중에 사용할 수 있습니다. … 에 배포하고 다시 삽입하세요. [닫기]</p>
+    <p><b>이 컴퓨터에 등록하지 않았다는 뜻입니다.</b> 그림은 노란 줄 밑에 그대로 있습니다. <a href="#register">1번</a>대로 등록하고 PowerPoint를 완전히 종료했다가 다시 엽니다. (LTSC 2024의 슬라이드 쇼에서는 그림 대신 흰 화면이었습니다.)</p>
+  </div>
+  <div class="card">
+    <p class="bar"><b>추가 기능 오류</b> — 추가 기능을 로드할 수 없습니다. 네트워크 및/또는 인터넷 연결 여부를 확인해 보세요. 온라인으로 돌아온 경우 "다시 시도"를 클릭하세요. [다시 시도] [닫기]</p>
+    <p><b>등록은 됐지만 추가 기능 페이지를 불러오지 못했습니다.</b> 이때는 그림 대신 흰 화면입니다. 인터넷 연결을 확인하고 <b>다시 시도</b>를 누릅니다. 계속되면 학교망이 <code>nalssam-bunpil.vercel.app</code>을 막는지 정보 담당 선생님께 확인합니다.</p>
+  </div>
+  <div class="card">
+    <p class="bar black">이 PowerPoint의 웹 엔진이 오래되어 HTML을 실행할 수 없습니다. Microsoft 365 또는 Office 2021 이상에서 열어 주세요.</p>
+    <p><b>그림 아래에 이 검은 줄이 보이면 오래된 PowerPoint입니다</b>(Office 2019 볼륨판에서 확인). 이 컴퓨터에서는 실행되지 않습니다. 그림으로 발표하거나 <a href="#browser">브라우저로 엽니다</a>. 안내 문구와 달리, 슬라이드 쇼에서 눌러 쓰려면 Microsoft 365가 필요합니다.</p>
+  </div>
+  <div class="card">
+    <h3>편집 화면에서는 눌러지는데 슬라이드 쇼에서는 안 된다</h3>
+    <p>Office LTSC 2021·2024에서 그렇습니다(<a href="#versions">2번 표</a>). 쇼에서 눌러 써야 하면 <a href="#browser">브라우저로 엽니다</a>.</p>
   </div>
 
+  <h2 id="show">4. 발표할 때 <small>Microsoft 365에서 확인</small></h2>
+  <ul>
+    <li><b>넘기기</b>: ← → PageUp PageDown 키를 씁니다. 화면 속에 넘기기 단추가 있으면 그것도 됩니다. 살아있는 장에서는 클릭해도 넘어가지 않습니다.</li>
+    <li><b>글자 입력칸 안</b>에서는 ← →가 글자 사이를 움직입니다. PageDown으로 넘기거나, 빈 곳을 한 번 누른 뒤 넘깁니다.</li>
+    <li><b>끝내기</b>: 화면 속을 누른 뒤에는 <b>Esc를 두 번</b> 누릅니다.</li>
+    <li><b>눌러 둔 것은 남습니다.</b> 편집 화면에서 펼친 정답은 쇼에서도 펼쳐져 있습니다. 파일을 닫았다가 다시 열면 처음으로 돌아갑니다.</li>
+    <li><b>저장</b>하면 미리보기 그림이 그 순간의 화면으로 바뀝니다. 정답을 펼친 채 저장하면 그림에 정답이 남습니다.</li>
+  </ul>
+
+  <h2 id="browser">5. 브라우저로 발표하기 <small>어느 컴퓨터에서나</small></h2>
+  <ol>
+    <li>pptx와 함께 받은 <b>deck.html</b>을 Edge나 Chrome으로 엽니다.</li>
+    <li><b>F11</b>을 눌러 전체 화면으로 만듭니다.</li>
+    <li><b>← →</b> 키로 넘깁니다.</li>
+  </ol>
+  <p class="muted">등록도 Microsoft 365도 필요 없습니다. deck.html이 없으면 파일을 만든 분께 받으세요.</p>
+
+  <h2 id="remove">6. 지우기</h2>
+  <div class="card">
+    <h3>Windows</h3>
+    <div class="cmd"><pre id="unwin">powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/live-html/unregister.ps1 | iex"</pre><button type="button" data-copy="unwin">복사</button></div>
+    <h3>Mac</h3>
+    <div class="cmd"><pre id="unmac">curl -fsSL https://nalssam-bunpil.vercel.app/live-html/register.sh | sh -s -- --remove</pre><button type="button" data-copy="unmac">복사</button></div>
+  </div>
+  <p class="muted">실행한 뒤 PowerPoint를 다시 열면 적용됩니다.</p>
+
   <h2>개인정보</h2>
-  <p>슬라이드의 HTML은 PowerPoint 파일 안에 들어 있습니다. 이 사이트의 추가 기능 페이지는 그 HTML을 꺼내 화면에 그릴 뿐, 내용을 어디로도 보내거나 저장하지 않습니다. 믿을 수 있는 사람이 만든 파일만 여세요.</p>
+  <p>슬라이드의 HTML은 PowerPoint 파일 안에 들어 있습니다. 추가 기능 페이지는 그것을 꺼내 화면에 그릴 뿐, 내용을 이 사이트로 보내거나 저장하지 않습니다. 페이지를 불러올 때 이 사이트와 Microsoft 서버에 일반적인 접속 기록은 남습니다. 믿을 수 있는 사람이 만든 파일만 여세요.</p>
 
   <h2>직접 만들고 싶다면</h2>
   <p><a href="/">nalssam's 분필팩</a>을 설치하고 "분수 수업을 살아있는 PPT로 만들어줘"처럼 말하면 됩니다.</p>
+  <p id="copy-status" class="sr" role="status"></p>
 </main>
 <script>
-  Array.prototype.forEach.call(document.querySelectorAll('button[data-copy]'), function (b) {
-    b.addEventListener('click', function () {
-      var text = document.getElementById(b.getAttribute('data-copy')).textContent;
-      function done() { var old = b.textContent; b.textContent = '복사됨'; setTimeout(function () { b.textContent = old; }, 1400); }
-      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, function () {}); }
-      else { var r = document.createRange(); r.selectNodeContents(document.getElementById(b.getAttribute('data-copy'))); var s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); done(); } catch (e) {} }
+  (function () {
+    var live = document.getElementById('copy-status');   // 화면 읽기 프로그램에 알리는 자리(눈에는 보이지 않는다)
+    var note = null, noteFor = null;                      // 복사하지 못했을 때만 명령 아래에 생기는 안내. 한 번에 하나뿐이다.
+    function selectAll(el) {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+    function isSelected(el) {
+      var s = window.getSelection();
+      return !!s && s.rangeCount > 0 && !s.isCollapsed && el.contains(s.anchorNode) && el.contains(s.focusNode);
+    }
+    function clearNote() {
+      if (note && note.parentNode) { note.parentNode.removeChild(note); }
+      note = null; noteFor = null;
+    }
+    function announce(text) {
+      if (!live) { return; }
+      live.textContent = '';
+      setTimeout(function () { live.textContent = text; }, 60);
+    }
+    // "선택되어 있다"는 안내는 선택이 풀리면 같이 지운다.
+    document.addEventListener('selectionchange', function () {
+      if (note && noteFor && !isSelected(noteFor)) { clearNote(); }
     });
-  });
+    Array.prototype.forEach.call(document.querySelectorAll('button[data-copy]'), function (b) {
+      var label = b.textContent, timer = 0;
+      var pre = document.getElementById(b.getAttribute('data-copy'));
+      function flash(text) {
+        b.textContent = text;
+        clearTimeout(timer);
+        timer = setTimeout(function () { b.textContent = label; }, 1600);
+      }
+      function copied() { clearNote(); flash('복사됨'); announce('명령을 복사했습니다.'); }
+      // 클립보드에 직접 넣지 못하는 브라우저: 명령을 선택해서 복사하고, 그것도 안 되면 선택만 해 두고 알린다.
+      function fallback() {
+        var ok = false, held, help;
+        selectAll(pre);
+        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+        if (ok) { copied(); return; }
+        held = isSelected(pre);
+        help = held ? '자동으로 복사하지 못했습니다. 명령이 선택되어 있으니 Ctrl+C(Mac은 ⌘C)로 복사하세요.'
+                    : '자동으로 복사하지 못했습니다. 명령을 끌어서 선택한 뒤 복사하세요.';
+        clearNote();
+        flash(held ? '선택됨' : '실패');
+        note = document.createElement('p'); note.className = 'muted'; note.textContent = help;
+        noteFor = held ? pre : null;
+        b.parentNode.parentNode.insertBefore(note, b.parentNode.nextSibling);
+        announce(help);
+      }
+      b.addEventListener('click', function () {
+        var done = null;
+        clearNote();   // 다른 명령 아래에 남아 있던 안내는 이제 맞지 않는다
+        try { done = navigator.clipboard && navigator.clipboard.writeText && navigator.clipboard.writeText(pre.textContent); } catch (e) { done = null; }
+        if (done && done.then) { done.then(copied, fallback); } else { fallback(); }
+      });
+    });
+  })();
 </script>
 </body>
 </html>
