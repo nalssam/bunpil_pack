@@ -51,14 +51,14 @@
   <div class="card first">
     <h3>먼저 알아 둘 것</h3>
     <ul>
-      <li>슬라이드 쇼에서 눌러 쓰려면 <b>Windows의 Microsoft 365</b> PowerPoint가 필요합니다. Office LTSC 2021·2024는 편집 화면에서만 눌러집니다. <a href="#versions">표 보기</a></li>
+      <li>슬라이드 쇼에서 눌러 쓰려면 <b>Windows의 Microsoft 365</b> PowerPoint(최신 채널에서 확인)가 필요합니다. Office LTSC 2021·2024는 편집 화면에서만 눌러집니다. <a href="#versions">표 보기</a></li>
       <li>발표할 때 <b>인터넷</b>이 연결되어 있어야 합니다.</li>
-      <li>안 되면 함께 받은 <b>deck.html</b>을 브라우저로 엽니다. <a href="#browser">방법 보기</a></li>
+      <li>안 되면 함께 받은 <b>브라우저용 HTML(deck-browser.html)</b>을 브라우저로 엽니다. <a href="#browser">방법 보기</a></li>
     </ul>
   </div>
 
   <h2 id="register">1. 등록하기 (컴퓨터마다 한 번)</h2>
-  <p class="muted">발표할 컴퓨터에서 이 페이지를 열면 명령을 복사해 붙여넣을 수 있습니다: <code>https://nalssam-bunpil.vercel.app/live-html/</code></p>
+  <p class="muted">발표할 컴퓨터에서 이 페이지를 열면 명령을 복사해 붙여넣을 수 있습니다.<br><code>https://nalssam-bunpil.vercel.app/live-html/</code></p>
   <div class="card">
     <h3>Windows</h3>
     <p>시작 메뉴에서 <b>PowerShell</b>을 찾아 열고, 아래 한 줄을 붙여넣은 뒤 Enter를 누릅니다.</p>
@@ -70,12 +70,12 @@
     <div class="cmd"><pre id="mac">curl -fsSL https://nalssam-bunpil.vercel.app/live-html/register.sh | sh</pre><button type="button" data-copy="mac">복사</button></div>
   </div>
   <p>“등록했습니다”라고 나오면 <b>PowerPoint를 완전히 종료했다가 다시 열고</b> 파일을 엽니다. 위쪽에 “제한된 보기” 줄이 보이면 <b>편집 사용</b>을 누릅니다.</p>
-  <p class="muted">현재 사용자 계정에만 등록되고 관리자 권한이 필요 없습니다. 프로그램을 설치하지 않고, 주소가 적힌 작은 설정 파일(<a href="/live-html/manifest.xml">manifest.xml</a>) 하나를 내려받아 둡니다. Windows에서는 그 위치를 레지스트리에 한 줄 적습니다.</p>
+  <p class="muted">현재 사용자 계정에만 등록되고 관리자 권한을 쓰지 않도록 만들었습니다. 명령이 무엇을 하는지 먼저 보고 싶으면 <a href="/live-html/register.ps1">register.ps1</a>(Windows)이나 <a href="/live-html/register.sh">register.sh</a>(Mac) 주소를 열어 내용을 읽어 볼 수 있습니다. 프로그램을 설치하지 않고, 주소가 적힌 작은 설정 파일(<a href="/live-html/manifest.xml">manifest.xml</a>) 하나를 내려받아 둡니다. Windows에서는 그 위치를 레지스트리에 한 줄 적습니다.</p>
 
   <h2 id="versions">2. 어느 PowerPoint에서 되나</h2>
   <table>
     <tr><th scope="col">PowerPoint</th><th scope="col">편집 화면</th><th scope="col">슬라이드 쇼<small>전체 화면</small></th></tr>
-    <tr><td><b>Microsoft 365</b><small>구독형 16.0.20625</small></td><td class="yes">눌러짐</td><td class="yes">눌러짐</td></tr>
+    <tr><td><b>Microsoft 365</b><small>구독형 최신 채널 16.0.20625</small></td><td class="yes">눌러짐</td><td class="yes">눌러짐</td></tr>
     <tr><td><b>Office LTSC 2024</b><small>기관용 고정판 16.0.17932</small></td><td class="yes">눌러짐</td><td>화면만 보임</td></tr>
     <tr><td><b>Office LTSC 2021</b><small>기관용 고정판 16.0.14334</small></td><td class="yes">눌러짐</td><td>화면만 보임</td></tr>
     <tr><td><b>Office 2019</b><small>볼륨판 16.0.10417</small></td><td class="no">그림과 안내 줄</td><td class="no">그림과 안내 줄</td></tr>
@@ -86,7 +86,7 @@
     <li><b>화면만 보임</b>: 편집 화면에서 해 둔 상태 그대로 보이고, 화면 속 단추는 눌러지지 않습니다. 클릭하면 다음 장으로 넘어갈 수 있습니다. LTSC 2024에서는 편집 화면에서 열어 보지 않은 장이 희거나 검게 나올 수 있습니다.</li>
     <li>창으로 띄우는 쇼와 읽기용 보기에서는 Microsoft 365에서도 화면만 보입니다(LTSC 2021에서는 흰 화면도 있었습니다).</li>
   </ul>
-  <p class="muted">Windows에서, 그래픽 카드가 없는 시험용 컴퓨터로 확인한 결과입니다. 그래픽 카드가 있는 LTSC 컴퓨터에서 달라지는지는 모릅니다. <b>확인하지 못한 것</b>: Mac PowerPoint, 웹용 PowerPoint, 하나씩 따로 산(볼륨판이 아닌) Office 2021·2024, Office 2016, 발표자 보기, 펜·레이저 포인터, 터치 화면·전자칠판, 휴대폰·태블릿, 한쇼, 구글 슬라이드, PDF·인쇄·동영상 내보내기(미리보기 그림으로 나올 것으로 봅니다).</p>
+  <p class="muted">Windows에서, 그래픽 카드가 없는 시험용 컴퓨터로 확인한 결과입니다. 그래픽 카드가 있는 LTSC 컴퓨터에서 달라지는지는 모릅니다. <b>확인하지 못한 것</b>: 다른 업데이트 채널이나 더 오래된 Microsoft 365(기관이 업데이트를 늦춘 곳은 발표 전에 슬라이드 쇼로 한 번 눌러 보세요), Mac PowerPoint, 웹용 PowerPoint, 하나씩 따로 산(볼륨판이 아닌) Office 2021·2024, Office 2016, 발표자 보기, 펜·레이저 포인터, 터치 화면·전자칠판, 휴대폰·태블릿, 한쇼, 구글 슬라이드, PDF·인쇄·동영상 내보내기(미리보기 그림으로 나올 것으로 봅니다).</p>
 
   <h2 id="trouble">3. 이런 화면이 보이면</h2>
   <div class="card">
@@ -117,11 +117,11 @@
 
   <h2 id="browser">5. 브라우저로 발표하기 <small>어느 컴퓨터에서나</small></h2>
   <ol>
-    <li>pptx와 함께 받은 <b>deck.html</b>을 Edge나 Chrome으로 엽니다.</li>
+    <li>pptx와 함께 받은 <b>deck-browser.html</b>(그림·글자가 한 파일에 합쳐진 것)을 Edge나 Chrome으로 엽니다.</li>
     <li><b>F11</b>을 눌러 전체 화면으로 만듭니다.</li>
     <li><b>← →</b> 키로 넘깁니다.</li>
   </ol>
-  <p class="muted">등록도 Microsoft 365도 필요 없습니다. deck.html이 없으면 파일을 만든 분께 받으세요.</p>
+  <p class="muted">등록도 Microsoft 365도 필요 없습니다. deck-browser.html이 없으면 파일을 만든 분께 받으세요. (그림이 따로 있는 deck.html만 받으면 그림이 깨질 수 있습니다.)</p>
 
   <h2 id="remove">6. 지우기</h2>
   <div class="card">

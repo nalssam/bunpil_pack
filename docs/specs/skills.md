@@ -53,7 +53,7 @@
 - 트리거: "살아있는 PPT", "눌러 보는 PPT", "인터랙티브 PPT", "PPT 안에 HTML", "슬라이드에서 푸는 퀴즈".
 - 목적: 슬라이드마다 HTML이 실제로 실행되는 .pptx를 만든다. 퀴즈 보기, 슬라이더 조작, 타이머, 번호 뽑기, 뒤집는 카드.
 - 원리: HTML 한 파일(덱)을 pptx 안의 추가 기능 설정값으로 저장하고, 슬라이드마다 "Live HTML" 콘텐츠 추가 기능 틀을 놓는다. 추가 기능 페이지는 분필팩 사이트(`/live-html/app.html`)가 제공하고, 덱은 격리된 틀(`sandbox="allow-scripts allow-forms"`)에서 실행된다. 틀 구조는 Microsoft 개발 도구(office-addin-dev-settings)의 견본과 같다.
-- 실제 PowerPoint에서 확인한 범위(Windows, GitHub 러너): Microsoft 365는 편집 화면·슬라이드 쇼 모두 조작됨 / Office LTSC 2021·2024는 편집 화면만 조작되고 슬라이드 쇼는 화면만 / Office 2019 기관 설치판(IE11 엔진)은 미리보기 그림 + 안내 줄 / 창 모드 쇼는 어디서나 화면만. Mac·웹용·낱개 구매판은 미확인. 그래서 pptx와 `deck.html`을 항상 함께 주고, 눌러지지 않는 PC에서는 브라우저 발표를 안내한다. 문서에는 확인한 것만 사실로 쓴다.
+- 실제 PowerPoint에서 확인한 범위(Windows, GitHub 러너): Microsoft 365는 편집 화면·슬라이드 쇼 모두 조작됨 / Office LTSC 2021·2024는 편집 화면만 조작되고 슬라이드 쇼는 화면만 / Office 2019 기관 설치판(IE11 엔진)은 미리보기 그림 + 안내 줄 / 창 모드 쇼는 어디서나 화면만. Mac·웹용·낱개 구매판은 미확인. 그래서 pptx와 한 파일로 합친 브라우저용 `deck-browser.html`(변환기 `--save-html`)을 항상 함께 주고, 눌러지지 않는 PC에서는 브라우저 발표를 안내한다. Microsoft 365는 Windows 최신 채널 16.0.20625 한 빌드만 확인했고 Office 2016은 확인하지 못했다. 문서에는 확인한 것만 사실로 쓴다.
 - 흐름: 버전별 차이 안내 → 구성안 → `assets/deck-template.html`로 덱 작성 → `scripts/build_live_pptx.py --strict` 변환(덱 폴더의 파일 합치기, 미리보기 촬영, 발표자 노트) → `scripts/qa_live_pptx.py` 점검 → 브라우저에서 눌러 보기 → 동의 후 `scripts/register_addin.py` 등록(발표 PC가 아니면 한 줄 명령 전달) → 교사가 PowerPoint에서 확인.
 - 규칙: 슬라이드 하나 = `<section class="slide">`, 한 장에 학생 활동 하나(슬라이드 사이 값 전달 없음), 바깥 주소에서 글꼴·스크립트를 불러오지 않음, HTML 저장 크기 3.0MB 이하(4MB까지 동작 확인, 10MB는 실패), 번호 뽑기는 번호만(학생 이름 금지), 정답은 노트에 두고 첫 화면에 보이지 않게.
 - 사이트: `site/live-html/`(추가 기능 페이지, 안내 페이지, 등록 스크립트) → `tools/make_site.py`가 `public/live-html/`로 복사하고 스킬의 `assets/manifest.xml`을 함께 놓는다.
