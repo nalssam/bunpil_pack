@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>살아있는 PPT — Live HTML 추가 기능</title>
+<meta name="description" content="PowerPoint 슬라이드 안에서 HTML이 실행되는 '살아있는 PPT'를 여는 방법. 분필팩 live-pptx 스킬로 만든 파일에 필요한 추가 기능을 한 줄로 등록합니다.">
+<link rel="icon" href="icon-32.png">
+<style>
+  :root{--bg:#FBFAF6;--ink:#132C3D;--teal:#18766B;--gray:#586875;--line:#E4DFD3;--card:#fff;--soft:#E3F0EC;--coral:#D9734E}
+  @media (prefers-color-scheme:dark){:root{--bg:#10202B;--ink:#EEF3F1;--teal:#6FD1C2;--gray:#A6B6BF;--line:#2A3D4A;--card:#172B38;--soft:#1C3A3A;--coral:#F09A78}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65;
+    font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:48px 20px 72px}
+  .kicker{color:var(--teal);font-weight:700;font-size:14px;letter-spacing:.04em}
+  h1{font-size:clamp(30px,6vw,44px);line-height:1.2;letter-spacing:-.02em;margin:8px 0 12px;text-wrap:balance}
+  h2{font-size:22px;margin:44px 0 12px;letter-spacing:-.01em}
+  p{margin:0 0 12px} .lead{font-size:18px;color:var(--gray)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0}
+  .card h3{margin:0 0 8px;font-size:16px}
+  .cmd{display:flex;gap:8px;align-items:stretch;margin:8px 0}
+  code,pre{font-family:ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace;font-size:13.5px}
+  pre{flex:1;margin:0;background:var(--soft);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:pre}
+  button{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:10px;padding:0 16px;background:var(--ink);color:var(--bg);cursor:pointer;flex:none}
+  button:focus-visible,a:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+  ol,ul{margin:0 0 12px;padding-left:22px} li{margin:4px 0}
+  .tbl{overflow-x:auto} table{border-collapse:collapse;width:100%;font-size:15px}
+  th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+  th{color:var(--gray);font-weight:600;white-space:nowrap}
+  a{color:var(--teal)} .muted{color:var(--gray);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">nalssam's 분필팩 · live-pptx</div>
+  <h1>살아있는 PPT를 여는 방법</h1>
+  <p class="lead">슬라이드 안에서 퀴즈를 누르고 슬라이더를 움직일 수 있는 PowerPoint 파일을 받으셨나요? 화면이 그림으로만 보인다면, 이 컴퓨터에 <b>Live HTML 추가 기능</b>을 한 번 등록하면 됩니다.</p>
+
+  <h2>1. 등록하기 (한 번만)</h2>
+  <div class="card">
+    <h3>Windows</h3>
+    <p>시작 메뉴에서 <b>PowerShell</b> 또는 <b>명령 프롬프트</b>를 열고 아래 한 줄을 붙여넣어 실행합니다.</p>
+    <div class="cmd"><pre id="win">powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/live-html/register.ps1 | iex"</pre><button type="button" data-copy="win">복사</button></div>
+  </div>
+  <div class="card">
+    <h3>Mac</h3>
+    <p><b>터미널</b>을 열고 아래 한 줄을 붙여넣어 실행합니다.</p>
+    <div class="cmd"><pre id="mac">curl -fsSL https://nalssam-bunpil.vercel.app/live-html/register.sh | sh</pre><button type="button" data-copy="mac">복사</button></div>
+  </div>
+  <p>그다음 <b>PowerPoint를 완전히 종료했다가 다시 열고</b> 파일을 엽니다. 위쪽에 "보호된 보기" 노란 줄이 보이면 <b>편집 사용</b>을 누릅니다.</p>
+  <p class="muted">등록은 현재 사용자 계정에만 적용되고 관리자 권한이 필요 없습니다. 프로그램을 설치하지 않고, 주소가 적힌 작은 설정 파일(<a href="manifest.xml">manifest.xml</a>) 하나를 PowerPoint가 찾을 수 있는 곳에 둡니다.</p>
+
+  <h2>2. 필요한 것</h2>
+  <ul>
+    <li><b>Microsoft 365</b> 또는 <b>Office 2021 이상</b>의 PowerPoint (Windows·Mac). Office 2016·2019에서는 그림만 보입니다.</li>
+    <li>발표할 때 <b>인터넷 연결</b>.</li>
+    <li>휴대폰·태블릿 앱, 한쇼, 구글 슬라이드, PDF에서는 그림으로 보입니다.</li>
+  </ul>
+
+  <h2>3. 그래도 움직이지 않을 때</h2>
+  <div class="tbl"><table>
+    <tr><th>보이는 것</th><th>할 일</th></tr>
+    <tr><td>그림만 보인다</td><td>위 1번을 실행했는지, PowerPoint를 완전히 껐다 켰는지 확인합니다.</td></tr>
+    <tr><td>"추가 기능을 로드할 수 없습니다"</td><td>인터넷 연결을 확인하고 <b>다시 시도</b>를 누릅니다. 학교망이 이 사이트를 막는지 정보 담당 선생님께 확인합니다.</td></tr>
+    <tr><td>"웹 엔진이 오래되어…"</td><td>Microsoft 365 또는 Office 2021 이상이 깔린 컴퓨터에서 엽니다.</td></tr>
+    <tr><td>슬라이드 쇼에서만 빈 화면</td><td>파일 → 옵션 → 고급 → "슬라이드 쇼 하드웨어 그래픽 가속 사용 안 함"을 켭니다.</td></tr>
+    <tr><td>발표자 보기에서 눌리지 않는다</td><td>청중이 보는 화면에서 누릅니다.</td></tr>
+  </table></div>
+
+  <h2>4. 지우기</h2>
+  <div class="card">
+    <div class="cmd"><pre id="unwin">powershell -NoProfile -Command "irm https://nalssam-bunpil.vercel.app/live-html/unregister.ps1 | iex"</pre><button type="button" data-copy="unwin">복사</button></div>
+    <div class="cmd"><pre id="unmac">curl -fsSL https://nalssam-bunpil.vercel.app/live-html/register.sh | sh -s -- --remove</pre><button type="button" data-copy="unmac">복사</button></div>
+  </div>
+
+  <h2>개인정보</h2>
+  <p>슬라이드의 HTML은 PowerPoint 파일 안에 들어 있습니다. 이 사이트의 추가 기능 페이지는 그 HTML을 꺼내 화면에 그릴 뿐, 내용을 어디로도 보내거나 저장하지 않습니다. 믿을 수 있는 사람이 만든 파일만 여세요.</p>
+
+  <h2>직접 만들고 싶다면</h2>
+  <p><a href="/">nalssam's 분필팩</a>을 설치하고 "분수 수업을 살아있는 PPT로 만들어줘"처럼 말하면 됩니다.</p>
+</main>
+<script>
+  Array.prototype.forEach.call(document.querySelectorAll('button[data-copy]'), function (b) {
+    b.addEventListener('click', function () {
+      var text = document.getElementById(b.getAttribute('data-copy')).textContent;
+      function done() { var old = b.textContent; b.textContent = '복사됨'; setTimeout(function () { b.textContent = old; }, 1400); }
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, function () {}); }
+      else { var r = document.createRange(); r.selectNodeContents(document.getElementById(b.getAttribute('data-copy'))); var s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); done(); } catch (e) {} }
+    });
+  });
+</script>
+</body>
+</html>

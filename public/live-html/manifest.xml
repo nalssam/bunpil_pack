@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:type="ContentApp">
+  <Id>6f2b8c1e-4d7a-4e55-9a3b-2c8f5d1e7a90</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>nalssam bunpil pack</ProviderName>
+  <DefaultLocale>ko-KR</DefaultLocale>
+  <DisplayName DefaultValue="Live HTML"/>
+  <Description DefaultValue="Runs the HTML stored in this presentation inside the slide."/>
+  <IconUrl DefaultValue="https://nalssam-bunpil.vercel.app/live-html/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://nalssam-bunpil.vercel.app/live-html/icon-64.png"/>
+  <SupportUrl DefaultValue="https://nalssam-bunpil.vercel.app/live-html/"/>
+  <Hosts>
+    <Host Name="Presentation"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://nalssam-bunpil.vercel.app/live-html/app.html"/>
+    <RequestedWidth>960</RequestedWidth>
+    <RequestedHeight>540</RequestedHeight>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+</OfficeApp>

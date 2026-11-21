@@ -4,7 +4,8 @@
 검사: SKILL.md frontmatter(name·description만, name=폴더명, 설명 길이),
 개인정보 원칙 블록, 점검 절, 본문 길이, 'Claude' 표기(허용 목록 외),
 금지 디렉터리(bin/), 개인정보 패턴(src·evals), 플러그인 이름 규칙, dist zip 구조,
-설치 문장(채팅창에 붙여넣는 첫 문단)이 사이트·README·설치 안내에서 같은지, 문서 링크·사이트 앵커.
+설치 문장(채팅창에 붙여넣는 첫 문단)이 사이트·README·설치 안내에서 같은지, 문서 링크·사이트 앵커,
+살아있는 PPT(live-pptx) 추가 기능의 ID·주소가 스킬·사이트·배포 묶음에서 같은지.
 사용: python3 tools/check.py   (실패 시 종료 코드 1)
 """
 import html
@@ -202,12 +203,61 @@ def check_install_text():
                 errors.append(f"{name}: Windows 채팅 명령에 달러 기호($)가 있음(cmd·Git Bash에서 깨짐) → {m.group(1)[:60]}")
 
 
+def check_live_html():
+    """살아있는 PPT(live-pptx): 스킬·사이트·배포 묶음의 추가 기능 ID와 주소가 서로 맞는지 본다."""
+    sk = SRC / "bunpil-class" / "skills" / "live-pptx"
+    if not sk.exists():
+        return
+    import make_site
+    manifest = (sk / "assets" / "manifest.xml").read_text(encoding="utf-8")
+    m = re.search(r"<Id>([0-9a-fA-F-]{36})</Id>", manifest)
+    if not m:
+        errors.append("live-pptx: assets/manifest.xml 에 <Id> 없음"); return
+    addin = m.group(1)
+    if f"{make_site.SITE}/live-html/app.html" not in manifest:
+        errors.append("live-pptx: manifest.xml 의 SourceLocation 이 사이트 주소(/live-html/app.html)가 아님")
+    for script in ("build_live_pptx.py", "qa_live_pptx.py"):
+        f = sk / "scripts" / script
+        if not f.exists() or f'ADDIN_ID = "{addin}"' not in f.read_text(encoding="utf-8"):
+            errors.append(f"live-pptx: scripts/{script} 의 ADDIN_ID 가 manifest.xml 과 다름")
+    src = ROOT / "site" / "live-html"
+    need = ("app.html", "index.html", "register.ps1", "unregister.ps1", "register.sh", "icon-32.png", "icon-64.png")
+    for n in need:
+        if not (src / n).exists():
+            errors.append(f"site/live-html/{n} 없음")
+    for n in ("register.ps1", "unregister.ps1", "register.sh"):
+        f = src / n
+        if f.exists() and addin not in f.read_text(encoding="utf-8-sig"):
+            errors.append(f"site/live-html/{n}: 추가 기능 ID 가 manifest.xml 과 다름")
+    app = src / "app.html"
+    if app.exists() and "appsforoffice.microsoft.com/lib/1/hosted/office.js" not in app.read_text(encoding="utf-8"):
+        errors.append("site/live-html/app.html: office.js 를 불러오지 않음")
+    pub = ROOT / "public" / "live-html"
+    if (ROOT / "public").exists():
+        for n in need + ("manifest.xml",):
+            if not (pub / n).exists():
+                errors.append(f"public/live-html/{n} 없음 — python3 tools/make_site.py 를 실행하세요")
+        if (pub / "manifest.xml").exists() and (pub / "manifest.xml").read_text(encoding="utf-8") != manifest.replace("\r\n", "\n"):
+            errors.append("public/live-html/manifest.xml 이 스킬의 assets/manifest.xml 과 다름")
+        if (pub / "app.html").exists() and app.exists() and (pub / "app.html").read_text(encoding="utf-8") != app.read_text(encoding="utf-8").replace("\r\n", "\n"):
+            errors.append("public/live-html/app.html 이 site/live-html/app.html 과 다름")
+        for n in ("register.ps1", "unregister.ps1"):
+            if (pub / n).exists() and (pub / n).read_bytes().startswith(b"\xef\xbb\xbf"):
+                errors.append(f"public/live-html/{n}: BOM 있음(irm | iex 용은 BOM 없이 charset 헤더로 읽는다)")
+        if (pub / "register.sh").exists() and b"\r\n" in (pub / "register.sh").read_bytes():
+            errors.append("public/live-html/register.sh: CRLF 줄바꿈(sh 실패)")
+    vj = ROOT / "vercel.json"
+    if vj.exists() and "/live-html/register.ps1" not in vj.read_text(encoding="utf-8"):
+        errors.append("vercel.json: /live-html/register.ps1 의 Content-Type 헤더 없음")
+
+
 def main():
     n = check_skills()
     check_personal_info()
     check_structure()
     check_site()
     check_install_text()
+    check_live_html()
     for w in warns:
         print("주의:", w)
     for e in errors:
