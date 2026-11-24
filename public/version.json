@@ -19,23 +19,23 @@
     },
     "app/bunpil-builder.zip": {
       "bytes": 28547,
-      "sha256": "8c5b1ed659af404bbeb28835810c2587a38515b6bdefdfa56b5744928c497b2a"
+      "sha256": "e829ca96196249f17a1f5fc65feea95b86e30271549b20c01f2a7f7eb3e32ef2"
     },
     "app/bunpil-class.zip": {
       "bytes": 151788,
-      "sha256": "b7f9fb013bc3e2462f8b133ac62235ad62cab09e53dd8326de3aa67a366ee829"
+      "sha256": "fc6dc9a4571439ab83cd9187eb00d65b73ccef9df8aabf24fd463996102376ee"
     },
     "app/bunpil-connect.zip": {
       "bytes": 7511,
-      "sha256": "c2d80a4b101c5c435cdff6f32f33bf3df80e9b7da08e2e3b546cf191eecb4b0b"
+      "sha256": "ec8afeda05068ff86a9da8a9c531aeed3af9c94aa535c0e14fc916c08f0e12ce"
     },
     "app/bunpil-school.zip": {
       "bytes": 42049,
-      "sha256": "f1712c50476b80035a613f4c5e25a5cad403ead9a56c6c8674fcc73d7a421977"
+      "sha256": "8be40f78bdf38cae52e313d7b63c263e839dc99fa0c71b3d2ef31167b191a88f"
     },
     "app/bunpil-start.zip": {
       "bytes": 16442,
-      "sha256": "f7590f581109f63016ee3753840e2072f379bcf6cd91b18767b2466fbd3c863d"
+      "sha256": "e99872788e08afdfa65acc8aaf3d26bd8f441d64cca35e15ae03d2e7027ab067"
     },
     "app/skills/checkup.zip": {
       "bytes": 2846,
@@ -130,8 +130,8 @@
       "sha256": "d124f326813cbe5c5590e716a731d6a1a2b1e8e6c02e9d36baa9a77111ba67a7"
     },
     "bunpil-pack.zip": {
-      "bytes": 642470,
-      "sha256": "b69344d21bd1365c7061ca9adb8c750ab84e7ae2fbc51a5afd3e3ea6ced06f8e"
+      "bytes": 642478,
+      "sha256": "7f6abafbba93da5fc5d3dd719e05ad8ba8b6625a471a3894bfe446cc8c120f3e"
     },
     "claude.ps1": {
       "bytes": 64862,

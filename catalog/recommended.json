@@ -197,7 +197,7 @@
       "profile": "creator",
       "repo": "Jakeschincariol/youtube-agent-skill",
       "license": "MIT",
-      "label": "유튜브 스킬 11종 — 아이디어 한 줄로 훅 점수 대본·제목·썸네일 점검·편집 목록·쇼츠·채널 점검(올리기는 직접)",
+      "label": "유튜브 스킬 11종 — 아이디어 한 줄로 대본(훅 점수 포함)·제목과 썸네일 점검·편집 목록·쇼츠·채널 점검(올리기는 직접)",
       "claude": "plugin youtube-agent@youtube-agent-skill",
       "codex": "plugin youtube-agent@youtube-agent-skill",
       "needs": "Python 3(점검 도구)"
