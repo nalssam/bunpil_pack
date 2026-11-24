@@ -778,7 +778,7 @@ try {
       CPlugin 'leeandev/stop-slop-ko' 'stop-slop-ko@stop-slop-ko' '한국어 문서 AI 티 걷어내기 · stop-slop-ko'
     }
     if (InProfile 'creator') {
-      Write-Host '  [creator] 웹·디자인·영상·인스타' -ForegroundColor DarkGray
+      Write-Host '  [creator] 웹·디자인·영상·인스타·유튜브' -ForegroundColor DarkGray
       CPlugin 'nextlevelbuilder/ui-ux-pro-max-skill' 'ui-ux-pro-max@ui-ux-pro-max-skill' 'UI·UX 디자인 · ui-ux-pro-max'
       CPlugin 'Leonxlnx/taste-skill' 'taste-skill@taste-skill' '디자인 감각 · taste-skill'
       CPlugin 'pbakaus/impeccable' 'impeccable@impeccable' '디자인 다듬기 · impeccable'
@@ -787,6 +787,7 @@ try {
       else { SkillsAdd 'Leonxlnx/cinetic' 'claude-code' '소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)' }
       SkillsAdd 'aldegad/sprite-gen' 'claude-code' '스프라이트 이미지 · sprite-gen'
       CPlugin 'Jakeschincariol/instagram-agent-skill' 'instagram-agent@instagram-agent-skill' '인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill'
+      CPlugin 'Jakeschincariol/youtube-agent-skill' 'youtube-agent@youtube-agent-skill' '유튜브 스킬 11종(대본·제목·썸네일·편집) · youtube-agent-skill'
       CPlugin 'glifxyz/glif-mcp-server' 'glif@glif' '이미지·영상 AI · Glif 플러그인'
       McpHttp 'claude' 'glif' 'Glif 연결(MCP, /mcp에서 로그인)' $glifUrl
       $st.glifOn = $true
@@ -799,6 +800,7 @@ try {
       if (Has 'codex') { CPlugin 'openai/codex-plugin-cc' 'codex@openai-codex' 'Claude에서 Codex에게 맡기기 · codex-plugin-cc' }
       else { Skip 'codex-plugin-cc — Codex가 없어 건너뜀' }
       SkillsAdd 'Panniantong/Agent-Reach' 'claude-code' '웹·SNS 읽기 · Agent-Reach (도구 설치는 에이전트가 안내)'
+      SkillsAdd 'Google-Antigravity/antigravity-sdk-python' 'claude-code' 'Google Antigravity SDK 에이전트 스킬 · antigravity-sdk-python (SDK는 pip로 따로)'
       CMarket 'affaan-m/ECC' 'ecc' 'Everything Claude Code(ECC)'
       CMarket 'wshobson/agents' 'claude-code-workflows' '개발 워크플로 모음 · wshobson/agents'
       CMarket 'google/skills' 'google-plugins' 'Google Cloud 스킬 · google/skills'
@@ -833,7 +835,7 @@ try {
       XPlugin 'leeandev/stop-slop-ko' 'stop-slop-ko@stop-slop-ko' '한국어 문서 AI 티 걷어내기 · stop-slop-ko'
     }
     if (InProfile 'creator') {
-      Write-Host '  [creator] 웹·디자인·영상·인스타' -ForegroundColor DarkGray
+      Write-Host '  [creator] 웹·디자인·영상·인스타·유튜브' -ForegroundColor DarkGray
       SkillsAdd 'nextlevelbuilder/ui-ux-pro-max-skill' 'codex' 'UI·UX 디자인 · ui-ux-pro-max'
       SkillsAdd 'Leonxlnx/taste-skill' 'codex' '디자인 감각 · taste-skill'
       SkillsAdd 'pbakaus/impeccable' 'codex' '디자인 다듬기 · impeccable'
@@ -842,6 +844,7 @@ try {
       else { SkillsAdd 'Leonxlnx/cinetic' 'codex' '소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)' }
       SkillsAdd 'aldegad/sprite-gen' 'codex' '스프라이트 이미지 · sprite-gen'
       XPlugin 'Jakeschincariol/instagram-agent-skill' 'instagram-agent@instagram-agent-skill' '인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill'
+      XPlugin 'Jakeschincariol/youtube-agent-skill' 'youtube-agent@youtube-agent-skill' '유튜브 스킬 11종(대본·제목·썸네일·편집) · youtube-agent-skill'
       XPlugin 'glifxyz/glif-mcp-server' 'glif@glif' '이미지·영상 AI · Glif(MCP 포함)'
       $st.glifOn = $true
     }
@@ -851,6 +854,7 @@ try {
       SkillsAdd 'multica-ai/andrej-karpathy-skills' 'codex' '카파시식 코딩 지침'
       SkillsAdd 'JuliusBrussee/caveman' 'codex' '토큰 절약 · caveman'
       SkillsAdd 'Panniantong/Agent-Reach' 'codex' '웹·SNS 읽기 · Agent-Reach (도구 설치는 에이전트가 안내)'
+      SkillsAdd 'Google-Antigravity/antigravity-sdk-python' 'codex' 'Google Antigravity SDK 에이전트 스킬 · antigravity-sdk-python (SDK는 pip로 따로)'
       XMarket 'affaan-m/ECC' 'ecc' 'Everything Claude Code(ECC)'
       XMarket 'wshobson/agents' 'claude-code-workflows' '개발 워크플로 모음 · wshobson/agents'
       XMarket 'google/skills' 'google-plugins' 'Google Cloud 스킬 · google/skills'

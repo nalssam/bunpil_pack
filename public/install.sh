@@ -14,7 +14,7 @@
 #   1) 컴퓨터에 있는 Claude Code, Codex(ChatGPT)를 찾는다 (옵션을 주면 없을 때 설치한다)
 #   2) 분필팩(플러그인 5종)을 내려받아 ~/.bunpil 에 두고 설치한다 (Git 없어도 됨)
 #   3) 추천 스킬·MCP·플러그인 묶음을 함께 설치한다 (catalog/recommended.json)
-#        teacher(기본) 한글·발표 자료·문서 변환·브라우저 자동화(RPA)·웹 수집·하네스 / creator 웹·디자인·영상·인스타 / dev 개발자용
+#        teacher(기본) 한글·발표 자료·문서 변환·브라우저 자동화(RPA)·웹 수집·하네스 / creator 웹·디자인·영상·인스타·유튜브 / dev 개발자용
 #        studio 영상·모션그래픽·발표·분석 도구를 고정 버전으로 한꺼번에 (수 GB·10~30분, macOS·Linux·WSL2) — studio/ 폴더의 설치 엔진을 쓴다
 #   4) 이미 설치되어 있으면 최신으로 바꾼다 (다시 실행 = 업데이트)
 #  관리자 권한(sudo)이 필요 없다.
@@ -665,7 +665,7 @@ recs_claude() {
     c_plugin leeandev/stop-slop-ko stop-slop-ko@stop-slop-ko "한국어 문서 AI 티 걷어내기 · stop-slop-ko"
   fi
   if in_profile creator; then
-    say "  ${D}[creator] 웹·디자인·영상·인스타${N}"
+    say "  ${D}[creator] 웹·디자인·영상·인스타·유튜브${N}"
     c_plugin nextlevelbuilder/ui-ux-pro-max-skill ui-ux-pro-max@ui-ux-pro-max-skill "UI·UX 디자인 · ui-ux-pro-max"
     c_plugin Leonxlnx/taste-skill taste-skill@taste-skill "디자인 감각 · taste-skill"
     c_plugin pbakaus/impeccable impeccable@impeccable "디자인 다듬기 · impeccable"
@@ -673,6 +673,7 @@ recs_claude() {
     skills_add Leonxlnx/cinetic claude-code "소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)"
     skills_add aldegad/sprite-gen claude-code "스프라이트 이미지 · sprite-gen"
     c_plugin Jakeschincariol/instagram-agent-skill instagram-agent@instagram-agent-skill "인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill"
+    c_plugin Jakeschincariol/youtube-agent-skill youtube-agent@youtube-agent-skill "유튜브 스킬 11종(대본·제목·썸네일·편집) · youtube-agent-skill"
     c_plugin glifxyz/glif-mcp-server glif@glif "이미지·영상 AI · Glif 플러그인"
     mcp_http claude glif "Glif 연결(MCP, /mcp에서 로그인)" "$GLIF_URL"
     GLIF_ON=1
@@ -685,6 +686,7 @@ recs_claude() {
     if has codex; then c_plugin openai/codex-plugin-cc codex@openai-codex "Claude에서 Codex에게 맡기기 · codex-plugin-cc"
     else skip "codex-plugin-cc — Codex가 없어 건너뜀"; fi
     skills_add Panniantong/Agent-Reach claude-code "웹·SNS 읽기 · Agent-Reach (도구 설치는 에이전트가 안내)"
+    skills_add Google-Antigravity/antigravity-sdk-python claude-code "Google Antigravity SDK 에이전트 스킬 · antigravity-sdk-python (SDK는 pip로 따로)"
     c_market affaan-m/ECC ecc "Everything Claude Code(ECC)"
     c_market wshobson/agents claude-code-workflows "개발 워크플로 모음 · wshobson/agents"
     c_market google/skills google-plugins "Google Cloud 스킬 · google/skills"
@@ -717,7 +719,7 @@ recs_codex() {
     x_plugin leeandev/stop-slop-ko stop-slop-ko@stop-slop-ko "한국어 문서 AI 티 걷어내기 · stop-slop-ko"
   fi
   if in_profile creator; then
-    say "  ${D}[creator] 웹·디자인·영상·인스타${N}"
+    say "  ${D}[creator] 웹·디자인·영상·인스타·유튜브${N}"
     skills_add nextlevelbuilder/ui-ux-pro-max-skill codex "UI·UX 디자인 · ui-ux-pro-max"
     skills_add Leonxlnx/taste-skill codex "디자인 감각 · taste-skill"
     skills_add pbakaus/impeccable codex "디자인 다듬기 · impeccable"
@@ -725,6 +727,7 @@ recs_codex() {
     skills_add Leonxlnx/cinetic codex "소개·출시 영상 만들기 · Cinetic (영상 만들 때 ffmpeg·Node 22·Python 3.11 필요)"
     skills_add aldegad/sprite-gen codex "스프라이트 이미지 · sprite-gen"
     x_plugin Jakeschincariol/instagram-agent-skill instagram-agent@instagram-agent-skill "인스타그램 스킬 13종(훅·대본·캡션) · instagram-agent-skill"
+    x_plugin Jakeschincariol/youtube-agent-skill youtube-agent@youtube-agent-skill "유튜브 스킬 11종(대본·제목·썸네일·편집) · youtube-agent-skill"
     x_plugin glifxyz/glif-mcp-server glif@glif "이미지·영상 AI · Glif(MCP 포함)"
     GLIF_ON=1
   fi
@@ -734,6 +737,7 @@ recs_codex() {
     skills_add multica-ai/andrej-karpathy-skills codex "카파시식 코딩 지침"
     skills_add JuliusBrussee/caveman codex "토큰 절약 · caveman"
     skills_add Panniantong/Agent-Reach codex "웹·SNS 읽기 · Agent-Reach (도구 설치는 에이전트가 안내)"
+    skills_add Google-Antigravity/antigravity-sdk-python codex "Google Antigravity SDK 에이전트 스킬 · antigravity-sdk-python (SDK는 pip로 따로)"
     x_market affaan-m/ECC ecc "Everything Claude Code(ECC)"
     x_market wshobson/agents claude-code-workflows "개발 워크플로 모음 · wshobson/agents"
     x_market google/skills google-plugins "Google Cloud 스킬 · google/skills"

@@ -24,6 +24,7 @@ Copyright 2026 날쌤(nalssam) · 몽당분필 (사단법인 디지털미디어�
 - firecrawl/firecrawl-mcp-server (호스팅 MCP 주소로 연결) — MIT
 - perplexityai/modelcontextprotocol (@perplexity-ai/mcp-server) — MIT
 - Jakeschincariol/instagram-agent-skill — MIT
+- Jakeschincariol/youtube-agent-skill — MIT
 - Leonxlnx/cinetic — MIT
 - ManimCommunity/manim — MIT (수업 영상 스킬이 필요할 때 설치)
 - rany2/edge-tts — LGPL-3.0 (수업 영상 스킬이 필요할 때 설치)
@@ -40,6 +41,7 @@ Copyright 2026 날쌤(nalssam) · 몽당분필 (사단법인 디지털미디어�
 - JuliusBrussee/caveman — Apache-2.0
 - openai/codex-plugin-cc — Apache-2.0
 - Panniantong/Agent-Reach — MIT
+- Google-Antigravity/antigravity-sdk-python — Apache-2.0 (스킬 1개만 설치. SDK 자체는 사용자가 pip로 따로 설치)
 - affaan-m/ECC — MIT
 - wshobson/agents — MIT
 - google/skills — Apache-2.0
@@ -57,8 +59,8 @@ Copyright 2026 날쌤(nalssam) · 몽당분필 (사단법인 디지털미디어�
 웹사이트
 - 글꼴: Black Han Sans, Gaegu, IBM Plex Sans KR, IBM Plex Mono (Google Fonts, SIL Open Font License 1.1)
 - QR 코드: segno(BSD-3-Clause)로 빌드할 때 생성
-링크만 안내: hesreallyhim/awesome-claude-code (CC BY-NC-ND 4.0)
-각 프로젝트의 라이선스·약관은 원 저장소를 따른다. 라이선스 정보는 2026-10-14 기준이다.
+링크만 안내: hesreallyhim/awesome-claude-code (CC BY-NC-ND 4.0), zhuyansen/awesome-claude-video-skills (목록은 CC0 1.0)
+각 프로젝트의 라이선스·약관은 원 저장소를 따른다. 라이선스 정보는 2026-10-14 기준이다(youtube-agent-skill, antigravity-sdk-python, awesome-claude-video-skills는 2026-11-24 기준).
 
 상표
 "몽당분필", "디미교연"과 로고는 몽당분필의 표장이며 위 라이선스로 허락되지 않습니다.

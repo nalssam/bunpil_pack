@@ -1,5 +1,11 @@
 # 변경 기록
 
+## 0.9.0 — 2026-11-24
+- creator 묶음에 **유튜브 스킬 11종**(Jakeschincariol/youtube-agent-skill, MIT) 추가: 아이디어 한 줄로 훅을 점수 매긴 대본, 제목·썸네일 문구를 한 쌍으로 점검, 대본(자막)에서 편집 목록, 시청 지속률 파일 읽기, 긴 영상에서 쇼츠 찾기, 챕터·검색어·댓글 정리, 한 주 계획, 채널 점검, 내 분야에서 잘 되는 영상 찾기. 인스타그램 스킬과 같은 방식의 Claude Code·Codex 플러그인이며 계정 연결 없이 쓰고 올리기는 직접 한다
+- dev 묶음에 **Google Antigravity SDK 스킬**(Google-Antigravity/antigravity-sdk-python, Apache-2.0) 추가: 저장소의 스킬 1개(google-antigravity-sdk)만 `npx skills`로 설치한다. SDK 자체(`pip install google-antigravity`, 알파 버전)와 Gemini API 키는 분필팩이 설치하지 않는다
+- 링크로만 안내하는 목록에 **awesome-claude-video-skills**(zhuyansen, 영상 스킬 모음 목록, 목록은 CC0 1.0) 추가. 사이트 "함께 보면 좋은 곳"에 나온다
+- 사이트 변경 기록에 0.7.0~0.9.0 추가, 추천 목록 기준일 2026-11-24
+
 ## 0.8.1 — 2026-11-21
 - live-pptx 문서 정정(운영 사이트 독립 점검 반영): 확인한 것보다 단정적이던 문구를 바로잡았다. Office 2016은 확인하지 못했고(Office 2019 기관 설치판만 확인), Microsoft 365는 Windows 최신 채널 16.0.20625 한 빌드에서만 확인했다. 업데이트를 늦춘 Microsoft 365는 발표 전에 슬라이드 쇼로 한 번 눌러 보게 안내한다
 - 눌러지지 않는 PC를 위한 브라우저 발표 파일: 변환할 때 `--save-html`로 그림·CSS·스크립트를 한 파일로 합친 `deck-browser.html`을 만들어 pptx와 함께 전달한다(그림을 따로 둔 `deck.html`만 옮기면 그림이 깨지던 문제)
